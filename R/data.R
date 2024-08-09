@@ -14,7 +14,6 @@
 #'
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' data("ecoparameters")
