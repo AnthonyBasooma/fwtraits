@@ -3,6 +3,8 @@
 #' @return
 #' @export
 #'
+#' @importFrom askpass askpass
+#'
 #' @examples
 loadapikey <- function() {
   # check if the FRESHWATERAPIKEY has been set and has the API key
@@ -12,7 +14,7 @@ loadapikey <- function() {
   if (nchar(apikey) == 36) {
     return(apikey)
   } else {
-    apikey <- askpass::askpass(prompt = "Paste API key ")
+    apikey <- askpass(prompt = "Paste API key ")
 
     # validate the apikey before saving in the environment
 

@@ -1,39 +1,35 @@
+
+#' @noRd
+trans_macrodata <- function(m){
+  md <- list()
+  for (i in seq_along(m)) {
+    md[[i]] <- m[[i]]
+    d <- do.call(c, md)
+  }
+  invisible(d)
+}
+
+
+
 #' Title
 #'
 #' @param species
 #' @param group
+#' @importFrom methods is
 #'
 #' @return
 #' @export
 #'
 #' @examples
-extract_traits <- function(species, group) {
+#'
+extract_traits <- function(species, group, taxaorder = NULL,
+                            token  = NULL, multiple = FALSE, parallel = FALSE,
+                            cores = NULL, quietly = FALSE,
+                            pct = 80,
+                            errorness = 20) {
 
 
-  # check if the taxa group is being downloaded for the first time to tell the user to wait
-  # get the harmonized taxa name
-  taxafile <- harmonisetaxa(group)
-
-  taxapath <- list.files(
-    path = file.path(absolutepath(dir = "taxongroups", verbose = FALSE)),
-    pattern = paste0(taxafile, ".RData"), full.names = F
-  )
-
-  if (length(taxapath) < 1) {
-    message("Please wait to download the ", taxafile, " data from the database.")
-
-    taxagroup_data <- getdata(taxa = group)
-  } else {
-    taxagroup_data <- getdata(taxa = group)
-  }
-
-  # # cleaned species names
-
-  speclean <- clean_names(sp = species, grouplists = taxagroup_data)
-
-  #only get unique species
-
-  specleaned <- unique(speclean)
+  #if multiple groups are considered
 
   cabbr <- c()
   cvalue <- c()
@@ -41,114 +37,143 @@ extract_traits <- function(species, group) {
   spp <- c()
   dlist <- list()
   dftraits <- list()
+  dspecies <- list()
+  grouplist <- list()
 
-  for (iii in seq_along(taxagroup_data)) {
+  for (ii in seq_along(group)) {
 
-    #data filtered for each trait with each orders available fors
+    # check if the taxa group is being downloaded for the first time to tell the user to wait
+    # get the harmonized taxa name
+    taxafile <- harmonisetaxa(group[ii])
 
-    traitorderdf <- taxagroup_data[[iii]]
+    taxagroup_data <- getdata(taxa = group[ii], taxaorder = taxaorder,
+                              token  = token, multiple = multiple,
+                              parallel = parallel, cores = cores,
+                              quietly = quietly)
 
-    #creates a complete species name on the data frame
+    # # cleaned species names
 
-    traitorderdf["speciesname"] <- paste0(traitorderdf$Genus,' ', traitorderdf$Species)
+    speclean <- clean_names(sp = species, grouplists = taxagroup_data,
+                            pct = pct, errorness = errorness, group = taxafile )
 
+    #only get unique species
+    specleaned <- unique(unlist(speclean))
 
-    if(nrow(traitorderdf)>=1) { #for phytobento that returns no data
+    #check if there are species to check
+    if(length(specleaned)>=1) specleaned else stop("No species name to extract the traits.")
 
-      #filter out the species being searched for by the user
+    #reshape the macroinvetebrates data if more than 1 taxorder is selected.
+    #form order dataframe rather than lists
 
-      rowsdata <- traitorderdf[traitorderdf[, "speciesname"] %in% specleaned, ]
+    if(taxafile=='macroinvertebrates' && is(taxagroup_data, 'list')){
 
-
-      #even within this some fi, pp, mp, di returns no data so skip to next
-
-      if (nrow(rowsdata) >= 1) pp1 <- rowsdata else next
-
-      #remove any duplicate species
-
-      pp2 <- as.data.frame(pp1[!duplicated(pp1[c('speciesname')]),])#add more paramaters
-
+      taxagroup_data_final <- trans_macrodata(taxagroup_data)
     }else{
-      next #skip to next
+      taxagroup_data_final <- taxagroup_data
     }
 
-    for (iv in 1:nrow(pp2)) {
+    for (iii in seq_along(taxagroup_data_final)) {
 
-      if(taxafile=="phytobentho"){
+      #data filtered for each trait with each orders available fors
 
-        #change the traits
-        traitslist <- pp2[iv, "ecologicalParameterList"][[1]][[iv]][[3]] # get the parameter values
+      traitorderdf <- taxagroup_data_final[[iii]]
 
+      if(nrow(traitorderdf)>=1) { #for phytobento that returns no data
 
-        cname <- pp2[iv, "ecologicalParameterList"][[1]][[iv]][[2]] # get the parameter name
+        #creates a complete species name on the data frame
+
+        traitorderdf["speciesname"] <- paste0(traitorderdf$Genus,' ', traitorderdf$Species)
+
+        #filter out the species being searched for by the user
+
+        rowsdata <- traitorderdf[traitorderdf[, "speciesname"] %in% specleaned, ]
+
+        #even within this some fi, pp, mp, di returns no data so skip to next
+
+        if (nrow(rowsdata) >= 1) pp1 <- rowsdata else next
+
+        #remove any duplicate species
+
+        pp2 <- as.data.frame(pp1[!duplicated(pp1[c('speciesname')]),])#add more paramaters
 
       }else{
-        #the dataframe only changes in the first loop
-
-        traitslist <- pp2[iv, "ecologicalParameterList"][[1]][[1]][[3]] # get the parameter values
-
-        cname <- pp2[iv, "ecologicalParameterList"][[1]][[1]][[2]] # get the parameter name
+        next #skip to next
       }
 
-      # get the species name
+      for (iv in 1:nrow(pp2)) {
 
-      spp[iv] <- unlist(pp2[, "speciesname"])[iv]
+        pp3 <- pp2[iv, "ecologicalParameterList"][[1]]
+
+        spp <- unlist(pp2[, "speciesname"])[iv]
+
+        for (v in seq_along(pp3)) {
+
+          traitslist <- pp3[[v]][[3]]
+
+          cname <- pp3[[v]][[2]]
+
+          abbr <- sapply(traitslist, function(x) x[[1]]) # extract all the species parameter names
+
+          val <- sapply(traitslist, function(x) x[[2]]) # extract all the species parameter values
+
+          if (is.null(unlist(val)) == TRUE) { # some diatom had no values
+
+            cvalue[v]  <- "nodata" # extracts the value
+
+            cvaluedescription[v]  <- 'None' # extracts the value description
+
+            if (length(abbr) > 1) cabbr[v]  <- clean_traits(x = cname) else cabbr[v]  <- clean_traits(x = abbr) # for diatoms with no values in all parameters
+
+          } else if (length(abbr) == 1) {
 
 
-      abbr <- sapply(traitslist, function(x) x[[1]]) # extract all the species parameter names
+            # if length = 1 then the val is the parameter to maintain since its the output
+            #if the value has an empty string
+            if(val !="") cvalue[v]  <- val else cvalue[v]  <- "nodata"
 
-      val <- sapply(traitslist, function(x) x[[2]]) # extract all the species parameter values
+            #clean the traits name before saving
+            cabbr[v]  <- clean_traits(x = abbr)
 
+            cvaluedescription[v]  <- clean_traits(x = abbr)
 
-      if (is.null(unlist(val)) == TRUE) { # some diatom had no values
+          } else {
 
-        cvalue[iv] <- NA # extracts the value
+            valIndesc <- abbr[which(val != "0" & !is.null(val) & nzchar(val))] # maintain those with values, no 0, NA and empty strings
 
-        cvaluedescription[iv] <- 'None' # extracts the value description
+            valIn <- val[which(val != "0" & !is.null(val) & nzchar(val))]
 
-        if (length(abbr) > 1) cabbr[iv] <- clean_traits(x = cname) else cabbr[iv] <- clean_traits(x = abbr) # for diatoms with no values in all parameters
+            # value description
+            if (length(valIndesc) <= 0) valdescript <- "nodata" else valdescript <- paste(valIndesc, collapse = "_ ") # concatenate if more than 1
 
-      } else if (length(abbr) == 1) {
+            tfdescript <- grepl("&lt;", valdescript, fixed = TRUE)
 
+            if (tfdescript == TRUE) cvaluedescription[v]  <- gsub("&lt;", "<", valdescript) else cvaluedescription[v]  <- valdescript
 
-        # if length = 1 then the val is the parameter to maintain since its the output
-        #if the value has an empty string
-        if(val !="") cvalue[iv] <- val else cvalue[iv] <- 'Nd'
+            # get also the values
+            if (length(valIn) <= 0) valInf <- "nodata" else valInf <- paste(valIn, collapse = "_ ") # concatenate if more than 1
 
-        #clean the traits name before saving
-        cabbr[iv] <- clean_traits(x = abbr)
+            tf <- grepl("&lt;", valInf, fixed = TRUE)
 
-        cvaluedescription[iv] <- clean_traits(x = abbr)
+            if (tf == TRUE) cvalue[v] <- gsub("&lt;", "<", valInf) else cvalue[v]  <- valInf
 
-      } else {
+            cabbr[v]  <- clean_traits(x = cname)
+          }
+          dfout <- data.frame(taxagroup = taxafile, species = spp, parameter = cabbr, description = cvaluedescription, value = cvalue)
+        }
+        dspecies[[iv]] <- dfout
 
-        valIndesc <- abbr[which(val != "0" & !is.null(val) & nzchar(val))] # maintain those with values, no 0, NA and empty strings
-
-        valIn <- val[which(val != "0" & !is.null(val) & nzchar(val))]
-
-        # value description
-        if (length(valIndesc) <= 0) valdescript <- NA else valdescript <- paste(valIndesc, collapse = "_ ") # concatenate if more than 1
-
-        tfdescript <- grepl("&lt;", valdescript, fixed = TRUE)
-
-        if (tfdescript == TRUE) cvaluedescription[iv] <- gsub("&lt;", "<", valdescript) else cvaluedescription[iv] <- valdescript
-
-        # get also the values
-        if (length(valIn) <= 0) valInf <- NA else valInf <- paste(valIn, collapse = "_ ") # concatenate if more than 1
-
-        tf <- grepl("&lt;", valInf, fixed = TRUE)
-
-        if (tf == TRUE) cvalue[iv] <- gsub("&lt;", "<", valInf) else cvalue[iv] <- valInf
-
-        cabbr[iv] <- clean_traits(x = cname)
+        df1 <- do.call(rbind, dspecies)
 
       }
-      dlist <- data.frame(species = spp, parameter = cabbr, description = cvaluedescription, value = cvalue)
+
+      dftraits[[iii]] <- df1
+
+      df2 <- do.call(rbind, dftraits)
     }
+    grouplist[[ii]] <- df2
 
-    dftraits[[iii]] <- dlist
+    dfinal <- do.call(rbind, grouplist)
 
-    dfinal <- do.call(rbind, dftraits)
   }
   return(dfinal)
 }

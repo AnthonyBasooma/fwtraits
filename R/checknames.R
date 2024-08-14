@@ -3,13 +3,14 @@
 #'
 #' @param sp
 #' @param grouplists
+#' @importFrom utils adist
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #'
-clean_names <- function(sp, grouplists) {
+clean_names <- function(sp, grouplists, pct = 80, errorness = 20, group) {
 
   #run through the species list
 
@@ -31,8 +32,22 @@ clean_names <- function(sp, grouplists) {
     spclean <- gsub("(^[[:alpha:]])", "\\U\\1", spaces, perl = TRUE)
 
     #compiles all species from all the list of the group extracted
+    if(group=='macroinvertebrates'){
 
-    stlist <- unlist(unique(do.call(c, sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))))
+      #macro invertebrates is downloaded and arranged differently since the groups cannot retrieved in one file.
+      if(is(grouplists, 'list')){
+
+        stlist <- unlist(unique(Reduce(c, sapply(grouplists, function(yy){sapply(yy, function(zz){paste0(zz$Genus," ", zz$Species)})}))))
+
+      }else{
+        stlist <- unlist(unique(sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species))))
+      }
+
+    }else{
+      print('i am here')
+      stlist <- unlist(unique(Reduce(c, sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))))
+    }
+
 
     inOut <- spclean%in%stlist
 
@@ -45,10 +60,35 @@ clean_names <- function(sp, grouplists) {
 
       dst <- adist(spclean, stlist)
 
-      spch <- stlist[which.min(dst)]
-    }
+      errorsp <- (min(dst)/nchar(spclean))*100
 
-    return(spch)
+      if(errorness>30) warning("The returned species name ", stlist[which.min(dst)], " has a high percentage error compared to ", spclean, " and wrong traits may be returned.", call. = FALSE)
+
+      #errorness of the name
+      if(errorsp<errorness){
+
+         spsel <- stlist[which.min(dst)]
+
+         #check %length of the species replacing
+         ncpct <- (nchar(spsel)/nchar(spclean))*100
+
+         if(ncpct>pct) {
+           spch <- spsel
+         }
+         else {
+           spch = NA
+           warning("No matching species name found for ", x, " in the ", group, "  and will be removed", call. = FALSE)
+         }
+      }else{
+        spch = NA
+        warning("No matching species name found for ", x, " in the ", group, " and will be removed", call. = FALSE)
+      }
+
+    }
+    finallist <- spch[!is.na(spch)]
+
+    return(finallist)
+
   }, simplify = TRUE, USE.NAMES = FALSE)
 }
 

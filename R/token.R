@@ -6,11 +6,14 @@
 #' @importFrom curl has_internet
 #' @importFrom httr2 req_headers
 #'
+#'
 #' @return
 #' @export
 #'
 #' @examples
-fip_token <- function(key = loadapikey(), quietly = TRUE, seed) {
+#'
+fip_token <- memoise::memoise(function(key = loadapikey(), quietly = TRUE, seed) {
+
   if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
 
   if (is.null(key)) stop("The APIKEY is not provided. Please register at https://www.freshwaterecology.info/register/index.php")
@@ -36,4 +39,5 @@ fip_token <- function(key = loadapikey(), quietly = TRUE, seed) {
     stop("Unable to access the database.")
   }
   return(tkn)
-}
+}, cache = memoise::cache_filesystem(path = 'taxongroups'))
+

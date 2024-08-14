@@ -5,14 +5,16 @@
 #' @param grouptaxa
 #'
 #' @importFrom memoise memoise
+#' @importFrom stats reshape
 #'
 #' @return
 #' @export
 #'
 #' @example
 #'
-fip_traits <- function(data, spcol = NULL, group = 'fi', taxonomy= NULL,
-                       level = NULL, traits = NULL, wide = FALSE, all = FALSE,
+fip_traits <- function(data, spcol = NULL, group = 'fi', traits = 'all', taxonomy= NULL,
+                       taxaorder = NULL, token  = NULL, multiple = FALSE, parallel = FALSE, cores = 2, quietly = FALSE,
+                       level = NULL, wide = FALSE,
                        select = NULL,
                        na.rm = FALSE){
 
@@ -39,16 +41,13 @@ fip_traits <- function(data, spcol = NULL, group = 'fi', taxonomy= NULL,
 
   #get species as they exist in the taxon names of the FIP
 
-  extracteddata <- extract_traits(species = specieslist, group = group)
+  extracteddata <- extract_traits(species = specieslist, group = group, taxaorder = taxaorder, token  = token,
+                                  multiple = multiple, parallel = parallel, cores = cores, quietly = quietly)
 
   if(nrow(extracteddata)<1) stop("No data found for the species entered. Confirm right group of taxa has been selected.")
 
-  if(isTRUE(all)){
-
-    if(!is.null(traits)) stop("If all is TRUE, the traits parameter must be NULL but not both.")
-
+  if(traits=="all"){
     #get traits
-
     traitwords <- unique(unlist(extracteddata$parameter))
 
   }else{
@@ -70,17 +69,19 @@ fip_traits <- function(data, spcol = NULL, group = 'fi', taxonomy= NULL,
 
     specieslist <- sapply(dflists, function(x){
 
+      taxagroup = x$taxagroup
+
       species <- x$species
 
-      # print(species)
       parameter <- x$parameter
 
       descvalue  <-  strsplit(x$description,split="_ ",fixed=TRUE)
 
       traitvalue <-  strsplit(x$value,split="_ ",fixed=TRUE)
 
-      traits <- mapply(FUN = function(sp, par, desc, value) data.frame(species = species, trait = parameter, description = desc, value = value),
-                       sp = species, par = parameter,  desc = descvalue , value = traitvalue, SIMPLIFY = FALSE)
+      traits <- mapply(FUN = function(taxagroup, sp, par, desc, value) data.frame(taxagroup = taxagroup, species = species, trait = parameter,
+                                                                                  description = desc, value = value),
+                       taxagroup = taxagroup, sp = species, par = parameter,  desc = descvalue , value = traitvalue, SIMPLIFY = FALSE)
 
       spfinal <- Reduce(rbind, traits)
 
@@ -103,7 +104,7 @@ fip_traits <- function(data, spcol = NULL, group = 'fi', taxonomy= NULL,
 
   #remove traits with no data
 
-  if(isTRUE(na.rm)) traitdf <- traitdfsel[!is.na(traitdfsel$value),] else traitdf <-traitdfsel
+  if(isTRUE(na.rm)) traitdf <- traitdfsel[!traitdfsel$value=="nodata",] else traitdf <-traitdfsel
 
   #add the traits and description to make it wide
 
@@ -111,9 +112,9 @@ fip_traits <- function(data, spcol = NULL, group = 'fi', taxonomy= NULL,
 
     traitdf['traitdesc'] <- paste(traitdf$trait,'_',traitdf$description )
 
-    dfsel <- traitdf[, c(1,4,5)]
+    dfsel <- traitdf[, c("taxagroup", 'species', 'value', "traitdesc")]
 
-    spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = 'species' , direction = 'wide', sep = "_")
+    spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = c('taxagroup', 'species') , direction = 'wide', sep = "_")
 
     #remove the value_created by reshape function
 

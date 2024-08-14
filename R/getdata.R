@@ -27,8 +27,9 @@ harmonisetaxa <- function(tx, taxafile = FALSE) {
 #' @param taxa
 #' @param token
 #'
-#' @importFrom httr2 request req_body_raw  req_perform resp_body_json req_auth_bearer_token
+#' @importFrom httr2 request req_body_raw  req_perform resp_body_json req_auth_bearer_token req_user_agent
 #' @importFrom jsonlite toJSON
+#' @importFrom memoise memoise cache_filesystem
 #'
 #' @return
 #' @export
@@ -36,14 +37,11 @@ harmonisetaxa <- function(tx, taxafile = FALSE) {
 #' @examples
 
 
-getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, token = NULL, seed = 1144) {
+getfiles <- memoise::memoise(function(taxa, taxaorder, token) {
 
   if (!curl::has_internet()) stop("Not connected on internet to access the database.")
 
   if(is.null(token)) stop("Provide the token key to continue, run before_u_start() function and learn to set the token.")
-
-  #set seed for memoising the downloads even when the token chnage
-  set.seed(seed)
 
   # get database map
   getparam_list <- fip_paramlist()
@@ -113,14 +111,15 @@ getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, token = NULL, seed
 
       #check if the order entered are in the allowed list
 
-      inOut <- taxaorder%in%orderlist
+      inOut <- taxaorder%in%names(orderlist)
+
       if(all(inOut) == TRUE){
 
         taxasel <- orderlist[taxaorder]
       }else{
        ordersnotin <- taxaorder[which(inOut==FALSE)]
 
-       stop("The orders, ", ordersnotin, " is/are not in the standard order list for macroinvertebrates. run orders() function to identify allowed orders.")
+       stop("The orders: ", paste(ordersnotin, collapse = ", "), " is/are not in the standard order list for macroinvertebrates. run orders() function to identify allowed orders.")
       }
       xsp <- sapply(names(taxasel), function(x) {
 
@@ -132,7 +131,7 @@ getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, token = NULL, seed
 
           ldata <- request(base_url = qurl) |>
 
-            req_auth_bearer_token(token = tokencode) |>
+            req_auth_bearer_token(token = token) |>
 
             req_body_raw(body = jsonlite::toJSON(
               list(
@@ -143,9 +142,11 @@ getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, token = NULL, seed
               auto_unbox = TRUE
             ), type = "application/json") |>
 
+            req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" ) |>
+
             req_perform()
 
-          fxdata <- ldata |> httr2::resp_body_json()
+          fxdata <- ldata |> resp_body_json()
 
           lmdata <- as.data.frame(do.call(rbind, fxdata$searchResult))
 
@@ -161,7 +162,7 @@ getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, token = NULL, seed
 
         ldata <- request(base_url = qurl) |>
 
-          req_auth_bearer_token(token = tokencode) |>
+          req_auth_bearer_token(token = token) |>
 
           req_body_raw(body = jsonlite::toJSON(
             list(
@@ -172,7 +173,11 @@ getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, token = NULL, seed
             auto_unbox = TRUE
           ), type = "application/json")
 
-        reqdata <- ldata |> req_perform()
+        reqdata <- ldata |>
+
+          req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" ) |>
+
+          req_perform()
 
         fxdata <- reqdata |> resp_body_json()
 
@@ -219,7 +224,11 @@ getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, token = NULL, seed
           ), type = "application/json")
       }
 
-      reqdata <- extdata |> req_perform()
+      reqdata <- extdata |>
+
+        req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" ) |>
+
+        req_perform()
 
       respdata <- reqdata |> resp_body_json()
 
@@ -271,41 +280,41 @@ orders <- function(){
 #' @export
 #'
 #' @examples
-getdata <- function(taxa, taxaorder = NULL, token, multiple = FALSE, parallel = FALSE, cores = NULL, seed= 1144){
+#'
+getdata <- function(taxa, taxaorder = NULL, token  = NULL,
+                    multiple = FALSE, parallel = FALSE, cores = 2,
+                    quietly = FALSE){
 
   if(isFALSE(multiple)){
 
     if(length(taxa)>1) stop("One taxa group to be downloaded if multiple is FALSE")
 
-    getdf <- getfiles(taxa = taxa, taxaorder = taxaorder, seed = seed, token = token)
+    getdf <- getfiles(taxa = taxa, taxaorder = taxaorder, token = token)
 
+    return(getdf)
   }else{
 
     if(length(taxa)<=1)stop("If multiple is TRUE, multiple taxagroups are expected.")
 
     if(isFALSE(parallel)){
 
-      message("The slower version of getting data from FIP will be implemented.")
+     if(isFALSE(quietly)) message("The slower version of getting data from FIP will be implemented.")
 
       taxadflist <- list()
 
       for (i in taxa) {
-        taxadflist[[i]] <- getfiles(taxa = i, taxaorder = taxaorder)
+        taxadflist[[i]] <- getfiles(taxa = i, taxaorder = taxaorder, token = token)
       }
-
+      return(taxadflist)
     }else{
-
-      if(is.null(cores))stop("For parallel downloading of taxa groups, please set the number of cores.")
 
       #check allowed cores
 
       ncoresdetected <- detectCores()
 
-      if(cores>=ncoresdetected) stop("Reduce the cores to ", ncoresdetected-2," or less for effective parallelisation.")
+      if(cores>=ncoresdetected | (ncoresdetected-cores)<2) stop("Reduce the cores to ", ncoresdetected-2," or less for effective parallelisation.")
 
       makecluster <- makeCluster(spec = cores, type = 'PSOCK')
-
-      #clusterExport(makecluster, varlist = c("token"))
 
       registerDoParallel(cl = makecluster)
 
@@ -314,20 +323,20 @@ getdata <- function(taxa, taxaorder = NULL, token, multiple = FALSE, parallel = 
 
         taxadf <- getfiles(taxa = i,  taxaorder = taxaorder, token = token)
 
-        #on.exit(close(taxadf), add = TRUE)
-
+        return(taxadf)
       }
 
-      stopCluster(cl= makecluster)
+      stopCluster(makecluster)
 
       # Close all open connections
       closeAllConnections()
+
+      return(getdf)
     }
   }
 
 }
 
-# usethis::use_package('foreach')
 #
 # fip_decache <- function(taxa, folder = "taxongroups", quietly = TRUE) {
 #   unlikefolder <- absolutepath(dir = folder, verbose = FALSE)
