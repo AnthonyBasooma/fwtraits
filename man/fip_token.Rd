@@ -4,7 +4,7 @@
 \alias{fip_token}
 \title{Title}
 \usage{
-fip_token(key = loadapikey(), quietly = TRUE)
+fip_token(key = loadapikey(), quietly = TRUE, seed)
 }
 \arguments{
 \item{quietly}{}

@@ -8,11 +8,16 @@ fip_traits(
   data,
   spcol = NULL,
   group = "fi",
+  traits = "all",
   taxonomy = NULL,
+  taxaorder = NULL,
+  token = NULL,
+  multiple = FALSE,
+  parallel = FALSE,
+  cores = 2,
+  quietly = FALSE,
   level = NULL,
-  traits = NULL,
   wide = FALSE,
-  all = FALSE,
   select = NULL,
   na.rm = FALSE
 )

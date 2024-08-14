@@ -2,10 +2,21 @@
 % Please edit documentation in R/utilityfunction.R
 \name{fip_paramlist}
 \alias{fip_paramlist}
-\title{Title}
+\title{Function to retrieve all the traits in the database.}
 \usage{
 fip_paramlist()
 }
+\value{
+\code{list} List of traits for all the taxa groups and orders in the database.
+}
 \description{
-Title
+Function to retrieve all the traits in the database.
+}
+\examples{
+
+x <- fip_paramlist()
+
+}
+\author{
+Anthony Basooma
 }

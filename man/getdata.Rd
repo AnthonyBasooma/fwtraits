@@ -7,11 +7,11 @@
 getdata(
   taxa,
   taxaorder = NULL,
-  token,
+  token = NULL,
   multiple = FALSE,
   parallel = FALSE,
-  cores = NULL,
-  seed = 1144
+  cores = 2,
+  quietly = FALSE
 )
 }
 \arguments{

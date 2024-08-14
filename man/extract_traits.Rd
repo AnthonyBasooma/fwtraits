@@ -4,10 +4,18 @@
 \alias{extract_traits}
 \title{Title}
 \usage{
-extract_traits(species, group)
-}
-\arguments{
-\item{group}{}
+extract_traits(
+  species,
+  group,
+  taxaorder = NULL,
+  token = NULL,
+  multiple = FALSE,
+  parallel = FALSE,
+  cores = NULL,
+  quietly = FALSE,
+  pct = 80,
+  errorness = 20
+)
 }
 \description{
 Title

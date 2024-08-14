@@ -4,7 +4,7 @@
 \alias{getfiles}
 \title{Title}
 \usage{
-getfiles(taxa, taxaorder = NULL, token = NULL, seed = 1144)
+getfiles(taxa, taxaorder, token)
 }
 \arguments{
 \item{token}{}

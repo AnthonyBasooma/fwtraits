@@ -4,10 +4,7 @@
 \alias{clean_names}
 \title{Title}
 \usage{
-clean_names(sp, grouplists)
-}
-\arguments{
-\item{grouplists}{}
+clean_names(sp, grouplists, pct = 80, errorness = 20, group)
 }
 \description{
 Title
