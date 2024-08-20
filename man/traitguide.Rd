@@ -2,13 +2,20 @@
 % Please edit documentation in R/traitguide.R
 \name{traitguide}
 \alias{traitguide}
-\title{Title}
+\title{Standard table with taxonomic groups and their traits explanations.}
 \usage{
 traitguide(taxagroup = NULL, traits = NULL)
 }
 \arguments{
-\item{traits}{}
+\item{taxagroup}{\code{string or vector}. Taxa group names to aid the users in filtering the standard
+table for species traits and their explanations.}
+
+\item{traits}{\code{string or vector}. Traits that can be filtered from the databases, given the taxonomic group
+indicated in \code{taxagroup} parameter.}
+}
+\value{
+\code{dataframe} A dataset with taxonomic groups, traits and their explanations.
 }
 \description{
-Title
+Standard table with taxonomic groups and their traits explanations.
 }

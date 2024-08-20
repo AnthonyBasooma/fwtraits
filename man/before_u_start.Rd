@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilityfunction.R
 \name{before_u_start}
 \alias{before_u_start}
-\title{Steps to follow in using the Freshwater Infromation Platform}
+\title{Steps to follow in using the Freshwater Information Platform}
 \usage{
 before_u_start()
 }
@@ -10,11 +10,11 @@ before_u_start()
 \code{list} steps to follow in using the FIP
 }
 \description{
-Steps to follow in using the Freshwater Infromation Platform
+Steps to follow in using the Freshwater Information Platform
 }
 \examples{
 
-b4us <- before_u_start()
+#b4us <- before_u_start()
 
 }
 \author{

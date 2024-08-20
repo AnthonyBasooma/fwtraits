@@ -2,13 +2,17 @@
 % Please edit documentation in R/checknames.R
 \name{compare_traits}
 \alias{compare_traits}
-\title{Title}
+\title{Traits comparison for the user and standard triat names.}
 \usage{
 compare_traits(traits)
 }
 \arguments{
-\item{traits}{}
+\item{traits}{\code{string}. Trait name provided by the user that will be compared with the
+standard names in the database.}
+}
+\value{
+\code{string} accepted trait names based on the database
 }
 \description{
-Title
+Traits comparison for the user and standard triat names.
 }

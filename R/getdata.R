@@ -1,47 +1,64 @@
 #' @noRd
 
-harmonisetaxa <- function(tx, taxafile = FALSE) {
-  if (tx == "fi" || tx == "fish" || tx == "fishes") {
-    if (isTRUE(taxafile)) taxa <- "fi" else taxa <- "fishes"
-  } else if (tx == "pp" || tx == "phyto" || tx == "phytoplankton") {
-    if (isTRUE(taxafile)) taxa <- "pp" else taxa <- "phytoplankton"
-  } else if (tx == "mi" || tx == "macro" || tx == "macroinvertebrates") {
-    if (isTRUE(taxafile)) taxa <- "mi" else taxa <- "macroinvertebrates"
-  } else if (tx == "di" || tx == "diatoms") {
-    if (isTRUE(taxafile)) taxa <- "di" else taxa <- "diatoms"
-  } else if (tx == "pb" || tx == "phytobentho" || tx == "bentho") {
-    if (isTRUE(taxafile)) taxa <- "pb" else taxa <- "phytobentho"
-  } else if (tx == "mp" || tx == "macrophyte" || tx == "grasses") {
-    if (isTRUE(taxafile)) taxa <- "mp" else taxa <- "macrophyte"
-  } else {
-    stop("Incorrect taxanomic group are entered. Use 'pp', 'fi', 'mi','di', 'pb', and 'mp' or run taxonomicgroups()")
-  }
-  return(taxa)
+tcheck <- function(tx, taxafile = FALSE) {
+
+  sapply(tx, function(it){
+
+    if (it == "fi" || it == "fish" || it == "fishes") {
+      if (isTRUE(taxafile)) taxa <- "fi" else taxa <- "fishes"
+    } else if (it == "pp" || it == "phyto" || it == "phytoplankton") {
+      if (isTRUE(taxafile)) taxa <- "pp" else taxa <- "phytoplankton"
+    } else if (it == "mi" || it == "macro" || it == "macroinvertebrates") {
+      if (isTRUE(taxafile)) taxa <- "mi" else taxa <- "macroinvertebrates"
+    } else if (it == "di" || it == "diatoms") {
+      if (isTRUE(taxafile)) taxa <- "di" else taxa <- "diatoms"
+    } else if (it == "pb" || it == "phytobentho" || it == "bentho") {
+      if (isTRUE(taxafile)) taxa <- "pb" else taxa <- "phytobentho"
+    } else if (it == "mp" || it == "macrophyte" || it == "grasses") {
+      if (isTRUE(taxafile)) taxa <- "mp" else taxa <- "macrophyte"
+    } else {
+      stop("Incorrect taxanomic group are entered. Use 'pp', 'fi', 'mi','di', 'pb', and 'mp' or run tcheck()")
+    }
+    return(taxa)
+  }, USE.NAMES = FALSE)
 }
 
 
 
-
-#' Title
+#' @title To collate data from the Freshwater Information Platform.
 #'
-#' @param taxa
-#' @param token
+#' @param taxa \code{string} The taxa group to download from the platform.
+#'      The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
+#'      phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
+#' \itemize{
+#'         \item{\code{pp: }}{Pytoplankton.}
+#'         \item{\code{mp: }}{Macrophtytes}
+#'         \item{\code{mi: }}{Macroinvertebrates}
+#'         \item{\code{fi: }}{Fishes}
+#'         \item{\code{di: }}{Diatoms}
+#'         \item{\code{pb: }}{Phytobenthos without diatoms}
+#'           }
+#' @param taxaorder \code{vector}. If \code{taxa} is \code{mi}, the \code{taxaorder} must be indicated for data to be downloaded.
+#'      The different macroinvertebrates orders allowed can be obtained using \code{orders()} function.
+#' @param ecotraits \code{vector} Selected traits that should be downloaded for particular taxa group. Check \code{\link{traitguide}} for the allowed
+#'      traits in the database.
+#' @param token \code{string}: This is a required parameter to allow user authentication with the platform. To get the token, use
+#'      \code{before_u_start()} function to get the required steps. Remember that the token is saved in memory such that
+#'      the data downloaded is not re-downloaded in the next session.
 #'
-#' @importFrom httr2 request req_body_raw  req_perform resp_body_json req_auth_bearer_token req_user_agent
+#' @importFrom httr2 request req_body_raw  req_perform resp_body_json req_auth_bearer_token req_user_agent last_response
 #' @importFrom jsonlite toJSON
-#' @importFrom memoise memoise cache_filesystem
+#' @importFrom memoise memoise
+#' @importFrom cachem cache_disk
 #'
-#' @return
-#' @export
+#' @return List of download species traits
 #'
-#' @examples
 
-
-getfiles <- memoise::memoise(function(taxa, taxaorder, token) {
+getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRUE) {
 
   if (!curl::has_internet()) stop("Not connected on internet to access the database.")
 
-  if(is.null(token)) stop("Provide the token key to continue, run before_u_start() function and learn to set the token.")
+  if(is.null(token)) stop("Provide the token key to continue, run before_u_start() function and learn to set the token.", call. = FALSE)
 
   # get database map
   getparam_list <- fip_paramlist()
@@ -51,26 +68,49 @@ getfiles <- memoise::memoise(function(taxa, taxaorder, token) {
 
   # get for each taxa
 
-  taxaharmonised <- harmonisetaxa(tx = taxa, taxafile = TRUE)
+  taxaharmonised <- tcheck(tx = taxa, taxafile = TRUE)
 
   gettaxa <- ecolist[[taxaharmonised]]
 
+  if(!is.null(ecotraits) && is.null(taxaorder)){
+
+    standardtraits <- sapply(gettaxa, function(x) x[["name"]])
+
+    #clean to standardize the names
+    stdf <- clean_traits(standardtraits)
+
+    #compare with the clean and user provided trait names
+    ctraits <-  checktrait(x= ecotraits, std = stdf, grp = tcheck(tx = taxa), warn = warn)
+
+    #if(length(unlist(ctraits))<1) stop("No trait data to download from FIP, please check for spellings for traits in the traitguide() generated dataset in the traitname column.")
+
+    gettaxa_final <- gettaxa[which(stdf%in%ctraits ==TRUE)]
+
+  }else{
+
+    gettaxa_final <- gettaxa
+  }
 
   # get the base url for the taxa data tables
   qurl <- "https://www.freshwaterecology.info/fweapi2/v1/query"
 
   if (taxaharmonised == "mi" | taxaharmonised == "pb") {
+
     # extract data for macro invertebrates and phytobenthos
 
     # get all list available for traits
-    allorders <- sapply(gettaxa, function(x) strsplit(x[["availableFor"]], split = ", ", fixed = TRUE)[[1]])
+    allorders <- sapply(gettaxa_final, function(x) strsplit(x[["availableFor"]], split = ", ", fixed = TRUE)[[1]])
 
-    traitcodes <- sapply(gettaxa, function(x) x[[1]])
+    traitcodes <- sapply(gettaxa_final, function(x) x[[1]])
 
     # merge all lists and make them unique to get the orders or classes (phytobenthos)
-    names(allorders) <- traitcodes
+    if(is.null(ecotraits)){
+      names(allorders) <- traitcodes
+    }else{
+      if(length(allorders)>1 && length(ecotraits)==1) names(allorders) <- rep(traitcodes, length(allorders)) else names(allorders) <- traitcodes
+    }
 
-    unique_ORDERS <- unique(do.call(c, allorders))
+    if(length(allorders)==1) unique_ORDERS <- allorders else unique_ORDERS <- unique(Reduce(c, allorders))
 
     # get the traitcodes for each order
 
@@ -86,10 +126,9 @@ getfiles <- memoise::memoise(function(taxa, taxaorder, token) {
 
         cnames <- as.numeric(names(allorders[vi]))
 
-        if (order %in% lstoerds == TRUE) codematrix[v, vi] <- cnames else codematrix[v] <- NA
+        if (order %in% lstoerds == TRUE) codematrix[v, vi] <- cnames else codematrix[v, vi] <- NA
       }
     }
-
     row.names(codematrix) <- unique_ORDERS
 
     # extract all matrix rows, remove NAs and maintain the ecoparams for each taxa
@@ -103,23 +142,36 @@ getfiles <- memoise::memoise(function(taxa, taxaorder, token) {
 
       # remove orders that are not in available for list
 
-      orderlist <- within(taxafinal, rm(Araneae, Kamptozoa))
+      tf <- unlist(taxafinal) %in% c("Araneae", "Kamptozoa")
 
-      if(is.null(taxaorder)) stop("For macroinvertebrates, provide the taxa orders, run orders() function to get allowed orders.")
+      if(any(tf)==TRUE) {
 
-      if (length(unique(taxaorder)) > 4) stop("Please a maximum of 4 macroinvertebrate orders are allowed but ", length(unique(taxaorder)), " have been provided.")
+        orderlist <- taxafinal[which(tf==FALSE)]
 
-      #check if the order entered are in the allowed list
-
-      inOut <- taxaorder%in%names(orderlist)
-
-      if(all(inOut) == TRUE){
-
-        taxasel <- orderlist[taxaorder]
       }else{
-       ordersnotin <- taxaorder[which(inOut==FALSE)]
+        orderlist <- taxafinal
+      }
 
-       stop("The orders: ", paste(ordersnotin, collapse = ", "), " is/are not in the standard order list for macroinvertebrates. run orders() function to identify allowed orders.")
+      if(!is.null(taxaorder) && !is.null(ecotraits)) stop("If using selected species ecological traits, the taxaorder must be NULL")
+
+      if(!is.null(taxaorder)){
+
+        if (length(unique(taxaorder)) > 4) stop("Please a maximum of 4 macroinvertebrate orders are allowed but ", length(unique(taxaorder)), " have been provided.")
+
+        #check if the order entered are in the allowed list
+
+        inOut <- taxaorder%in%names(orderlist)
+
+        if(all(inOut) == TRUE){
+
+          taxasel <- orderlist[taxaorder]
+        }else{
+          ordersnotin <- taxaorder[which(inOut==FALSE)]
+
+          stop("The orders: ", paste(ordersnotin, collapse = ", "), " is/are not in the standard order list for macroinvertebrates. run orders() function to identify allowed orders.")
+        }
+      }else{
+        taxasel <- orderlist
       }
       xsp <- sapply(names(taxasel), function(x) {
 
@@ -142,14 +194,25 @@ getfiles <- memoise::memoise(function(taxa, taxaorder, token) {
               auto_unbox = TRUE
             ), type = "application/json") |>
 
-            req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" ) |>
+            req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" )
 
-            req_perform()
+          #try and get the error during data collation and customize the messages
 
-          fxdata <- ldata |> resp_body_json()
+          ldata_out <- tryCatch(expr = ldata |> req_perform(), error = function(e) return(NULL))
 
-          lmdata <- as.data.frame(do.call(rbind, fxdata$searchResult))
+          #if successfully executed
 
+          if(!is.null(ldata_out)){
+
+            fxdata <- ldata_out |> resp_body_json()
+
+            lmdata <- as.data.frame(do.call(rbind, fxdata$searchResult))
+          }else{
+            #confirm the status code
+            lastresp <- last_response()
+
+            if(lastresp$status_code==403) stop("Either run the fip_token() to refresh the token or reduce the number of traits.", call. = FALSE)
+          }
         }, USE.NAMES = TRUE, simplify = FALSE)
       })#end of macro inverts
 
@@ -171,24 +234,36 @@ getfiles <- memoise::memoise(function(taxa, taxaorder, token) {
               displayValues = list(ecologicalparameter = codes)
             ),
             auto_unbox = TRUE
-          ), type = "application/json")
+          ), type = "application/json")|>
 
-        reqdata <- ldata |>
+          req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" )
 
-          req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" ) |>
+        #try and get the error during data collation and customize the messages
 
-          req_perform()
+        reqdata <- tryCatch(expr = ldata  |> req_perform(), error = function(e) return(NULL))
 
-        fxdata <- reqdata |> resp_body_json()
+        #if successfully executed
 
-        phytobenthos <- as.data.frame(do.call(rbind, fxdata$searchResult))
+        if(!is.null(reqdata)){
 
+          fxdata <- reqdata |> resp_body_json()
+
+          phytobenthos <- as.data.frame(do.call(rbind, fxdata$searchResult))
+
+        }else{
+          #confirm the status code
+          lastresp <- last_response()
+
+          if(lastresp$status_code==403) stop("Run the fip_token() function to refresh the token and try again.", call. = FALSE)
+        }
       }, simplify = FALSE, USE.NAMES = TRUE)
     }#end phytobentho
 
     #start fish, phytoplankton, diatoms, and macrophytes
   } else {
-    sapply(gettaxa, function(x) {
+
+    sapply(gettaxa_final, function(x) {
+
       traitcodes <- x[["code"]]
 
       traitnames <- x[["name"]]
@@ -226,25 +301,165 @@ getfiles <- memoise::memoise(function(taxa, taxaorder, token) {
 
       reqdata <- extdata |>
 
-        req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" ) |>
+        req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" )
 
-        req_perform()
+      #try and get the error during data collation and customize the messages
 
-      respdata <- reqdata |> resp_body_json()
+      reqdata2 <- tryCatch(expr = reqdata  |> req_perform(), error = function(e) return(NULL))
 
-      finaldata <- as.data.frame(do.call(rbind, respdata$searchResult))
+      #if successfully executed
 
-      attr(finaldata, "traitname") <- traitnames
+      if(!is.null(reqdata2)){
 
+        fxdata <- reqdata2 |> resp_body_json()
 
-      return(finaldata)
+        finaldata <- as.data.frame(do.call(rbind, fxdata$searchResult))
+
+      }else{
+        #confirm the status code
+        lastresp <- last_response()
+
+        if(lastresp$status_code==403) stop("Either run the fip_token() to refresh the token and try again.", call. = FALSE)
+      }
+
     }, simplify = FALSE, USE.NAMES = TRUE)
   }
-}, cache = memoise::cache_filesystem(path = "taxongroups", compress = TRUE))
+}
 
 
 
+#' @title Data download from the Freshwater Information Platform.
+#'
+#' @details
+#' The \code{getdata} is used as a wrapper to enable the user to download data from multiple groups
+#' and allowing parallelising the \code{\link{getfiles}} function. The user can change the number of cores to improve the speed of
+#' data downloaded. All data downloaded in this function by the user  is cached in the \code{taxongroups} folder, which
+#' is automatically created in the working directory when loading the package. The data is permanently cached, even when
+#' the session is restarted. The user can use the \code{decache()} function to remove the files. However, to extract the data
+#' please check both \code{\link{extract_traits}} and \code{\link{fip_traits}}.
+#'
+#'
+#' @inheritParams getfiles
+#' @param multiple \code{logical} Either \code{TRUE} if multiple taxa groups are considered. Default is \code{FALSE} for only
+#'        single taxon group.
+#' @param parallel \code{logcial} Either \code{TRUE} to allow parallelisation most especially if multiple groups are considered.
+#'      If multiple is set to TRUE and parallel to FALSE, a slow mode of data download will be executed.
+#' @param cores \code{interger} The number computer cores to be used to run while data download and its necessary only when
+#'      parallel is set to \code{TRUE}. Default is 2.
+#' @param quietly \code{logical}. If \code{FALSE}, a message showing the slow mode of data collation
+#'      will be presented to the user. Default \code{TRUE}.
+#' @param decache \code{logical}. Either \code{TRUE} To all the species or taxa data saved on storage disk
+#'        and therefore the associated will also be re-downloaded. Default \code{FALSE}.
+#'
+#' @importFrom parallel detectCores makeCluster clusterExport stopCluster
+#' @importFrom foreach foreach %dopar%
+#' @importFrom doParallel registerDoParallel
+#' @importFrom utils askYesNo
+#'
+#' @return \code{list}. Lists of taxa groups data downloaded from the Freshwater Information Platform.
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' ppdata <- 1
+#' }
+#'
+collatedata <- function(taxa, ecotraits = NULL, taxaorder = NULL, token  = NULL, warn = FALSE,
+                    multiple = FALSE, parallel = FALSE, cores = 2,
+                    quietly = FALSE, decache=FALSE){
 
+  #cache file on disk
+  cacheddata <- cachem::cache_disk(dir = 'taxadata')
+
+ if(isFALSE(decache)) {
+
+   getfiles <- memoise::memoise(getfiles, cache = cacheddata)
+
+   if(isFALSE(multiple)){
+
+     if(length(taxa)>1) stop("One taxa group to be downloaded if multiple is FALSE")
+
+     getdf <- getfiles(taxa = taxa, ecotraits = ecotraits, taxaorder = taxaorder, token = token, warn = warn)
+
+     return(getdf)
+   }else{
+
+     if(length(taxa)<=1)stop("If multiple is TRUE, multiple taxagroups are expected.")
+
+     if(isFALSE(parallel)){
+
+       if(isFALSE(quietly)) message("The slower version of getting data from FIP will be implemented.")
+
+       taxadflist <- list()
+
+       for (i in taxa) {
+         taxadflist[[i]] <- getfiles(taxa = i,  ecotraits = ecotraits, taxaorder = taxaorder, token = token, warn = warn)
+       }
+       return(taxadflist)
+     }else{
+
+       #check allowed cores
+
+       ncoresdetected <- detectCores()
+
+       if(cores>=ncoresdetected | (ncoresdetected-cores)<2) stop("Reduce the cores to ", ncoresdetected-2," or less for effective parallelisation.")
+
+       makecluster <- makeCluster(spec = cores, type = 'PSOCK')
+
+       registerDoParallel(cl = makecluster)
+
+
+       getdf <- foreach(i = taxa, .packages ="fwtraits") %dopar% {
+
+         taxadf <- getfiles(taxa = i, ecotraits = ecotraits,  taxaorder = taxaorder, token = token, warn = warn)
+
+         return(taxadf)
+       }
+
+       stopCluster(makecluster)
+
+       # Close all open connections
+       #closeAllConnections()
+
+       return(getdf)
+     }
+   }
+
+ }else{
+
+   msg <- "Do you want to remove all cached data files?"
+
+   tf <- askYesNo(msg, default = TRUE,
+                  prompts = getOption("askYesNo", gettext(c("Yes", "No", "Cancel"))))
+   if(isTRUE(tf)){
+
+     warning("All cached data will be removed and has to be re-downloaded.", call. = FALSE)
+
+     cacheddata$reset()
+
+     invisible(NULL)
+
+   }else{
+     message("No data files removed from the disk.")
+   }
+ }
+
+}
+
+
+#' @title To get the allowed macroinvertebrates in the Freshwater Information Platform.
+#'
+#' @return \code{vector}. A vector of allowed macro invertebrates taxonomic groups that can be set in the \code{taxaorder} parameter while
+#'        while getting data.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' x <- orders()
+#'
 orders <- function(){
 
   getparam_list <- fip_paramlist()
@@ -260,111 +475,5 @@ orders <- function(){
 
   return(orderlist)
 }
-
-
-
-#' Title
-#'
-#' @param taxa
-#' @param taxaorder
-#' @param token
-#' @param multiple
-#' @param parallel
-#' @param cores
-#'
-#' @importFrom parallel detectCores makeCluster clusterExport stopCluster
-#' @importFrom foreach foreach %dopar%
-#' @importFrom doParallel registerDoParallel
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#'
-getdata <- function(taxa, taxaorder = NULL, token  = NULL,
-                    multiple = FALSE, parallel = FALSE, cores = 2,
-                    quietly = FALSE){
-
-  if(isFALSE(multiple)){
-
-    if(length(taxa)>1) stop("One taxa group to be downloaded if multiple is FALSE")
-
-    getdf <- getfiles(taxa = taxa, taxaorder = taxaorder, token = token)
-
-    return(getdf)
-  }else{
-
-    if(length(taxa)<=1)stop("If multiple is TRUE, multiple taxagroups are expected.")
-
-    if(isFALSE(parallel)){
-
-     if(isFALSE(quietly)) message("The slower version of getting data from FIP will be implemented.")
-
-      taxadflist <- list()
-
-      for (i in taxa) {
-        taxadflist[[i]] <- getfiles(taxa = i, taxaorder = taxaorder, token = token)
-      }
-      return(taxadflist)
-    }else{
-
-      #check allowed cores
-
-      ncoresdetected <- detectCores()
-
-      if(cores>=ncoresdetected | (ncoresdetected-cores)<2) stop("Reduce the cores to ", ncoresdetected-2," or less for effective parallelisation.")
-
-      makecluster <- makeCluster(spec = cores, type = 'PSOCK')
-
-      registerDoParallel(cl = makecluster)
-
-
-      getdf <- foreach(i = taxa, .packages ="fwtraits") %dopar% {
-
-        taxadf <- getfiles(taxa = i,  taxaorder = taxaorder, token = token)
-
-        return(taxadf)
-      }
-
-      stopCluster(makecluster)
-
-      # Close all open connections
-      closeAllConnections()
-
-      return(getdf)
-    }
-  }
-
-}
-
-#
-# fip_decache <- function(taxa, folder = "taxongroups", quietly = TRUE) {
-#   unlikefolder <- absolutepath(dir = folder, verbose = FALSE)
-#
-#   cat("0 - No \n1 - Yes\n")
-#
-#   check <- readline(prompt = "Are you sure you want to remove the archived files ? ")
-#
-#
-#   if (as.integer(check) == 1) {
-#     for (i in taxa) {
-#       tout <- harmonisetaxa(tx = i)
-#
-#       unlink(file.path(unlikefolder, paste0(tout, ".RData")))
-#     }
-#
-#     if (isFALSE(quietly)) message(taxa, " removed from the archiving folder.")
-#   } else {
-#     if (isFALSE(quietly)) ("Files not removed.")
-#   }
-# }
-
-
-
-
-
-
-
-
 
 

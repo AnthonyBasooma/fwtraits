@@ -2,10 +2,42 @@
 % Please edit documentation in R/checknames.R
 \name{clean_names}
 \alias{clean_names}
-\title{Title}
+\title{Check and clean species names to match standard names in the database.}
 \usage{
-clean_names(sp, grouplists, pct = 80, errorness = 20, group)
+clean_names(
+  sp,
+  grouplists,
+  pct = 80,
+  errorness = 20,
+  group = NULL,
+  full = FALSE
+)
+}
+\arguments{
+\item{sp}{\code{string or vector}. Species scientific names to be checked. Although the spellings are checked, the users
+should check for the species name provided to avoid not being being detected in the database.}
+
+\item{grouplists}{\code{list}. List of data downloaded in the \code{\link{collatedata}} function. If species considered in \code{sp}
+parameter are fishes, then the fishes lists should be provided otherwise the species names will be rejected.}
+
+\item{pct}{\code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
+The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{pct}
+ranges from 0 to 100 but the default is 80 to ensure that wrong names are not selected at low similarity percentage cutoff.}
+
+\item{errorness}{\code{numeric} Similar to \code{pct}, \code{errorness} parameter uses the distance differences between the user-provided
+names and all the taxa group species standard names. The lower the percentage error, the higher the similarity in the species
+names provided. Default is 20 and beyond 30, a warning is showed to avoid wrong species replace the user provided name, which leads
+to extracting wrong traits.}
+
+\item{group}{\code{string} The taxa group names should be indicated to separate the macro-invertebrates workflow from others. The accepted
+group names include macroinvertebrates, fishes, macrophytes, phytoplankton, diatoms, and phytobenthos.}
+
+\item{full}{\code{logical} \code{TRUE} if a dataframe with both cleaned and unclened species are required. If \code{FALSE} then the
+a species list will be produced after cleaning. Dafualt \code{FALSE}.}
+}
+\value{
+\code{vector or string} clean species name that is also found in the database.
 }
 \description{
-Title
+Check and clean species names to match standard names in the database.
 }

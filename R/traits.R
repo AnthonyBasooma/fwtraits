@@ -1,32 +1,72 @@
-#' Title
+#' @title Arranging and user friendly selection of traits at different taxanomic levels.
 #'
-#' @param data
-#' @param trait
-#' @param grouptaxa
+#' @inheritParams collatedata
+#' @inheritParams extract_traits
+#' @param spcol \code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
+#' @param taxa \code{string}. \code{string} The taxa group to download from the platform.
+#'      The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
+#'      phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
+#' @param traits \code{string or vector}. If \code{all} is indicated, then all the traits will be extracted. Otherwise,
+#'      individual traits can be indicated in a vector format. Check the allowed traits in \code{link{traitguide}} function and identify
+#'      all the traits allowed for each group and their explanation.
+#' @param level \code{string}. The taxonomic orders allowed for each species including \code{species, genus, order or family}.
+#' @param taxaorder \code{vector}. If \code{taxa} is \code{mi}, the \code{taxaorder} must be indicated for data to be downloaded.
+#'      The different macroinvertebrates orders allowed can be obtained using \code{orders()} function.
+#' @param token \code{string}: This is a required parameter to allow user authentication with the platform. To get the token, use
+#'      \code{before_u_start()} function to get the required steps. Remember that the token is saved in memory such that
+#'      the data downloaded is not re-downloaded in the next session.
+#' @param wide \code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
+#'      taxonomic groups.
+#' @param select \code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
+#'      then the species native in the Danube region can be selected and retained.
+#' @param na.rm \code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
+#'        Default \code{TRUE}.
+#'
 #'
 #' @importFrom memoise memoise
 #' @importFrom stats reshape
 #'
-#' @return
+#' @return \code{dataframe} A dataframe species traits at a selected taxonomic level.
+#'
 #' @export
 #'
 #' @example
 #'
-fip_traits <- function(data, spcol = NULL, group = 'fi', traits = 'all', taxonomy= NULL,
-                       taxaorder = NULL, token  = NULL, multiple = FALSE, parallel = FALSE, cores = 2, quietly = FALSE,
-                       level = NULL, wide = FALSE,
+fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotraits = NULL,
+                       traits = 'all', level= NULL,
+                       taxaorder = NULL, multiple = FALSE,
+                       parallel = FALSE, cores = 2, quietly = FALSE,
+                       wide = FALSE,
                        select = NULL,
-                       na.rm = FALSE){
+                       na.rm = TRUE,
+                       merge= FALSE,
+                       warn = FALSE){
 
-  if(is(data, "data.frame") && is.null(spcol)) stop("If ", deparse(substitute(data)), " is a dataframe, column with species names must be provided.")
+  if(is(data, "data.frame")){
 
-  if(is(data, "data.frame") && !is.null(spcol)){
+    if(is.null(spcol)){
+      stop("If ", deparse(substitute(data)), " is a dataframe, column with species names must be provided.")
 
-    if(spcol%in%colnames(data)==FALSE) stop(deparse(substitute(spcol)), " not in the dataset provided.")
+    }else{
+      #one taxa group in the data
 
-    #create a species list
+      if(is.null(taxacol) && length(taxa)==1){
 
-    specieslist <- unlist(data[, spcol])
+        if(spcol%in%colnames(data)==FALSE) stop(deparse(substitute(spcol)), " not in the dataset provided.")
+
+        #create a species list
+        specieslist <- unlist(data[, spcol])
+
+      }else{
+        #more than one taxa group in the dataset
+        if(taxacol%in%colnames(data)==FALSE) stop(deparse(substitute(taxacol)), " not in the dataset provided.")
+
+        taxagroup_split <- split(data, f=data[, taxacol])
+
+        specieslist <- sapply(taxagroup_split, function(x) x[,spcol], simplify = FALSE)
+      }
+
+    }
 
   }else if(is(data, 'vector') || is('data', 'atomic')){
 
@@ -40,15 +80,15 @@ fip_traits <- function(data, spcol = NULL, group = 'fi', traits = 'all', taxonom
   }
 
   #get species as they exist in the taxon names of the FIP
+  #generates the traits[[1]] and species details[[2]]
+  extracteddata <- extract_traits(data = specieslist, ecotraits = ecotraits, taxa = taxa, taxaorder = taxaorder, token  = token,
+                                  multiple = multiple, parallel = parallel, cores = cores, quietly = quietly, warn = warn)
 
-  extracteddata <- extract_traits(species = specieslist, group = group, taxaorder = taxaorder, token  = token,
-                                  multiple = multiple, parallel = parallel, cores = cores, quietly = quietly)
-
-  if(nrow(extracteddata)<1) stop("No data found for the species entered. Confirm right group of taxa has been selected.")
+  if(nrow(extracteddata[[1]])<1) stop("No data found for the species entered. Confirm right group of taxa has been selected.")
 
   if(traits=="all"){
     #get traits
-    traitwords <- unique(unlist(extracteddata$parameter))
+    traitwords <- unique(unlist(extracteddata[[1]]$parameter))
 
   }else{
     traitwords <- compare_traits(traits= traits)
@@ -56,7 +96,7 @@ fip_traits <- function(data, spcol = NULL, group = 'fi', traits = 'all', taxonom
 
   traitlist <- sapply(traitwords, function(twords){ #twords are the trait words looped
 
-    ftraits <- extracteddata[extracteddata[, "parameter"] %in% twords, ]
+    ftraits <- extracteddata[[1]][extracteddata[[1]][, "parameter"] %in% twords, ]
 
     #rearrange the traits
     dflist0 <- split(ftraits,seq(nrow(ftraits))) #equal to species names
@@ -123,6 +163,24 @@ fip_traits <- function(data, spcol = NULL, group = 'fi', traits = 'all', taxonom
   }else{
     spfinal <- traitdf
   }
+  if(isTRUE(merge)){
+    #standardize the column which one in the data
+    spd <- extracteddata[[2]]
 
-  return(spfinal)
+    colnames(spd)[1] <- spcol
+
+    dfmerge <- data |> merge(spd, by.x = spcol)
+
+    colnames(dfmerge)[1] <- 'speciesunchecked'
+
+    colnames(dfmerge)[which(names(dfmerge) == "clean")] <- spcol
+
+   dfinal <- dfmerge |> merge(spfinal, by.x = spcol)
+
+  }else{
+
+    dfinal <- spfinal
+  }
+  return(dfinal)
 }
+

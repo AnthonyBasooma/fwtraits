@@ -1,10 +1,12 @@
 
-#' Title
+#' @title Standard table with taxonomic groups and their traits explanations.
 #'
-#' @param taxagroup
-#' @param traits
+#' @param taxagroup \code{string or vector}. Taxa group names to aid the users in filtering the standard
+#'      table for species traits and their explanations.
+#' @param traits \code{string or vector}. Traits that can be filtered from the databases, given the taxonomic group
+#'      indicated in \code{taxagroup} parameter.
 #'
-#' @return
+#' @return \code{dataframe} A dataset with taxonomic groups, traits and their explanations.
 #' @export
 #'
 #' @examples
@@ -15,9 +17,9 @@ traitguide <- function(taxagroup = NULL, traits = NULL){
 
   ecolist <- paramlist$ecologicalParameterList
 
-  taxagroup <- sapply(names(ecolist), function(z){
+  groupfiles <- sapply(names(ecolist), function(z){
 
-    taxanames <- harmonisetaxa(tx = z)
+    taxanames <- tcheck(tx = z)
 
     zdata <- ecolist[[z]]
 
@@ -33,7 +35,9 @@ traitguide <- function(taxagroup = NULL, traits = NULL){
 
     extract <- function(y, traitname){
 
-      traitname <- clean_traits(traitname)
+      traitclean <- clean_traits(traitname)
+
+      traitunclean <- traitname
 
       name <- sapply(y, function(x) if(is.null(x[[1]])==TRUE) "No names" else x[[1]])
 
@@ -41,7 +45,9 @@ traitguide <- function(taxagroup = NULL, traits = NULL){
 
       expl <- sapply(y, function(x) if(is.null(x[[3]])==TRUE) "Not explained" else x[[3]])
 
-      dfguide <- data.frame(taxagroup = taxanames, traitname = traitname, name = name, abbr = abbr, explanation = expl)
+      dfguide <- data.frame(taxagroup = taxanames, traitraw = traitunclean,
+                            traitname = traitclean, description = name, abbrevation = abbr,
+                            explanation = expl)
     }
 
     groupdata <- mapply(extract, y = xclean, traitname = xnamesclean, SIMPLIFY = FALSE)
@@ -50,14 +56,13 @@ traitguide <- function(taxagroup = NULL, traits = NULL){
 
   }, simplify = FALSE)
 
-  dfinal <- Reduce(rbind, taxagroup)
+  dfinal <- Reduce(rbind, groupfiles)
 
   if(!is.null(traits)){
     taxafinal <- dfinal[dfinal$taxagroup %in% taxagroup | dfinal$traitname %in% traits, ]
   }else{
     taxafinal <- dfinal
   }
-
 
   return(taxafinal)
 }

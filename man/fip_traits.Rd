@@ -2,29 +2,79 @@
 % Please edit documentation in R/traits.R
 \name{fip_traits}
 \alias{fip_traits}
-\title{Title}
+\title{Arranging and user friendly selection of traits at different taxanomic levels.}
 \usage{
 fip_traits(
   data,
+  taxa,
+  token,
   spcol = NULL,
-  group = "fi",
+  taxacol = NULL,
+  ecotraits = NULL,
   traits = "all",
-  taxonomy = NULL,
+  level = NULL,
   taxaorder = NULL,
-  token = NULL,
   multiple = FALSE,
   parallel = FALSE,
   cores = 2,
   quietly = FALSE,
-  level = NULL,
   wide = FALSE,
   select = NULL,
-  na.rm = FALSE
+  na.rm = TRUE,
+  merge = FALSE,
+  warn = FALSE
 )
 }
 \arguments{
-\item{grouptaxa}{}
+\item{data}{\code{vector}. The list or vector with species names for which ecological references needs to be extracted from the
+database.}
+
+\item{taxa}{\code{string}. \code{string} The taxa group to download from the platform.
+The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
+phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.}
+
+\item{token}{\code{string}: This is a required parameter to allow user authentication with the platform. To get the token, use
+\code{before_u_start()} function to get the required steps. Remember that the token is saved in memory such that
+the data downloaded is not re-downloaded in the next session.}
+
+\item{spcol}{\code{string}. If the data is a dataframe, the species column is required and provided in this parameter.}
+
+\item{ecotraits}{\code{vector} Selected traits that should be downloaded for particular taxa group. Check \code{\link{traitguide}} for the allowed
+traits in the database.}
+
+\item{traits}{\code{string or vector}. If \code{all} is indicated, then all the traits will be extracted. Otherwise,
+individual traits can be indicated in a vector format. Check the allowed traits in \code{link{traitguide}} function and identify
+all the traits allowed for each group and their explanation.}
+
+\item{level}{\code{string}. The taxonomic orders allowed for each species including \code{species, genus, order or family}.}
+
+\item{taxaorder}{\code{vector}. If \code{taxa} is \code{mi}, the \code{taxaorder} must be indicated for data to be downloaded.
+The different macroinvertebrates orders allowed can be obtained using \code{orders()} function.}
+
+\item{multiple}{\code{logical} Either \code{TRUE} if multiple taxa groups are considered. Default is \code{FALSE} for only
+single taxon group.}
+
+\item{parallel}{\code{logcial} Either \code{TRUE} to allow parallelisation most especially if multiple groups are considered.
+If multiple is set to TRUE and parallel to FALSE, a slow mode of data download will be executed.}
+
+\item{cores}{\code{interger} The number computer cores to be used to run while data download and its necessary only when
+parallel is set to \code{TRUE}. Default is 2.}
+
+\item{quietly}{\code{logical}. If \code{FALSE}, a message showing the slow mode of data collation
+will be presented to the user. Default \code{TRUE}.}
+
+\item{wide}{\code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
+taxonomic groups.}
+
+\item{select}{\code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
+then the species native in the Danube region can be selected and retained.}
+
+\item{na.rm}{\code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
+Default \code{TRUE}.}
+}
+\value{
+\code{dataframe} A dataframe species traits at a selected taxonomic level.
 }
 \description{
-Title
+Arranging and user friendly selection of traits at different taxanomic levels.
 }

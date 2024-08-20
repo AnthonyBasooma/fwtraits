@@ -2,13 +2,36 @@
 % Please edit documentation in R/getdata.R
 \name{getfiles}
 \alias{getfiles}
-\title{Title}
+\title{To collate data from the Freshwater Information Platform.}
 \usage{
-getfiles(taxa, taxaorder, token)
+getfiles(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRUE)
 }
 \arguments{
-\item{token}{}
+\item{taxa}{\code{string} The taxa group to download from the platform.
+The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
+phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
+\itemize{
+\item{\code{pp: }}{Pytoplankton.}
+\item{\code{mp: }}{Macrophtytes}
+\item{\code{mi: }}{Macroinvertebrates}
+\item{\code{fi: }}{Fishes}
+\item{\code{di: }}{Diatoms}
+\item{\code{pb: }}{Phytobenthos without diatoms}
+}}
+
+\item{taxaorder}{\code{vector}. If \code{taxa} is \code{mi}, the \code{taxaorder} must be indicated for data to be downloaded.
+The different macroinvertebrates orders allowed can be obtained using \code{orders()} function.}
+
+\item{ecotraits}{\code{vector} Selected traits that should be downloaded for particular taxa group. Check \code{\link{traitguide}} for the allowed
+traits in the database.}
+
+\item{token}{\code{string}: This is a required parameter to allow user authentication with the platform. To get the token, use
+\code{before_u_start()} function to get the required steps. Remember that the token is saved in memory such that
+the data downloaded is not re-downloaded in the next session.}
+}
+\value{
+List of download species traits
 }
 \description{
-Title
+To collate data from the Freshwater Information Platform.
 }

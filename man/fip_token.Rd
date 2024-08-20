@@ -2,13 +2,19 @@
 % Please edit documentation in R/token.R
 \name{fip_token}
 \alias{fip_token}
-\title{Title}
+\title{Generate and decache the user authentication token}
 \usage{
-fip_token(key = loadapikey(), quietly = TRUE, seed)
+fip_token(seed = NULL, decache = NULL, quietly = TRUE)
 }
 \arguments{
-\item{quietly}{}
+\item{seed}{\code{integer}. An integer to help track the caching of the access token generated during data collation.
+If a user wants to get a new token, then the seed should be changed.}
+
+\item{decache}{\code{string}. Either \code{key} and put a particular seed to remove a particular token from the storage disk or
+\code{all} to remove all the user authentication token from the system and therefore the associated will also be re-downloaded.}
+
+\item{quietly}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
 }
 \description{
-Title
+Generate and decache the user authentication token
 }
