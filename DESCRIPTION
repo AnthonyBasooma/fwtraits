@@ -2,7 +2,7 @@ Package: fwtraits
 Title: Extract Species Ecological Ranges From Freshwater Information Platform
 Version: 0.0.0.9000
 Authors@R: 
-    person("Anthony", "Basooma", , "anthony.Basooma@boku.ac.at", role = c("aut", "cre"),
+    person("Anthony", "Basooma", , "anthony.basooma@boku.ac.at", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8994-9989"))
 Description: To extract species ecological ranges from the Freshwater Information Platform.
 License: GPL (>= 3)
@@ -14,8 +14,8 @@ BugReports: https://github.com/AnthonyBasooma/fwtraits/issues
 Depends: R (>= 2.10)
 Imports: 
     askpass,
+    cachem,
     curl,
-    digest,
     doParallel,
     foreach,
     httr2,
@@ -24,7 +24,8 @@ Imports:
     methods,
     parallel,
     stats,
-    utils
+    utils,
+    rstudioapi
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -11,22 +11,26 @@ trans_macrodata <- function(m){
 
 
 
-#' Title
+#' @title Extracting the traits from the downloaded data.
 #'
-#' @param species
-#' @param group
+#' @inheritParams collatedata
+#' @inheritParams clean_names
+#' @param data \code{vector}. The list or vector with species names for which ecological references needs to be extracted from the
+#'         database.
+#'
 #' @importFrom methods is
 #'
-#' @return
+#' @return \code{dataframe} A dataframe species traits for all orders.
 #' @export
 #'
 #' @examples
 #'
-extract_traits <- function(species, group, taxaorder = NULL,
+extract_traits <- function(data, taxa, ecotraits = NULL, taxaorder = NULL,
                             token  = NULL, multiple = FALSE, parallel = FALSE,
                             cores = NULL, quietly = FALSE,
                             pct = 80,
-                            errorness = 20) {
+                            errorness = 20,
+                           warn = FALSE) {
 
 
   #if multiple groups are considered
@@ -38,43 +42,50 @@ extract_traits <- function(species, group, taxaorder = NULL,
   dlist <- list()
   dftraits <- list()
   dspecies <- list()
-  grouplist <- list()
+  groupData <- list()
+  spdetails <- list()
 
-  for (ii in seq_along(group)) {
+  for (ii in seq_along(taxa)) {
 
-    # check if the taxa group is being downloaded for the first time to tell the user to wait
-    # get the harmonized taxa name
-    taxafile <- harmonisetaxa(group[ii])
+   #get list of ecotraits based on the names of the taxa groups
 
-    taxagroup_data <- getdata(taxa = group[ii], taxaorder = taxaorder,
+    taxanames <- taxa[ii]
+
+   if(is(ecotraits, 'list')) ecolisttaxa <- ecotraits[[taxanames]] else ecolisttaxa <- ecotraits
+
+    taxagroup_data <- collatedata(taxa = taxanames, ecotraits = ecolisttaxa,  taxaorder = taxaorder,
                               token  = token, multiple = multiple,
                               parallel = parallel, cores = cores,
-                              quietly = quietly)
+                              quietly = quietly, warn = warn)
 
-    # # cleaned species names
+    # get only the taxa list
+    if(is(data, 'list')) speciesin <- data[[taxanames]] else speciesin <- data
 
-    speclean <- clean_names(sp = species, grouplists = taxagroup_data,
-                            pct = pct, errorness = errorness, group = taxafile )
+    # cleaned species names
+    spdetails[[ii]] <- clean_names(sp = speciesin, grouplists = taxagroup_data,
+                            pct = pct, errorness = errorness, group = tcheck(taxa[ii]), full = TRUE)
 
-    #only get unique species
-    specleaned <- unique(unlist(speclean))
+     specol_cleaned <- spdetails[[ii]]$clean[!is.na(spdetails[[ii]]$clean)]
 
     #check if there are species to check
-    if(length(specleaned)>=1) specleaned else stop("No species name to extract the traits.")
+    if(length(specol_cleaned)>=1) specol_cleaned else stop("No species name to extract the traits.")
 
-    #reshape the macroinvetebrates data if more than 1 taxorder is selected.
+    #reshape the macroinvetebrates data if more than 1 taxaorder is selected.
     #form order dataframe rather than lists
+
+    taxafile <- tcheck(tx = taxa[ii])
 
     if(taxafile=='macroinvertebrates' && is(taxagroup_data, 'list')){
 
       taxagroup_data_final <- trans_macrodata(taxagroup_data)
+
     }else{
       taxagroup_data_final <- taxagroup_data
     }
 
     for (iii in seq_along(taxagroup_data_final)) {
 
-      #data filtered for each trait with each orders available fors
+      #data filtered for each trait with each orders available forms
 
       traitorderdf <- taxagroup_data_final[[iii]]
 
@@ -86,7 +97,7 @@ extract_traits <- function(species, group, taxaorder = NULL,
 
         #filter out the species being searched for by the user
 
-        rowsdata <- traitorderdf[traitorderdf[, "speciesname"] %in% specleaned, ]
+        rowsdata <- traitorderdf[traitorderdf[, "speciesname"] %in% specol_cleaned, ]
 
         #even within this some fi, pp, mp, di returns no data so skip to next
 
@@ -158,8 +169,10 @@ extract_traits <- function(species, group, taxaorder = NULL,
 
             cabbr[v]  <- clean_traits(x = cname)
           }
-          dfout <- data.frame(taxagroup = taxafile, species = spp, parameter = cabbr, description = cvaluedescription, value = cvalue)
-        }
+          dfout <- data.frame(taxagroup = taxafile, species = spp, parameter = cabbr,
+                              description = cvaluedescription, value = cvalue)
+
+          }
         dspecies[[iv]] <- dfout
 
         df1 <- do.call(rbind, dspecies)
@@ -169,11 +182,16 @@ extract_traits <- function(species, group, taxaorder = NULL,
       dftraits[[iii]] <- df1
 
       df2 <- do.call(rbind, dftraits)
-    }
-    grouplist[[ii]] <- df2
 
-    dfinal <- do.call(rbind, grouplist)
+    }
+    groupData[[ii]] <- df2
+
+    attr(groupData, 'speciesnames') <- spdetails
+
+    speciesdetails <- do.call(rbind, attributes(groupData)$speciesnames)
+
+    dfinal <- do.call(rbind, groupData)
 
   }
-  return(dfinal)
+  return(list(dfinal, speciesdetails))
 }
