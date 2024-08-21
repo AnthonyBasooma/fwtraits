@@ -31,18 +31,27 @@ before_u_start <- function() {
 
   htmlFile <- file.path(dir, "beforeustart.html")
 
-  writeLines("<h4>Before you start please check the steps carefully</h4>
+  writeLines("<h4>fwtraits</h4>
   <hr>
-<p> Step 1: Register with in the at Freshwater Information Platform <a style='color: blue'
-href='https://www.freshwaterecology.info/register/index.php'> registration page</a> </p>
+  <p> The package provides robust and seamless access and interation with the
+  Freshwater Information Platform, while extracting and arranging the species ecological preferences.</p>
+  <p> To start interacting with the platform, pleases follow the steps below carefully.</p>
+  <p> <center>THANK YOU </center></p>
+  <hr>
+  <h4>Step to start interacting with Freshwater Iinformation Platform </h4>
+<p> <b>Step 1</b>: Register at the Freshwater Information Platform <a style='color: blue'
+href='https://www.freshwaterecology.info/register/index.php'> registration page</a> to obtain an API key. </p>
 
- <p> Step 2: Apply for the API Key by sending your details at (irv@irv-software.at) or (ask@boku.ac.at) </p>
+ <p> <b>Step 2</b>: Apply for the API Key by sending your details at irv@irv-software.at or ask@boku.ac.at </p>
 
- <p> Step 3: Copy and paste the API key by running fip_token(), which will prompt for the key</p>
+ <p> <b>Step 3</b>: Copy and paste the API key by running fip_token(), which will prompt for the key.</p>
 
- <p> Step 4: Congs: Ready to interact with Freshwater Information Platform will appear</p>
+ <p> <b>Step 4</b>: Congratulations: Ready to interact with Freshwater Information Platform will appear.</p>
 
- <p>                       <b>Prepared by Anthony Basooma (anthony.basooma@boku.ac.at)   </p>
+ <p> To cite the work, please run fipcite() </p>
+ <hr>
+
+ <p> <center><b>Prepared by Anthony Basooma (anthony.basooma@boku.ac.at)  </center> </p>
 
 </br>", con = htmlFile)
 
@@ -53,40 +62,47 @@ href='https://www.freshwaterecology.info/register/index.php'> registration page<
 
 
 #' @importFrom askpass askpass
+#' @importFrom httr2 secret_decrypt
 #'
 #' @noRd
-loadapikey <- function() {
-  # check if the FRESHWATERAPIKEY has been set and has the API key
+loadapikey <- function(test = FALSE, encrytedkey= NULL, fwtraitskey= NULL) {
 
-  apikey <- Sys.getenv("FRESHWATERAPIKEY")
+  if(isFALSE(test)){
 
-  if (nchar(apikey) == 36) {
-    return(apikey)
-  } else {
-    apikey <- askpass(prompt = "Paste API key ")
+    # check if the FRESHWATERAPIKEY has been set and has the API key
 
-    # validate the apikey before saving in the environment
+    apikey <- Sys.getenv("FRESHWATERAPIKEY")
 
-    if (nchar(apikey) != 36) stop("Wrong API key. Paste the correct API or contact FIP admin at irv@irv-software.at or ask@boku.ac.at", call. = FALSE)
-
-    # set the system environment to save the token
-    Sys.setenv("FRESHWATERAPIKEY" = apikey)
-
-    # get the token
-
-    getkey <- Sys.getenv("FRESHWATERAPIKEY")
-
-    if (is.null(getkey)) {
-      stop("The API key is not provided")
-    } else {
-      cat(
-        " ===============================================================", "\n",
-        "Congs!!! Ready to interact with Freshwater Information Platform.", "\n",
-        "================================================================", "\n"
-      )
-
+    if (nchar(apikey) == 36) {
       return(apikey)
+    } else {
+      apikey <- askpass(prompt = "Paste API key ")
+
+      # validate the apikey before saving in the environment
+
+      if (nchar(apikey) != 36) stop("Wrong API key. Paste the correct API or contact FIP admin at irv@irv-software.at or ask@boku.ac.at", call. = FALSE)
+
+      # set the system environment to save the token
+      Sys.setenv("FRESHWATERAPIKEY" = apikey)
+
+      # get the token
+
+      getkey <- Sys.getenv("FRESHWATERAPIKEY")
+
+      if (is.null(getkey)) {
+        stop("The API key is not provided")
+      } else {
+        cat(
+          " ===============================================================", "\n",
+          "Congratulations!!! Ready to interact with Freshwater Information Platform", "\n",
+          "================================================================", "\n"
+        )
+
+        return(apikey)
+      }
     }
+  }else{
+    apikey <- secret_decrypt(encrytedkey, fwtraitskey)
   }
 }
 

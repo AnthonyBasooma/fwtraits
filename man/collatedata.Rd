@@ -13,8 +13,7 @@ collatedata(
   multiple = FALSE,
   parallel = FALSE,
   cores = 2,
-  quietly = FALSE,
-  decache = FALSE
+  quietly = FALSE
 )
 }
 \arguments{

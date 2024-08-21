@@ -368,14 +368,7 @@ getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRU
 #'
 collatedata <- function(taxa, ecotraits = NULL, taxaorder = NULL, token  = NULL, warn = FALSE,
                     multiple = FALSE, parallel = FALSE, cores = 2,
-                    quietly = FALSE, decache=FALSE){
-
-  #cache file on disk
-  cacheddata <- cachem::cache_disk(dir = 'taxadata')
-
- if(isFALSE(decache)) {
-
-   getfiles <- memoise::memoise(getfiles, cache = cacheddata)
+                    quietly = FALSE){
 
    if(isFALSE(multiple)){
 
@@ -426,27 +419,8 @@ collatedata <- function(taxa, ecotraits = NULL, taxaorder = NULL, token  = NULL,
        return(getdf)
      }
    }
-
- }else{
-
-   msg <- "Do you want to remove all cached data files?"
-
-   tf <- askYesNo(msg, default = TRUE,
-                  prompts = getOption("askYesNo", gettext(c("Yes", "No", "Cancel"))))
-   if(isTRUE(tf)){
-
-     warning("All cached data will be removed and has to be re-downloaded.", call. = FALSE)
-
-     cacheddata$reset()
-
-     invisible(NULL)
-
-   }else{
-     message("No data files removed from the disk.")
-   }
  }
 
-}
 
 
 #' @title To get the allowed macroinvertebrates in the Freshwater Information Platform.

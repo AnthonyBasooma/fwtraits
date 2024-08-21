@@ -17,7 +17,7 @@
 #'      the data downloaded is not re-downloaded in the next session.
 #' @param wide \code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
 #'      taxonomic groups.
-#' @param select \code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
+#' @param selectvalue \code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
 #'      then the species native in the Danube region can be selected and retained.
 #' @param na.rm \code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
 #'        Default \code{TRUE}.
@@ -37,7 +37,8 @@ fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotrai
                        taxaorder = NULL, multiple = FALSE,
                        parallel = FALSE, cores = 2, quietly = FALSE,
                        wide = FALSE,
-                       select = NULL,
+                       selectvalue = NULL,
+                       descvalue = NULL,
                        na.rm = TRUE,
                        merge= FALSE,
                        warn = FALSE){
@@ -133,12 +134,16 @@ fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotrai
 
   }, simplify = F, USE.NAMES = FALSE)
 
-  traitdfinal_long <- do.call(rbind, traitlist)
+  traitdf_long <- do.call(rbind, traitlist)
 
   # initialize the row names
-  rownames(traitdfinal_long) <- NULL
+  rownames(traitdf_long) <- NULL
 
-  if(!is.null(select)) traitdfsel <- traitdfinal_long[traitdfinal_long[, "value"] %in% select, ] else traitdfsel <- traitdfinal_long
+  if(any(!is.null(selectvalue) | !is.null(descvalue))) {
+    traitdfsel <- traitdf_long[traitdf_long[, "value"] %in% selectvalue | traitdf_long[, "description"] %in% descvalue, ]
+    }else {
+      traitdfsel <- traitdf_long
+    }
 
   if(nrow(traitdfsel)<1) stop("No data found for the selected items.")
 
@@ -154,7 +159,8 @@ fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotrai
 
     dfsel <- traitdf[, c("taxagroup", 'species', 'value', "traitdesc")]
 
-    spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = c('taxagroup', 'species') , direction = 'wide', sep = "_")
+    spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = c('taxagroup', 'species') ,
+                       direction = 'wide', sep = "_")
 
     #remove the value_created by reshape function
 

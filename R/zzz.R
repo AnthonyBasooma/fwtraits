@@ -1,7 +1,9 @@
 
 .onLoad <- function(libname, pkgname) {
 
-  tokenkey <<- memoise::memoise(tokenkey)
+  fip_token <<- memoise::memoise(fip_token, cache = cachem::cache_disk(dir = 'authkey'))
+
+  getfiles <<- memoise::memoise(getfiles, cache = cachem::cache_disk(dir = 'taxadata'))
 }
 
 

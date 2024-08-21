@@ -19,7 +19,8 @@ fip_traits(
   cores = 2,
   quietly = FALSE,
   wide = FALSE,
-  select = NULL,
+  selectvalue = NULL,
+  descvalue = NULL,
   na.rm = TRUE,
   merge = FALSE,
   warn = FALSE
@@ -66,7 +67,7 @@ will be presented to the user. Default \code{TRUE}.}
 \item{wide}{\code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
 taxonomic groups.}
 
-\item{select}{\code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
+\item{selectvalue}{\code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
 then the species native in the Danube region can be selected and retained.}
 
 \item{na.rm}{\code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.

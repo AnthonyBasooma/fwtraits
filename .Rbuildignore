@@ -3,3 +3,5 @@
 ^\.httr-oauth$
 ^LICENSE\.md$
 ^README\.Rmd$
+^codecov\.yml$
+^\.github$

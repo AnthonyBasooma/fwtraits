@@ -4,6 +4,9 @@
 # fwtraits
 
 <!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg)](https://app.codecov.io/gh/AnthonyBasooma/fwtraits?branch=master)
 <!-- badges: end -->
 
 The goal of fwtraits is to …
