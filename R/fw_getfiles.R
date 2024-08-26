@@ -481,7 +481,7 @@ collatedata <- function(taxa, ecotraits = NULL, taxaorder = NULL, token  = NULL,
 
      if(length(taxa)>1) stop("One taxa group to be downloaded if multiple is FALSE")
 
-     getdf <- getfiles(taxa = taxa, ecotraits = ecotraits, taxaorder = taxaorder, token = token, warn = warn)
+     getdf <- getfiles(taxa = taxa, ecotraits = ecotraits, taxaorder = taxaorder, token = token, warn = warn, parallel = parallel, cores = cores)
      return(getdf)
    }else{
 
@@ -494,7 +494,7 @@ collatedata <- function(taxa, ecotraits = NULL, taxaorder = NULL, token  = NULL,
        taxadflist <- list()
 
        for (i in taxa) {
-         taxadflist[[i]] <- getfiles(taxa = i,  ecotraits = ecotraits, taxaorder = taxaorder, token = token, warn = warn)
+         taxadflist[[i]] <- getfiles(taxa = i,  ecotraits = ecotraits, taxaorder = taxaorder, token = token, warn = warn, parallel = parallel, cores = cores)
        }
        return(taxadflist)
      }else{
@@ -514,7 +514,7 @@ collatedata <- function(taxa, ecotraits = NULL, taxaorder = NULL, token  = NULL,
 
        getdf <- foreach(i = taxa, .packages ="fwtraits") %dopar% {
 
-         taxadf <- getfiles(taxa = i, ecotraits = ecotraits,  taxaorder = taxaorder, token = token, warn = warn)
+         taxadf <- getfiles(taxa = i, ecotraits = ecotraits,  taxaorder = taxaorder, token = token, warn = warn, parallel = parallel, cores = cores)
 
          return(taxadf)
        }
