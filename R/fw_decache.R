@@ -1,13 +1,16 @@
-#' Title
+#' @title Decache tokens and data files.
 #'
-#' @param type Either taxa or token
+#' @param type \code{string}. Either \code{taxa} or \code{token} to be removed from the data.
+#' @param action \code{string}. Either \code{reset} to remove token or data files or
+#'      \code{destroy} to remove all the files and cache directory.
 #'
-#' @return
+#' @return \code{message}. files or token cache token or taxa files and directory removed.
+#'
 #' @export
 #'
 #' @examples
 #'
-decache <- function(type = 'token', action= 'reset'){
+fw_decache <- function(type = 'token', action= 'reset'){
 
   match.arg(type, choices = c('token', 'taxa'))
   match.arg(action, choices = c('destroy', 'reset'))

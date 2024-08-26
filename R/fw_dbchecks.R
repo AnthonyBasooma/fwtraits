@@ -25,7 +25,9 @@
 #'
 #' @examples
 #'
-clean_names <- function(sp, grouplists, pct = 80, errorness = 20, group = NULL, full = FALSE) {
+clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
+                           group = NULL, full = FALSE,
+                           warn= FALSE) {
 
   #grt the standard lists
   if(is.null(group)) stop("provide the taxa group name")
@@ -73,7 +75,6 @@ clean_names <- function(sp, grouplists, pct = 80, errorness = 20, group = NULL, 
 
     spclean <- gsub("(^[[:alpha:]])", "\\U\\1", spaces, perl = TRUE)
 
-
     inOut <- spclean%in%stlist
 
     if(inOut==TRUE) {
@@ -81,34 +82,45 @@ clean_names <- function(sp, grouplists, pct = 80, errorness = 20, group = NULL, 
       spch <- spclean
 
     }else{
-      #check if there is a similar name
+      #reduce the species to get only the species name
 
-      dst <- adist(spclean, stlist)
+      spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:2], collapse = ' ')
 
-      errorsp <- (min(dst)/nchar(spclean))*100
+      inOut2 <- spclean2%in%stlist
 
-      if(errorsp>30) warning("The returned species name ", stlist[which.min(dst)], " has a high percentage error compared to ", spclean, " and wrong traits may be returned.", call. = FALSE)
+      if(inOut2==TRUE){
 
-      #errorness of the name
-      if(errorsp<errorness){
+        spch <- spclean2
 
-        spsel <- stlist[which.min(dst)]
-
-         #check %length of the species replacing
-         ncpct <- (nchar(spsel)/nchar(spclean))*100
-
-         if(ncpct>pct) {
-           spch <- spsel
-         }
-         else {
-           warning("No matching species name found for ", x, " in the ", group, "  and will be removed", call. = FALSE)
-           spch = NA
-         }
       }else{
-        warning("No matching species name found for ", x, " in the ", group, " and will be removed", call. = FALSE)
-        spch = NA
-      }
+        #check if there is a similar name
 
+        dst <- adist(spclean2, stlist)
+
+        errorsp <- (min(dst)/nchar(spclean2))*100
+
+        if(isTRUE(warn))if(errorsp>30) warning("The returned species name ", stlist[which.min(dst)], " has a high percentage error compared to ", spclean2, " and wrong traits may be returned.", call. = FALSE)
+
+        #errorness of the name
+        if(errorsp<errorness){
+
+          spsel <- stlist[which.min(dst)]
+
+          #check %length of the species replacing
+          ncpct <- (nchar(spsel)/nchar(spclean2))*100
+
+          if(ncpct>pct) {
+            spch <- spsel
+          }
+          else {
+            if(isTRUE(warn))warning("No matching species name found for ", spclean2, " in the ", group, "  and will be removed", call. = FALSE)
+            spch = NA
+          }
+        }else{
+          if(isTRUE(warn))warning("No matching species name found for ", spclean2, " in the ", group, " and will be removed", call. = FALSE)
+          spch = NA
+        }
+      }
     }
   }, simplify = TRUE, USE.NAMES = FALSE)
 
@@ -179,7 +191,7 @@ clean_traits <- function(x){
 
 compare_traits <- function(traits){
 
-  xtraits <- fip_paramlist()
+  xtraits <- fw_paramlist()
 
   ecopa <- xtraits$ecologicalParameterList
 
@@ -214,20 +226,24 @@ compare_traits <- function(traits){
 }
 
 
-#' Title
+#' @title Checks the traits spelling compared to user input.
 #'
-#' @param x
-#' @param std
-#' @param mind
-#' @param error
-#' @param grp
-#' @param warn
+#' @param x \code{string or vector}. The traits to be checked for spelling errors and matching database entries.
+#' @param std \code{lits}. A list with standard traits names from the the database to compare with user entries.
+#' @param mindist \code{numeric}. Set a threshold for trait similarity between the user provided and that found in the database.
+#'              The lower the percentage, the higher the similarity between the user provided
+#'              and standard trait names.
+#' @param error \code{numeric}. Also percentage to improve the distance based checked implemented or set in
+#'              mindist parameter
+#' @param grp  \code{grp}. The taxa names checked for. see \code{\link{collatedata}}.
+#' @param warn \code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.
 #'
-#' @return
+#' @return \code{list or string}. A list, vector or string of cleaned traits names based on
+#' the user provided and standard database traits for downloading.
 #'
 #' @examples
 #'
-checktrait<- function(x, std, mind = 0.3, error = 0.8, grp = NULL, warn= TRUE){
+checktrait<- function(x, std, mindist = 0.3, error = 0.8, grp = NULL, warn= TRUE){
 
   sapply(unique(x), function(wd){
 
@@ -241,7 +257,7 @@ checktrait<- function(x, std, mind = 0.3, error = 0.8, grp = NULL, warn= TRUE){
 
     dd <- (min(dst)-0)/10 #measure of similarity
 
-    if(chdd >= error && dd <= mind){
+    if(chdd >= error && dd <= mindist){
 
       fwd <- wrd
 

@@ -11,9 +11,9 @@
 #'
 #' @examples
 #'
-traitguide <- function(taxagroup = NULL, traits = NULL){
+fw_ecoparamdb <- function(taxagroup = NULL, traits = NULL){
 
-  paramlist <- fip_paramlist()
+  paramlist <- fw_paramlist()
 
   ecolist <- paramlist$ecologicalParameterList
 

@@ -5,8 +5,9 @@
 
 <!-- badges: start -->
 
-[![Codecov test
-coverage](https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg)](https://app.codecov.io/gh/AnthonyBasooma/fwtraits?branch=master)
+[![R-CMD-check](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/graph/badge.svg?token=07OUlLSQus)](https://codecov.io/gh/AnthonyBasooma/fwtraits)
+
 <!-- badges: end -->
 
 The goal of fwtraits is to …

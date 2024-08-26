@@ -2,8 +2,9 @@
 #'
 #' @param key \code{string} The API key which is automatically loaded using the loadapikey() internal function.
 #' @param quietly \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
-#'  @param seed \code{integer}. An integer to help track the caching of the access token generated during data collation.
+#' @param seed \code{integer}. An integer to help track the caching of the access token generated during data collation.
 #'        If a user wants to get a new token, then the seed should be changed.
+#'
 #'
 #' @importFrom curl has_internet
 #' @importFrom httr2 req_headers
@@ -15,7 +16,8 @@
 #'
 #' @examples
 #'
-fip_token <- function(key = loadapikey(), quietly = TRUE, seed= NULL) {
+
+fw_token <- memoise::memoise(function(key = loadapikey(), quietly = TRUE, seed= NULL) {
 
   if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
 
@@ -46,4 +48,4 @@ fip_token <- function(key = loadapikey(), quietly = TRUE, seed= NULL) {
     stop("Unable to access the database.")
   }
   return(tokendata)
-}
+}, cache = cachem::cache_disk(dir = 'authkey'))

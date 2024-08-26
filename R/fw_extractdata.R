@@ -63,7 +63,9 @@ extract_traits <- function(data, taxa, ecotraits = NULL, taxaorder = NULL,
 
     # cleaned species names
     spdetails[[ii]] <- clean_names(sp = speciesin, grouplists = taxagroup_data,
-                            pct = pct, errorness = errorness, group = tcheck(taxa[ii]), full = TRUE)
+                            pct = pct, errorness = errorness, group = tcheck(taxa[ii]),
+                            full = TRUE,
+                            warn = warn)
 
      specol_cleaned <- spdetails[[ii]]$clean[!is.na(spdetails[[ii]]$clean)]
 

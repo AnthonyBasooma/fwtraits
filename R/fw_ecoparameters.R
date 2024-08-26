@@ -3,24 +3,29 @@
 #' @inheritParams collatedata
 #' @inheritParams extract_traits
 #' @param spcol \code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
-#' @param taxa \code{string}. \code{string} The taxa group to download from the platform.
-#'      The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
-#'      phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
+#'        The column should have complete species name and not genus and species provided separately.
+#' @param taxacol \code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
+#'      the \code{taxacol} is required to iterate over the taxonomic groups separately.
 #' @param traits \code{string or vector}. If \code{all} is indicated, then all the traits will be extracted. Otherwise,
-#'      individual traits can be indicated in a vector format. Check the allowed traits in \code{link{traitguide}} function and identify
+#'      individual traits can be indicated in a vector format. Check the allowed traits in \code{\link{fw_ecoparamdb}} function and identify
 #'      all the traits allowed for each group and their explanation.
 #' @param level \code{string}. The taxonomic orders allowed for each species including \code{species, genus, order or family}.
 #' @param taxaorder \code{vector}. If \code{taxa} is \code{mi}, the \code{taxaorder} must be indicated for data to be downloaded.
-#'      The different macroinvertebrates orders allowed can be obtained using \code{orders()} function.
-#' @param token \code{string}: This is a required parameter to allow user authentication with the platform. To get the token, use
+#'      The different macroinvertebrates orders allowed can be obtained using \code{fw_orders()} function.
+#' @param token \code{string}. This is a required parameter to allow user authentication with the platform. To get the token, use
 #'      \code{before_u_start()} function to get the required steps. Remember that the token is saved in memory such that
 #'      the data downloaded is not re-downloaded in the next session.
 #' @param wide \code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
 #'      taxonomic groups.
 #' @param selectvalue \code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
 #'      then the species native in the Danube region can be selected and retained.
+#' @param descvalue \code{vector}. To allow traits selection within the traits, for example, for fishes and catchment regions is
+#'        is considered, 'Danu' can be selected.
 #' @param na.rm \code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
 #'        Default \code{TRUE}.
+#' @param merge \code{logical}. If the data is a dataframe and not list or vector, merge allows to
+#'        affix the species ecological parameters on the user dataframe. Default \code{FALSE} to return
+#'        only the species data but not the whole user input dataset.
 #'
 #'
 #' @importFrom memoise memoise
@@ -30,9 +35,39 @@
 #'
 #' @export
 #'
-#' @example
+#' @author {
+#' Anthony Basooma \email{anthony.basooma@boku.ac.at}
+#' }
 #'
-fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotraits = NULL,
+#' @example
+#' \dontrun{
+#'
+#' #encypted token for my api key
+#' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+#'
+#' #the FWTRAITS_KEY is the unlock key saved in my local environment
+#' #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
+#'
+#' apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
+#'
+#' #download fish catchment region data
+#' #setting the FWTRAITS_KEY
+#'
+#' #run this usethis::edit_r_environ()
+#'
+#' apikeydecrypted <- loadapikey(test = TRUE, encrytedkey = enc_api,
+#'                               fwtraitskey =  'FWTRAITS_KEY')
+#'
+#' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
+#'
+#' fishdata <- fw_ecoparameters(data = 'Abramis brmaam', taxa = 'fi',
+#'                              ecotraits = 'catchment region',
+#'                              token = tokendata,
+#'                              errorness = 27,
+#'                              pct = 70)#the species spelling is checked
+#' }
+#'
+fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotraits = NULL,
                        traits = 'all', level= NULL,
                        taxaorder = NULL, multiple = FALSE,
                        parallel = FALSE, cores = 2, quietly = FALSE,
@@ -41,7 +76,9 @@ fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotrai
                        descvalue = NULL,
                        na.rm = TRUE,
                        merge= FALSE,
-                       warn = FALSE){
+                       warn = FALSE,
+                       errorness = 20,
+                       pct = 80){
 
   if(is(data, "data.frame")){
 
@@ -53,14 +90,14 @@ fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotrai
 
       if(is.null(taxacol) && length(taxa)==1){
 
-        if(spcol%in%colnames(data)==FALSE) stop(deparse(substitute(spcol)), " not in the dataset provided.")
+        if(spcol%in%colnames(data)==FALSE) stop(deparse(substitute(spcol)), " not in the dataset ", deparse(substitute(data))," provided.")
 
         #create a species list
         specieslist <- unlist(data[, spcol])
 
       }else{
         #more than one taxa group in the dataset
-        if(taxacol%in%colnames(data)==FALSE) stop(deparse(substitute(taxacol)), " not in the dataset provided.")
+        if(taxacol%in%colnames(data)==FALSE) stop(deparse(substitute(taxacol)), " not in the dataset ", deparse(substitute(data))," provided.")
 
         taxagroup_split <- split(data, f=data[, taxacol])
 
@@ -80,10 +117,14 @@ fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotrai
     stop("Data format for species not allowed.")
   }
 
-  #get species as they exist in the taxon names of the FIP
+  #get species as they exist in the taxon names of the Freshwaterecology.info
   #generates the traits[[1]] and species details[[2]]
-  extracteddata <- extract_traits(data = specieslist, ecotraits = ecotraits, taxa = taxa, taxaorder = taxaorder, token  = token,
-                                  multiple = multiple, parallel = parallel, cores = cores, quietly = quietly, warn = warn)
+  extracteddata <- extract_traits(data = specieslist, ecotraits = ecotraits, taxa = taxa,
+                                  taxaorder = taxaorder, token  = token,
+                                  multiple = multiple, parallel = parallel,
+                                  cores = cores, quietly = quietly, warn = warn,
+                                  errorness = errorness,
+                                  pct = pct)
 
   if(nrow(extracteddata[[1]])<1) stop("No data found for the species entered. Confirm right group of taxa has been selected.")
 
@@ -139,13 +180,18 @@ fip_traits <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotrai
   # initialize the row names
   rownames(traitdf_long) <- NULL
 
-  if(any(!is.null(selectvalue) | !is.null(descvalue))) {
-    traitdfsel <- traitdf_long[traitdf_long[, "value"] %in% selectvalue | traitdf_long[, "description"] %in% descvalue, ]
-    }else {
-      traitdfsel <- traitdf_long
-    }
+  if(!is.null(selectvalue) & !is.null(descvalue)) {
 
-  if(nrow(traitdfsel)<1) stop("No data found for the selected items.")
+    traitdfsel <- traitdf_long[traitdf_long[, "value"] %in% selectvalue &  traitdf_long[, "description"]%in% descvalue, ]
+
+  }else if(any(!is.null(selectvalue) | !is.null(descvalue))){
+
+    traitdfsel <- traitdf_long[traitdf_long[, "value"] %in% selectvalue |  traitdf_long[, "description"]%in% descvalue, ]
+  }else{
+    traitdfsel <- traitdf_long
+  }
+
+  if(nrow(traitdfsel)<1)stop('Wrong selection has been made.check the traitguide dataset from the description and values allowed.', call. = FALSE)
 
   #remove traits with no data
 

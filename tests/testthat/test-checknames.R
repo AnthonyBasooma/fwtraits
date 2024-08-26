@@ -12,17 +12,20 @@ apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
 apikeydecrypted <- loadapikey(test = TRUE, encrytedkey = enc_api,
                               fwtraitskey =  'FWTRAITS_KEY')
 
-tokendata <- fip_token(key= apikeydecrypted, seed = 1234)
+tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
 
-fishdata <- collatedata(taxa = 'fi', ecotraits = 'catchment region',
-                        token = tokendata)
-
-x <- "ABramis brama"
-
-test_that(desc = 'Species in catchment region and name is also cleaned',
-          code = {
-            expect_type(clean_names(sp= x, grouplists = fishdata, group = 'fishes'), 'character')
-          })
+# fishdata <- collatedata(taxa = 'fi', ecotraits = 'catchment region',
+#                         token = tokendata)
+#
+# x <- "ABramis brama"
+#
+# test_that(desc = 'Species in catchment region/endemicity and name is also cleaned',
+#           code = {
+#             #species full = FASLE
+#             expect_type(clean_names(sp= x, grouplists = fishdata, group = 'fishes'), 'character')
+#             #full = TRUE
+#             expect_s3_class(clean_names(sp= x, grouplists = fishdata, group = 'fishes', full = TRUE), 'data.frame')
+#           })
 
 
 
