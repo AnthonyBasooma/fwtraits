@@ -2,7 +2,7 @@
 % Please edit documentation in R/fw_getfiles.R
 \name{collatedata}
 \alias{collatedata}
-\title{Data download from the Freshwater Information Platform.}
+\title{Data download from the Freshwaterecology.info database.}
 \usage{
 collatedata(
   taxa,
@@ -57,7 +57,7 @@ will be presented to the user. Default \code{TRUE}.}
 \code{list}. Lists of taxa groups data downloaded from the Freshwater Information Platform.
 }
 \description{
-Data download from the Freshwater Information Platform.
+Data download from the Freshwaterecology.info database.
 }
 \details{
 The \code{getdata} is used as a wrapper to enable the user to download data from multiple groups

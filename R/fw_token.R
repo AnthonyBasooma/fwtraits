@@ -17,7 +17,7 @@
 #' @examples
 #'
 
-fw_token <- memoise::memoise(function(key = loadapikey(), quietly = TRUE, seed= NULL) {
+fw_token <- function(key = loadapikey(), quietly = TRUE, seed= NULL) {
 
   if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
 
@@ -48,4 +48,4 @@ fw_token <- memoise::memoise(function(key = loadapikey(), quietly = TRUE, seed= 
     stop("Unable to access the database.")
   }
   return(tokendata)
-}, cache = cachem::cache_disk(dir = 'authkey'))
+}

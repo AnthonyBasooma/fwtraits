@@ -146,7 +146,7 @@ tcheck <- function(tx, taxafile = FALSE) {
 
       tricofam <-  ssdfamily()
 
-      famList <- split(tricofam , sample(3, length(tricofam) , repl = TRUE) )
+      famList <- split(tricofam , sample(3, length(tricofam) , replace = TRUE) )
 
       xsd <- sapply(famList, function(ff){
 
@@ -247,7 +247,7 @@ tcheck <- function(tx, taxafile = FALSE) {
 #' @return List of download species traits
 #'
 
-getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRUE, parallel= TRUE, cores = 3) {
+getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRUE, parallel= TRUE, cores = 3) {
 
   if (!curl::has_internet()) stop("Not connected on internet to access the database.")
 
@@ -433,11 +433,11 @@ getfiles <- memoise::memoise(function(taxa, taxaorder = NULL, ecotraits = NULL, 
                       simplify = FALSE, USE.NAMES = TRUE)
     }
   }
-},cache = cachem::cache_disk(dir = 'taxadata'))
+}
 
 
 
-#' @title Data download from the Freshwater Information Platform.
+#' @title Data download from the Freshwaterecology.info database.
 #'
 #' @details
 #' The \code{getdata} is used as a wrapper to enable the user to download data from multiple groups
