@@ -1,9 +1,11 @@
 
 .onLoad <- function(libname, pkgname) {
 
-  fw_token <<- memoise::memoise(fw_token, cache = cachem::cache_disk(dir = 'authkey'))
+  #fw_token <<- memoise::memoise(fw_token, cache = cachem::cache_disk(dir = 'authkey'))
 
-  getfiles <<- memoise::memoise(getfiles, cache = cachem::cache_disk(dir = 'taxadata'))
+  #fw_getdata <<- memoise::memoise(fw_getdata, cache = cachem::cache_disk(dir = 'taxadata'))
+
+  #.getfimppp <<- memoise::memoise(.getfimppp, cache = cachem::cache_disk(dir = 'taxadata'))
 }
 
 

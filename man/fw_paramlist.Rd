@@ -15,7 +15,4 @@ Function to retrieve all the traits in the database.
 \author{
 Anthony Basooma
 }
-\keyword{<-}
-\keyword{fw_paramlist()}
 \keyword{internal}
-\keyword{x}
