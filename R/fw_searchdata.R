@@ -2,31 +2,32 @@
 
 tcheck <- function(tx, taxafile = FALSE) {
 
-  sapply(tx, function(it){
+  orgroup <- sapply(tx, function(it){
 
     if (it == "fi" || it == "fish" || it == "fishes") {
-      if (isTRUE(taxafile)) taxa <- "fi" else taxa <- "fishes"
+      if (isTRUE(taxafile)) organismgroup <- "fi" else organismgroup <- "fishes"
     } else if (it == "pp" || it == "phyto" || it == "phytoplankton") {
-      if (isTRUE(taxafile)) taxa <- "pp" else taxa <- "phytoplankton"
+      if (isTRUE(taxafile)) organismgroup <- "pp" else organismgroup <- "phytoplankton"
     } else if (it == "mi" || it == "macro" || it == "macroinvertebrates") {
-      if (isTRUE(taxafile)) taxa <- "mi" else taxa <- "macroinvertebrates"
+      if (isTRUE(taxafile)) organismgroup <- "mi" else organismgroup <- "macroinvertebrates"
     } else if (it == "di" || it == "diatoms") {
-      if (isTRUE(taxafile)) taxa <- "di" else taxa <- "diatoms"
+      if (isTRUE(taxafile)) organismgroup <- "di" else organismgroup <- "diatoms"
     } else if (it == "pb" || it == "phytobentho" || it == "bentho") {
-      if (isTRUE(taxafile)) taxa <- "pb" else taxa <- "phytobentho"
+      if (isTRUE(taxafile)) organismgroup <- "pb" else organismgroup <- "phytobentho"
     } else if (it == "mp" || it == "macrophyte" || it == "grasses") {
-      if (isTRUE(taxafile)) taxa <- "mp" else taxa <- "macrophyte"
+      if (isTRUE(taxafile)) organismgroup <- "mp" else organismgroup <- "macrophyte"
     } else {
       stop("Incorrect taxanomic group are entered. Use 'pp', 'fi', 'mi','di', 'pb', and 'mp' or run tcheck()")
     }
-    return(taxa)
   }, USE.NAMES = FALSE)
+
+  return(orgroup)
 }
 
 
 #' @noRd
 #'
-.getdata <- function(x, token, harmztaxa, url) {
+.getfimppp <- memoise::memoise(function(x, token, harmztaxa, url, allClasses = NULL) {
 
   traitcodes <- x[["code"]]
 
@@ -36,11 +37,11 @@ tcheck <- function(tx, taxafile = FALSE) {
 
   # replace the all classes with all the classes
 
-  if ("all classes" %in% available4) available4 <- fw_classes(paramlist = x) else available4
+  if ("all classes" %in% available4) available4 <- allClasses else available4
 
   ldata <- request(base_url = url) |> req_auth_bearer_token(token = token)
 
-  # harmonise taxa
+  # harmonise organism group
 
   if (harmztaxa == "fi") {
 
@@ -87,11 +88,15 @@ tcheck <- function(tx, taxafile = FALSE) {
     if(lastresp$status_code==403) stop("Either run the fw_token() to refresh the token and try again.", call. = FALSE)
   }
 
-}
+}, cache = memoise::cache_filesystem(path = 'taxadata', compress = TRUE))
 
-.bentho <- function(x, y, token, harmztaxa, url) {
+
+#'
+#' @noRd
+.getbenthos <- memoise::memoise(function(x, y, token, harmztaxa, url) {
 
   codes <- y[[x]]
+
 
   ldata <- request(base_url = url) |>
 
@@ -126,9 +131,12 @@ tcheck <- function(tx, taxafile = FALSE) {
 
     if(lastresp$status_code==403) stop("Run the fw_token() function to refresh the token and try again.", call. = FALSE)
   }
-}
+}, cache = memoise::cache_filesystem(path = 'taxadata', compress = TRUE))
 
-.macro <- function(x, y, token, harmztaxa, url) {
+#'
+#' @noRd
+.getinverts <- memoise::memoise(function(x, y, token, harmztaxa, url) {
+  set.seed(1124)
 
   ordata <- y[[x]]
 
@@ -140,7 +148,7 @@ tcheck <- function(tx, taxafile = FALSE) {
 
       req_auth_bearer_token(token = token)
 
-    #this combination leads to error if not provided upto family level
+    #this combination leads to error if not provided up to family level
 
     if(y == 133 && x =="Trichoptera"){
 
@@ -213,45 +221,81 @@ tcheck <- function(tx, taxafile = FALSE) {
     }
 
   }, USE.NAMES = TRUE, simplify = FALSE)
-}
+}, cache = memoise::cache_filesystem(path = 'taxadata', compress = TRUE))
 
 
-#' @title To collate data from the Freshwater Information Platform.
+#' @title To download data from the Freshwaterecology.info database.
 #'
-#' @param taxa \code{string}. The taxa group to download from the platform.
+#' @description
+#' The function provides a seamless access and download of species ecological parameters, traits,
+#' or indicators from the Freshwaterecology.info database. The fucntion allows multiple inclusion
+#' of organism groups, which include macroinvertebrates, fishes, phytoplankton, phytobenthos,
+#' macrophytes, and diatoms. Parallelisation can also enabled to allow faster data download from
+#' for the database severs.
+#'
+#'
+#' @param organismgroup \code{string}. The organismgroup group to download from the platform.
 #'      The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
 #'      phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
 #' \itemize{
-#'         \item{\code{pp: }}{Pytoplankton.}
-#'         \item{\code{mp: }}{Macrophtytes}
-#'         \item{\code{mi: }}{Macroinvertebrates}
-#'         \item{\code{fi: }}{Fishes}
-#'         \item{\code{di: }}{Diatoms}
-#'         \item{\code{pb: }}{Phytobenthos without diatoms}
+#'         \item{\code{pp}: Pytoplankton.}
+#'         \item{\code{mp}: Macrophtytes}
+#'         \item{\code{mi}: Macroinvertebrates}
+#'         \item{\code{fi}: Fishes}
+#'         \item{\code{di}: Diatoms}
+#'         \item{\code{pb}: Phytobenthos without diatoms}
 #'           }
-#' @param taxaorder \code{vector}. If \code{taxa} is \code{mi}, the \code{taxaorder} must be indicated for data to be downloaded.
-#'      The different macroinvertebrates orders allowed can be obtained using \code{\link{fw_orders}} function.
-#' @param ecotraits \code{vector}. Selected traits that should be downloaded for particular taxa group. Check \code{\link{fw_ecoparamdb}} for the allowed
+#' @param taxagroup \code{vector}. If \code{organismgroup} is \code{mi}, the \code{taxagroup} must be indicated for data to be downloaded.
+#'      The different macroinvertebrates orders allowed can be obtained using \code{\link{fw_taxagroup}} function.
+#' @param ecoparams \code{vector}. Selected traits that should be downloaded for particular organismgroup group. Check \code{\link{fw_dbguide}} for the allowed
 #'      traits in the database.
 #' @param token \code{string}. This is a required parameter to allow user authentication with the platform. To get the token, use
-#'      \code{\link{before_u_start}} function to get the required steps. Remember that the token is saved in memory such that
+#'      \code{\link{fw_be4ustart}} function to get the required steps. Remember that the token is saved in memory such that
 #'      the data downloaded is not re-downloaded in the next session.
+#' @param parallel \code{logical}. If \code{TRUE} then the parallel data download is enabled.
+#' @param cores \code{integer} An integer indicating the number of cores to be be used in parallelisng the
+#'      the data download. Default is 2.
 #' @inheritParams checktrait
 #'
 #' @importFrom httr2 request req_body_raw  req_perform resp_body_json req_auth_bearer_token req_user_agent last_response
 #' @importFrom jsonlite toJSON
-#' @importFrom memoise memoise
-#' @importFrom cachem cache_disk
-#' @importFrom parallel detectCores clusterEvalQ makeCluster
+#' @importFrom memoise memoise cache_filesystem
+#' @importFrom parallel detectCores clusterEvalQ makeCluster parSapply stopCluster
 #'
 #' @return List of download species traits
 #'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' #encrypted token for my api key
+#'
+#' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+#'
+#' apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
+#'
+#' #download fish catchment region data
+#' #setting the FWTRAITS_KEY
+#'
+#' #run this usethis::edit_r_environ()
+#'
+#' apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+#'                               fwtraitskey =  'FWTRAITS_KEY')
+#'
+#' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
+#'
+#' dfpull <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', token = tokendata)
+#' }
 
-getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRUE, parallel= TRUE, cores = 3) {
+fw_searchdata <- function(organismgroup, taxagroup = NULL,
+                     ecoparams = NULL, token, warn = TRUE,
+                     parallel= FALSE, cores = 3) {
 
   if (!curl::has_internet()) stop("Not connected on internet to access the database.")
 
-  if(is.null(token)) stop("Provide the token key to continue, run before_u_start() function and learn to set the token.", call. = FALSE)
+  if(is.null(token)) stop("Provide the token key to continue, run fw_be4ustart() function and learn to set the token.", call. = FALSE)
 
   # get database map
   getparam_list <- fw_paramlist()
@@ -259,26 +303,33 @@ getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRU
   # extract parameters
   ecolist <- getparam_list$ecologicalParameterList # requires only fi, mi, pb, pp, pd, di
 
-  # get for each taxa
+  #loop through organism group
 
-  harmztaxa <- tcheck(tx = taxa, taxafile = TRUE)
+  organismdata <- sapply(organismgroup, function(orgx){
+
+  harmztaxa <- tcheck(tx = orgx, taxafile = TRUE)
 
   gettaxa <- ecolist[[harmztaxa]]
 
-
-  if(!is.null(ecotraits) && is.null(taxaorder)){
+  if(!is.null(ecoparams) && is.null(taxagroup)){
 
     standardtraits <- sapply(gettaxa, function(x) x[["name"]])
 
     #clean to standardize the names
     stdf <- clean_traits(standardtraits)
 
-    #compare with the clean and user provided trait names
-    ctraits <-  checktrait(x= ecotraits, std = stdf, grp = tcheck(tx = taxa), warn = warn)
+    if(is(ecoparams, 'list')) ecoparamgroup <- ecoparams[[orgx]] else ecoparamgroup <- ecoparams
 
-    #if(length(unlist(ctraits))<1) stop("No trait data to download from FWDB, please check for spellings for traits in the fw_ecoparamdb() generated dataset in the traitname column.")
+    #compare with the clean and user provided trait names
+    ctraits <-  checktrait(x= ecoparamgroup, std = stdf,
+                           grp = tcheck(tx = orgx),
+                           warn = warn)
 
     gettaxa_final <- gettaxa[which(stdf%in%ctraits ==TRUE)]
+
+    #carry on a group list of taxa group for pp to handle all classes aspect
+
+    #if(orgx=='mp') allclasses <- gettaxa
 
   }else{
 
@@ -302,7 +353,8 @@ getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRU
     clusterEvalQ(cl = clusters, expr = c(library("httr2"), library("jsonlite")))
   }
 
-  # get the base url for the taxa data tables
+  # get the base url for the organism group data tables
+
   qurl <- "https://www.freshwaterecology.info/fweapi2/v1/query"
 
   if (harmztaxa == "mi" | harmztaxa == "pb") {
@@ -310,15 +362,17 @@ getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRU
     # extract data for macro invertebrates and phytobenthos
 
     # get all list available for traits
-    allorders <- sapply(gettaxa_final, function(x) strsplit(x[["availableFor"]], split = ", ", fixed = TRUE)[[1]])
+    allorders <- sapply(gettaxa_final, function(x) strsplit(x[["availableFor"]],
+                                                            split = ", ", fixed = TRUE)[[1]])
 
     traitcodes <- sapply(gettaxa_final, function(x) x[[1]])
 
     # merge all lists and make them unique to get the orders or classes (phytobenthos)
-    if(is.null(ecotraits)){
+    if(is.null(ecoparams)){
+
       names(allorders) <- traitcodes
     }else{
-      if(length(allorders)>1 && length(ecotraits)==1) names(allorders) <- rep(traitcodes, length(allorders)) else names(allorders) <- traitcodes
+      if(length(allorders)>1 && length(ecoparams)==1) names(allorders) <- rep(traitcodes, length(allorders)) else names(allorders) <- traitcodes
     }
 
     if(length(allorders)==1) unique_ORDERS <- allorders else unique_ORDERS <- unique(Reduce(c, allorders))
@@ -342,16 +396,16 @@ getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRU
     }
     row.names(codematrix) <- unique_ORDERS
 
-    # extract all matrix rows, remove NAs and maintain the ecoparams for each taxa
+    # extract all matrix rows, remove NAs and maintain the ecoparams for each organismgroup
 
     taxafinal0 <- apply(codematrix, 1, FUN = function(x) unlist(x)[!is.na(unlist(x))])
 
     taxafinal <- taxafinal0[sapply(taxafinal0, length) > 0]
 
-    #macro are selected bse require to loop through the traits vs phtobenthos that allows combining them without the 403 error
+    #macro are selected because they require to loop through the traits vs phtobenthos that allows combining them without the 403 error
     if (harmztaxa == "mi") {
 
-      # remove orders that are not in available for list
+      # remove taxa groups that are not available in the list of taxa groups
 
       tf <- unlist(taxafinal) %in% c("Araneae", "Kamptozoa")
 
@@ -363,37 +417,36 @@ getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRU
         orderlist <- taxafinal
       }
 
-      if(!is.null(taxaorder) && !is.null(ecotraits)) stop("If using selected species ecological traits, the taxaorder must be NULL")
+      if(!is.null(taxagroup) && !is.null(ecoparams)) stop("If using selected species ecological traits, the taxagroup must be NULL")
 
-      if(!is.null(taxaorder)){
-
-        #if (length(unique(taxaorder)) > 4) stop("Please a maximum of 4 macro invertebrates orders are allowed but ", length(unique(taxaorder)), " have been provided.")
+      if(!is.null(taxagroup)){
 
         #check if the order entered are in the allowed list
 
-        inOut <- taxaorder%in%names(orderlist)
+        inOut <- taxagroup%in%names(orderlist)
 
         if(all(inOut) == TRUE){
 
-          taxasel <- orderlist[taxaorder]
+          taxasel <- orderlist[taxagroup]
         }else{
-          ordersnotin <- taxaorder[which(inOut==FALSE)]
+          ordersnotin <- taxagroup[which(inOut==FALSE)]
 
-          stop("The orders: ", paste(ordersnotin, collapse = ", "), " is/are not in the standard order list for macroinvertebrates. run fw_orders() function to identify allowed orders.")
+          stop("The orders: ", paste(ordersnotin, collapse = ", "), " is/are not in the standard order list for macroinvertebrates. run fw_taxagroup() function to identify allowed orders.")
         }
       }else{
         taxasel <- orderlist
       }
       if(isTRUE(parallel)){
 
-        dfout <- parSapply(clusters, names(taxasel), .macro, y = taxasel, token = token,
+        dfout <- parSapply(clusters, names(taxasel), .getinverts,
+                           y = taxasel, token = token,
                            harmztaxa = harmztaxa, url = qurl)
 
         stopCluster(cl = clusters)
 
         return(dfout)
       }else{
-        xsp <- sapply(names(taxasel), .macro, y = taxasel, token = token,
+        xsp <- sapply(names(taxasel), .getinverts, y = taxasel, token = token,
                       harmztaxa = harmztaxa, url = qurl)#end of macro inverts
       }
     } else {#start phyto benthos
@@ -401,16 +454,17 @@ getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRU
 
       if(isTRUE(parallel)){
 
-        dfout <- parSapply(clusters, names(taxasel), .bentho, y = taxasel, token = token,
+        dfout <- parSapply(clusters, names(taxasel), .getbenthos,
+                           y = taxasel, token = token,
                            harmztaxa = harmztaxa, url = qurl,
                            simplify = FALSE, USE.NAMES = TRUE)
 
         stopCluster(cl = clusters)
-
         return(dfout)
 
       }else{
-        dfout <- sapply(names(taxasel),.bentho, y = taxasel, token = token, harmztaxa = harmztaxa, url = qurl,
+        dfout <- sapply(names(taxasel),.getbenthos, y = taxasel, token = token,
+                        harmztaxa = harmztaxa, url = qurl,
                         simplify = FALSE, USE.NAMES = TRUE)
       }
     }#end phytobentho
@@ -420,126 +474,41 @@ getfiles <- function(taxa, taxaorder = NULL, ecotraits = NULL, token, warn = TRU
 
     if(isTRUE(parallel)){
 
-      dfout <- parSapply(clusters, gettaxa_final, .getdata, token = token, harmztaxa = harmztaxa, url = qurl,
+      dfout <- parSapply(clusters, gettaxa_final, .getfimppp, token = token,
+                         harmztaxa = harmztaxa,
+                         url = qurl, allClasses = fw_classes(paramlist = gettaxa),
                          simplify = FALSE, USE.NAMES = TRUE)
 
       stopCluster(cl = clusters)
-
       return(dfout)
-
     }else{
 
-      dfout <- sapply(gettaxa_final, .getdata, token = token, harmztaxa = harmztaxa, url = qurl,
+      #get taxa is carried over to handle all classes anomaly in macrophtes data
+
+      dfout <- sapply(gettaxa_final, .getfimppp, token = token, harmztaxa = harmztaxa,
+                      url = qurl, allClasses = fw_classes(paramlist = gettaxa),
                       simplify = FALSE, USE.NAMES = TRUE)
     }
   }
+  },simplify = FALSE)
+
+  return(organismdata)
 }
-
-
-
-#' @title Data download from the Freshwaterecology.info database.
-#'
-#' @details
-#' The \code{getdata} is used as a wrapper to enable the user to download data from multiple groups
-#' and allowing parallelising the \code{\link{getfiles}} function. The user can change the number of cores to improve the speed of
-#' data downloaded. All data downloaded in this function by the user  is cached in the \code{taxongroups} folder, which
-#' is automatically created in the working directory when loading the package. The data is permanently cached, even when
-#' the session is restarted. The user can use the \code{\link{fw_decache}} function to remove the files. However, to extract the data
-#' please check both \code{\link{extract_traits}} and \code{\link{fw_ecoparameters}}.
-#'
-#'
-#' @inheritParams getfiles
-#' @param multiple \code{logical}. Either \code{TRUE} if multiple taxa groups are considered. Default is \code{FALSE} for only
-#'        single taxon group.
-#' @param parallel \code{logcial}. Either \code{TRUE} to allow parallelisation most especially if multiple groups are considered.
-#'      If multiple is set to TRUE and parallel to FALSE, a slow mode of data download will be executed.
-#' @param cores \code{interger}. The number computer cores to be used to run while data download and its necessary only when
-#'      parallel is set to \code{TRUE}. Default is 2.
-#' @param quietly \code{logical}. If \code{FALSE}, a message showing the slow mode of data collation
-#'      will be presented to the user. Default \code{TRUE}.
-#'
-#' @importFrom parallel detectCores makeCluster clusterExport stopCluster
-#' @importFrom foreach foreach %dopar%
-#' @importFrom doParallel registerDoParallel
-#' @importFrom utils askYesNo
-#'
-#' @return \code{list}. Lists of taxa groups data downloaded from the Freshwater Information Platform.
-#' @export
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' ppdata <- 1
-#' }
-#'
-collatedata <- function(taxa, ecotraits = NULL, taxaorder = NULL, token  = NULL, warn = FALSE,
-                    multiple = FALSE, parallel = FALSE, cores = 2,
-                    quietly = FALSE){
-
-   if(isFALSE(multiple)){
-
-     if(length(taxa)>1) stop("One taxa group to be downloaded if multiple is FALSE")
-
-     getdf <- getfiles(taxa = taxa, ecotraits = ecotraits, taxaorder = taxaorder, token = token, warn = warn, parallel = parallel, cores = cores)
-     return(getdf)
-   }else{
-
-     if(length(taxa)<=1)stop("If multiple is TRUE, multiple taxagroups are expected.")
-
-     if(isFALSE(parallel)){
-
-       if(isFALSE(quietly)) message("The slower version of getting data from FW will be implemented.")
-
-       taxadflist <- list()
-
-       for (i in taxa) {
-         taxadflist[[i]] <- getfiles(taxa = i,  ecotraits = ecotraits, taxaorder = taxaorder, token = token, warn = warn, parallel = parallel, cores = cores)
-       }
-       return(taxadflist)
-     }else{
-
-       #check allowed cores
-
-       ncdetect <- detectCores()
-
-       if(is.na(ncdetect) | is.null(ncdetect) | ncdetect<=1) stop("The cores detected are either NA, NULL or less to 1, please use the slower version.")
-
-       if(cores>=ncdetect | (ncdetect-cores)<2) stop("Reduce the cores to ", ncdetect-2," or less for effective parallelisation.")
-
-       makecluster <- makeCluster(spec = cores, type = 'PSOCK')
-
-       registerDoParallel(cl = makecluster)
-
-
-       getdf <- foreach(i = taxa, .packages ="fwtraits") %dopar% {
-
-         taxadf <- getfiles(taxa = i, ecotraits = ecotraits,  taxaorder = taxaorder, token = token, warn = warn, parallel = parallel, cores = cores)
-
-         return(taxadf)
-       }
-
-       stopCluster(makecluster)
-
-       return(getdf)
-     }
-   }
- }
 
 
 
 #' @title To get the allowed macroinvertebrates in the Freshwaterecology.info.
 #'
-#' @return \code{vector}. A vector of allowed macro invertebrates taxonomic groups that can be set in the \code{taxaorder} parameter while
+#' @return \code{vector}. A vector of allowed macro invertebrates taxonomic groups that can be set in the \code{taxagroup} parameter while
 #'        while getting data.
 #'
 #' @export
 #'
 #' @examples
 #'
-#' x <- fw_orders()
+#' x <- fw_taxagroup()
 #'
-fw_orders <- function(){
+fw_taxagroup <- function(){
 
   getparam_list <- fw_paramlist()
 

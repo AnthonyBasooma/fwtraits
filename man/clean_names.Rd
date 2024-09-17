@@ -11,14 +11,15 @@ clean_names(
   errorness = 30,
   group = NULL,
   full = FALSE,
-  warn = FALSE
+  warn = FALSE,
+  subspecies = FALSE
 )
 }
 \arguments{
 \item{sp}{\code{string or vector}. Species scientific names to be checked. Although the spellings are checked, the users
 should check for the species name provided to avoid not being being detected in the database.}
 
-\item{grouplists}{\code{list}. List of data downloaded in the \code{\link{collatedata}} function. If species considered in \code{sp}
+\item{grouplists}{\code{list}. List of data downloaded in the \code{\link{fw_searchdata}} function. If species considered in \code{sp}
 parameter are fishes, then the fishes lists should be provided otherwise the species names will be rejected.}
 
 \item{pct}{\code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
@@ -33,8 +34,13 @@ to extracting wrong traits.}
 \item{group}{\code{string} The taxa group names should be indicated to separate the macro-invertebrates workflow from others. The accepted
 group names include macroinvertebrates, fishes, macrophytes, phytoplankton, diatoms, and phytobenthos.}
 
-\item{full}{\code{logical} \code{TRUE} if a dataframe with both cleaned and unclened species are required. If \code{FALSE} then the
-a species list will be produced after cleaning. Dafualt \code{FALSE}.}
+\item{full}{\code{logical} \code{TRUE} if a dataframe with both cleaned and uncleaned species are required. If \code{FALSE} then the
+a species list will be produced after cleaning. Default \code{FALSE}.}
+
+\item{warn}{To alert user on the species names cleaning errors and warnings.}
+
+\item{subspecies}{To consider subspecies while carrying taxonomic names checks. For example, Salmo trutta fario
+will not be truncated to Salmo trutta if \code{subspecies is TRUE}:}
 }
 \value{
 \code{vector or string} clean species name that is also found in the database.

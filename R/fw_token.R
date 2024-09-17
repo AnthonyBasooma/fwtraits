@@ -1,5 +1,14 @@
 #' @title Access and loading the token key
 #'
+#' @description
+#' The function and updates the authentication token that is automatically generated every after
+#' six hours by the servers. The function gets the API key, which is a one time key that is provided
+#' during registration or by database managers for already registered users. Since the authentication
+#' token expires, the seed parameter is included to allow caching across user sessions. Therefore,
+#' the data downloaded with a particular seed will be in stored in memory and can be retrieved from the user
+#' PC than from servers and hence tremendously optimizing on the speed on data access.
+#'
+#'
 #' @param key \code{string} The API key which is automatically loaded using the loadapikey() internal function.
 #' @param quietly \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
 #' @param seed \code{integer}. An integer to help track the caching of the access token generated during data collation.
@@ -8,6 +17,8 @@
 #'
 #' @importFrom curl has_internet
 #' @importFrom httr2 req_headers
+#' @importFrom askpass askpass
+#' @importFrom httr2 secret_decrypt
 #'
 #'
 #' @return \code{string} token authentication token key
@@ -16,8 +27,38 @@
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
+#' #sessionkey <- secret_make_key()
+#'
+#' #edit this page with usethis::edit_r_environ()
+#'
+#' #enc_api <- secret_encrypt(x = 'apikey', key = sessionkey)
+#'
+#' #encrypted token for my api key
+#'
+#' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+#'
+#' #the FWTRAITS_KEY is the unlock key saved in my local environment
+#' #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
+#'
+#' apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
+#'
+#' #download fish catchment region data
+#' #setting the FWTRAITS_KEY
+#'
+#' #run this usethis::edit_r_environ()
+#'
+#' apikeydecrypted <- loadapikey(test = TRUE, encrytedkey = enc_api,
+#'                               fwtraitskey =  'FWTRAITS_KEY')
+#'
+#' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
+#'
+#' }
+#'
+#'
 
-fw_token <- function(key = loadapikey(), quietly = TRUE, seed= NULL) {
+fw_token <- memoise::memoise(function(key = fw_loadapikey(), quietly = TRUE, seed= NULL) {
 
   if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
 
@@ -48,4 +89,4 @@ fw_token <- function(key = loadapikey(), quietly = TRUE, seed= NULL) {
     stop("Unable to access the database.")
   }
   return(tokendata)
-}
+}, cache = memoise::cache_filesystem(path = 'authtoken', compress = TRUE))

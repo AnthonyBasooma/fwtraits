@@ -3,7 +3,7 @@
 #'
 #' @param sp \code{string or vector}. Species scientific names to be checked. Although the spellings are checked, the users
 #'      should check for the species name provided to avoid not being being detected in the database.
-#' @param grouplists \code{list}. List of data downloaded in the \code{\link{collatedata}} function. If species considered in \code{sp}
+#' @param grouplists \code{list}. List of data downloaded in the \code{\link{fw_searchdata}} function. If species considered in \code{sp}
 #'      parameter are fishes, then the fishes lists should be provided otherwise the species names will be rejected.
 #' @param pct \code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
 #'        The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{pct}
@@ -14,23 +14,22 @@
 #'        to extracting wrong traits.
 #' @param group \code{string} The taxa group names should be indicated to separate the macro-invertebrates workflow from others. The accepted
 #'      group names include macroinvertebrates, fishes, macrophytes, phytoplankton, diatoms, and phytobenthos.
-#' @param full \code{logical} \code{TRUE} if a dataframe with both cleaned and unclened species are required. If \code{FALSE} then the
-#'       a species list will be produced after cleaning. Dafualt \code{FALSE}.
+#' @param full \code{logical} \code{TRUE} if a dataframe with both cleaned and uncleaned species are required. If \code{FALSE} then the
+#'       a species list will be produced after cleaning. Default \code{FALSE}.
+#' @param warn To alert user on the species names cleaning errors and warnings.
+#' @param subspecies To consider subspecies while carrying taxonomic names checks. For example, Salmo trutta fario
+#'      will not be truncated to Salmo trutta if \code{subspecies is TRUE}:
 #'
 #' @importFrom utils adist
 #'
 #' @return \code{vector or string} clean species name that is also found in the database.
 #'
-#' @export
-#'
-#' @examples
 #'
 clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
                            group = NULL, full = FALSE,
-                           warn= FALSE) {
-
-  #grt the standard lists
-  if(is.null(group)) stop("provide the taxa group name")
+                           warn= FALSE, subspecies = FALSE) {
+  #get the standard lists
+  if(is.null(group)) stop("Provide the organism group")
 
   #compiles all species from all the list of the group extracted
   if(group=='macroinvertebrates'){
@@ -49,9 +48,9 @@ clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
     }
 
   }else{
-
     stlist <- unlist(unique(Reduce(c, sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))))
-  }
+
+    }
 
   #get unique only
   spunique <- unique(sp)
@@ -83,9 +82,14 @@ clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
 
     }else{
       #reduce the species to get only the species name
+      if(isTRUE(subspecies) && length(spclean)>2){
 
+        spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:3], collapse = ' ')
+
+      }else{
       spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:2], collapse = ' ')
 
+      }
       inOut2 <- spclean2%in%stlist
 
       if(inOut2==TRUE){
@@ -102,15 +106,17 @@ clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
         if(isTRUE(warn))if(errorsp>30) warning("The returned species name ", stlist[which.min(dst)], " has a high percentage error compared to ", spclean2, " and wrong traits may be returned.", call. = FALSE)
 
         #errorness of the name
-        if(errorsp<errorness){
+        if(errorsp < errorness){
 
           spsel <- stlist[which.min(dst)]
 
           #check %length of the species replacing
           ncpct <- (nchar(spsel)/nchar(spclean2))*100
 
-          if(ncpct>pct) {
+          if(ncpct > pct) {
+
             spch <- spsel
+
           }
           else {
             if(isTRUE(warn))warning("No matching species name found for ", spclean2, " in the ", group, "  and will be removed", call. = FALSE)
@@ -185,9 +191,7 @@ clean_traits <- function(x){
 #'
 #' @return \code{string} accepted trait names based on the database
 #'
-#' @export
 #'
-#' @examples
 
 compare_traits <- function(traits){
 
@@ -235,13 +239,12 @@ compare_traits <- function(traits){
 #'              and standard trait names.
 #' @param error \code{numeric}. Also percentage to improve the distance based checked implemented or set in
 #'              mindist parameter
-#' @param grp  \code{grp}. The taxa names checked for. see \code{\link{collatedata}}.
+#' @param grp  \code{grp}. The taxa names checked for. see \code{\link{fw_searchdata}}.
 #' @param warn \code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.
 #'
 #' @return \code{list or string}. A list, vector or string of cleaned traits names based on
 #' the user provided and standard database traits for downloading.
 #'
-#' @examples
 #'
 checktrait<- function(x, std, mindist = 0.3, error = 0.8, grp = NULL, warn= TRUE){
 
@@ -263,7 +266,7 @@ checktrait<- function(x, std, mindist = 0.3, error = 0.8, grp = NULL, warn= TRUE
 
     }else{
       fwd <- NA
-      if(isTRUE(warn)) warning("The trait ", wd, " is wrongly spelt and not in ", grp, " traits and is likely to be -", wrd, "- but check traitguide() for appropiate trait name",
+      if(isTRUE(warn)) warning("The trait ", wd, " is wrongly spelt and not in ", grp, " traits and is likely to be -", wrd, "- but check fw_dbguide() for appropiate trait name",
               call. = FALSE)
     }
 
@@ -271,4 +274,21 @@ checktrait<- function(x, std, mindist = 0.3, error = 0.8, grp = NULL, warn= TRUE
 
   }, simplify = TRUE, USE.NAMES = FALSE)
 }
+#' @noRd
+str_sentence <- function(x){
 
+  if(length(x)<0) stop('zero length string provided.', call. = FALSE)
+
+  if(length(x)==1) {
+
+    firstCap <- paste0(toupper(strtrim(x, 1)), substring(x, 2))
+
+  }else{
+    strout <- unlist(strsplit(x, " "))[1]
+
+    strother <- paste0(unlist(strsplit(strout, " "))[-1], collapse = ' ')
+
+    firstCap <- paste0(paste0(toupper(strtrim(strout, 1)), substring(strout, 2)),' ',strother)
+  }
+  return(firstCap)
+}

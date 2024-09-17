@@ -1,20 +1,14 @@
-#' @title Arranging and user friendly selection of traits at different taxanomic levels.
+#' @title Arranging and user friendly selection of traits at different taxonomic levels.
 #'
-#' @inheritParams collatedata
-#' @inheritParams extract_traits
+#' @inheritParams fw_extract
 #' @param spcol \code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
 #'        The column should have complete species name and not genus and species provided separately.
-#' @param taxacol \code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
-#'      the \code{taxacol} is required to iterate over the taxonomic groups separately.
+#' @param groupcol \code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
+#'      the \code{groupcol} is required to iterate over the taxonomic groups separately.
 #' @param traits \code{string or vector}. If \code{all} is indicated, then all the traits will be extracted. Otherwise,
-#'      individual traits can be indicated in a vector format. Check the allowed traits in \code{\link{fw_ecoparamdb}} function and identify
+#'      individual traits can be indicated in a vector format. Check the allowed traits in \code{\link{fw_dbguide}} function and identify
 #'      all the traits allowed for each group and their explanation.
 #' @param level \code{string}. The taxonomic orders allowed for each species including \code{species, genus, order or family}.
-#' @param taxaorder \code{vector}. If \code{taxa} is \code{mi}, the \code{taxaorder} must be indicated for data to be downloaded.
-#'      The different macroinvertebrates orders allowed can be obtained using \code{fw_orders()} function.
-#' @param token \code{string}. This is a required parameter to allow user authentication with the platform. To get the token, use
-#'      \code{before_u_start()} function to get the required steps. Remember that the token is saved in memory such that
-#'      the data downloaded is not re-downloaded in the next session.
 #' @param wide \code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
 #'      taxonomic groups.
 #' @param selectvalue \code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
@@ -39,10 +33,12 @@
 #' Anthony Basooma \email{anthony.basooma@boku.ac.at}
 #' }
 #'
-#' @example
+#' @examples
+#'
 #' \dontrun{
 #'
-#' #encypted token for my api key
+#' #encrypted token for my api key
+#'
 #' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 #'
 #' #the FWTRAITS_KEY is the unlock key saved in my local environment
@@ -55,30 +51,37 @@
 #'
 #' #run this usethis::edit_r_environ()
 #'
-#' apikeydecrypted <- loadapikey(test = TRUE, encrytedkey = enc_api,
+#' apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
 #'                               fwtraitskey =  'FWTRAITS_KEY')
 #'
 #' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
 #'
-#' fishdata <- fw_ecoparameters(data = 'Abramis brmaam', taxa = 'fi',
-#'                              ecotraits = 'catchment region',
+#' fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
+#'                              ecoparams = 'catchment region',
 #'                              token = tokendata,
 #'                              errorness = 27,
 #'                              pct = 70)#the species spelling is checked
 #' }
 #'
-fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  ecotraits = NULL,
-                       traits = 'all', level= NULL,
-                       taxaorder = NULL, multiple = FALSE,
-                       parallel = FALSE, cores = 2, quietly = FALSE,
-                       wide = FALSE,
-                       selectvalue = NULL,
-                       descvalue = NULL,
-                       na.rm = TRUE,
-                       merge= FALSE,
-                       warn = FALSE,
-                       errorness = 20,
-                       pct = 80){
+#' @seealso \code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_extract}}
+
+fw_fetchdata <- function(data, organismgroup, token,
+                         spcol = NULL,
+                         groupcol = NULL,
+                         ecoparams = NULL,
+                         traits = 'all', level= NULL,
+                         taxagroup = NULL,
+                         parallel = FALSE, cores = 2,
+                         wide = FALSE,
+                         subspecies = FALSE,
+                         selectvalue = NULL,
+                         descvalue = NULL,
+                         na.rm = TRUE,
+                         merge= FALSE,
+                         warn = FALSE,
+                         sanitize = FALSE,
+                         errorness = 27,
+                         pct = 80){
 
   if(is(data, "data.frame")){
 
@@ -86,9 +89,9 @@ fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  e
       stop("If ", deparse(substitute(data)), " is a dataframe, column with species names must be provided.")
 
     }else{
-      #one taxa group in the data
+      #one organism group in the data
 
-      if(is.null(taxacol) && length(taxa)==1){
+      if(is.null(groupcol) && length(organismgroup)==1){
 
         if(spcol%in%colnames(data)==FALSE) stop(deparse(substitute(spcol)), " not in the dataset ", deparse(substitute(data))," provided.")
 
@@ -97,9 +100,9 @@ fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  e
 
       }else{
         #more than one taxa group in the dataset
-        if(taxacol%in%colnames(data)==FALSE) stop(deparse(substitute(taxacol)), " not in the dataset ", deparse(substitute(data))," provided.")
+        if(groupcol%in%colnames(data)==FALSE) stop(deparse(substitute(groupcol)), " not in the dataset ", deparse(substitute(data))," provided.")
 
-        taxagroup_split <- split(data, f=data[, taxacol])
+        taxagroup_split <- split(data, f=data[, groupcol])
 
         specieslist <- sapply(taxagroup_split, function(x) x[,spcol], simplify = FALSE)
       }
@@ -119,12 +122,14 @@ fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  e
 
   #get species as they exist in the taxon names of the Freshwaterecology.info
   #generates the traits[[1]] and species details[[2]]
-  extracteddata <- extract_traits(data = specieslist, ecotraits = ecotraits, taxa = taxa,
-                                  taxaorder = taxaorder, token  = token,
-                                  multiple = multiple, parallel = parallel,
-                                  cores = cores, quietly = quietly, warn = warn,
-                                  errorness = errorness,
-                                  pct = pct)
+  extracteddata <- fw_extract(data = specieslist, ecoparams = ecoparams,
+                              organismgroup = organismgroup,
+                              taxagroup = taxagroup, token  = token,
+                              parallel = parallel,
+                              subspecies = subspecies,
+                              cores = cores, warn = warn,
+                              errorness = errorness,
+                              pct = pct)
 
   if(nrow(extracteddata[[1]])<1) stop("No data found for the species entered. Confirm right group of taxa has been selected.")
 
@@ -161,8 +166,8 @@ fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  e
 
       traitvalue <-  strsplit(x$value,split="_ ",fixed=TRUE)
 
-      traits <- mapply(FUN = function(taxagroup, sp, par, desc, value) data.frame(taxagroup = taxagroup, species = species, trait = parameter,
-                                                                                  description = desc, value = value),
+      traits <- mapply(FUN = function(taxagroup, sp, par, desc, value) data.frame(organismgroup = taxagroup, species = species, parameter = parameter,
+                                                                                  abbreviation = desc, value = value),
                        taxagroup = taxagroup, sp = species, par = parameter,  desc = descvalue , value = traitvalue, SIMPLIFY = FALSE)
 
       spfinal <- Reduce(rbind, traits)
@@ -201,11 +206,11 @@ fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  e
 
   if(isTRUE(wide)){
 
-    traitdf['traitdesc'] <- paste(traitdf$trait,'_',traitdf$description )
+    traitdf['traitdesc'] <- paste(traitdf$parameter,'_',traitdf$abbreviation )
 
-    dfsel <- traitdf[, c("taxagroup", 'species', 'value', "traitdesc")]
+    dfsel <- traitdf[, c("organismgroup", 'species', 'value', "traitdesc")]
 
-    spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = c('taxagroup', 'species') ,
+    spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = c('organismgroup', 'species') ,
                        direction = 'wide', sep = "_")
 
     #remove the value_created by reshape function
@@ -215,7 +220,8 @@ fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  e
   }else{
     spfinal <- traitdf
   }
-  if(isTRUE(merge)){
+  if(isTRUE(merge) && is(data, 'data.frame')){
+
     #standardize the column which one in the data
     spd <- extracteddata[[2]]
 
@@ -227,12 +233,43 @@ fw_ecoparameters <- function(data, taxa, token, spcol = NULL, taxacol = NULL,  e
 
     colnames(dfmerge)[which(names(dfmerge) == "clean")] <- spcol
 
-   dfinal <- dfmerge |> merge(spfinal, by.x = spcol)
-
+    dfinal <- dfmerge |> merge(spfinal, by.x = spcol)
   }else{
 
     dfinal <- spfinal
   }
-  return(dfinal)
+  if(isTRUE(sanitize)){
+
+    dfinal$tf <- dfinal$parameter== dfinal$abbreviation
+
+    dfinal$value2 <- ifelse(dfinal$tf==TRUE,  dfinal$value,  dfinal$abbreviation)
+
+    dfinal$link = paste0(dfinal$parameter, dfinal$value2)
+
+    dfinal <- dfinal[, !names(dfinal) %in% c("tf", "value2")]
+
+    #get the standard database names
+    dbstandard <- fw_dbguide()
+
+    dbstandard$link <- paste0(dbstandard$ecoparameters_cleaned, dbstandard$parameterabbrevation)
+
+    dbstandard <- dbstandard[, c("link", "parametervalue")]
+
+    sanitized <- merge(dfinal, dbstandard, by='link')
+
+    sanitized <- sanitized[, !names(sanitized) %in% c('link')]
+
+    attr(sanitized, 'fetch') <- "dataout"
+    attr(sanitized, 'format') <- wide
+    attr(sanitized, 'sanitize') <- sanitize
+  }else{
+    #not sanitized
+    sanitized <- dfinal
+    attr(sanitized, 'fetch') <- "dataout"
+    attr(sanitized, 'format') <- wide
+    attr(sanitized, 'sanitize') <- sanitize
+  }
+  return(sanitized)
 }
+
 

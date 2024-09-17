@@ -18,3 +18,18 @@ fw_decache(type = "token", action = "reset")
 \description{
 Decache tokens and data files.
 }
+\examples{
+
+\dontrun{
+
+#to remove the token but not delete the folder
+
+fw_decache(type= 'token', action= 'reset' )
+
+#delete the folder
+
+fw_decache(type= 'token', action= 'destroy' )
+
+}
+
+}

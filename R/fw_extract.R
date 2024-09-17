@@ -9,11 +9,9 @@ trans_macrodata <- function(m){
   invisible(d)
 }
 
-
-
 #' @title Extracting the traits from the downloaded data.
 #'
-#' @inheritParams collatedata
+#' @inheritParams fw_searchdata
 #' @inheritParams clean_names
 #' @param data \code{vector}. The list or vector with species names for which ecological references needs to be extracted from the
 #'         database.
@@ -21,16 +19,43 @@ trans_macrodata <- function(m){
 #' @importFrom methods is
 #'
 #' @return \code{dataframe} A dataframe species traits for all orders.
+#'
 #' @export
 #'
 #' @examples
 #'
-extract_traits <- function(data, taxa, ecotraits = NULL, taxaorder = NULL,
-                            token  = NULL, multiple = FALSE, parallel = FALSE,
-                            cores = NULL, quietly = FALSE,
-                            pct = 80,
-                            errorness = 20,
-                           warn = FALSE) {
+#' \dontrun{
+#' #' #' #encrypted token for my api key
+#'
+#' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+#'
+#' apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
+#'
+#' #download fish catchment region data
+#' #setting the FWTRAITS_KEY
+#'
+#' #run this usethis::edit_r_environ()
+#'
+#' apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+#'                               fwtraitskey =  'FWTRAITS_KEY')
+#'
+#' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
+#'
+#' #extract is for specific species or multiple number of species
+#'
+#' dfextract <- fw_extract(data = "Abramis brama", organismgroup = 'fi',
+#' ecoparams = 'migration', token = tokendata)
+#'
+#' }
+#'
+
+fw_extract <- function(data, organismgroup, ecoparams = NULL, taxagroup = NULL,
+                        token  = NULL,  parallel = FALSE,
+                        cores = NULL,
+                        pct = 80,
+                       subspecies = FALSE,
+                        errorness = 20,
+                        warn = FALSE) {
 
 
   #if multiple groups are considered
@@ -45,53 +70,66 @@ extract_traits <- function(data, taxa, ecotraits = NULL, taxaorder = NULL,
   groupData <- list()
   spdetails <- list()
 
-  for (ii in seq_along(taxa)) {
+  groupoutputlists <- fw_searchdata(organismgroup = organismgroup, ecoparams = ecoparams,
+                           taxagroup = taxagroup,
+                           token  = token,
+                           parallel = parallel, cores = cores,
+                           warn = warn)
 
-   #get list of ecotraits based on the names of the taxa groups
+  for (ii in seq_along(groupoutputlists)) {
 
-    taxanames <- taxa[ii]
 
-   if(is(ecotraits, 'list')) ecolisttaxa <- ecotraits[[taxanames]] else ecolisttaxa <- ecotraits
+    taxanames <- names(groupoutputlists)[ii]
 
-    taxagroup_data <- collatedata(taxa = taxanames, ecotraits = ecolisttaxa,  taxaorder = taxaorder,
-                              token  = token, multiple = multiple,
-                              parallel = parallel, cores = cores,
-                              quietly = quietly, warn = warn)
+    groupdata <- groupoutputlists[[ii]]
 
-    # get only the taxa list
+    # get only the organism group list
+
     if(is(data, 'list')) speciesin <- data[[taxanames]] else speciesin <- data
 
     # cleaned species names
-    spdetails[[ii]] <- clean_names(sp = speciesin, grouplists = taxagroup_data,
-                            pct = pct, errorness = errorness, group = tcheck(taxa[ii]),
-                            full = TRUE,
-                            warn = warn)
+    spdetails[[ii]] <- clean_names(sp = speciesin, grouplists = groupdata,
+                                   pct = pct, errorness = errorness,
+                                   group = tcheck(taxanames),
+                                   full = TRUE,
+                                   subspecies = subspecies,
+                                   warn = warn)
 
-     specol_cleaned <- spdetails[[ii]]$clean[!is.na(spdetails[[ii]]$clean)]
+    specol_cleaned <- spdetails[[ii]]$ clean[!is.na(spdetails[[ii]]$clean)]
 
     #check if there are species to check
-    if(length(specol_cleaned)>=1) specol_cleaned else stop("No species name to extract the traits.")
+    if(length(specol_cleaned)>=1){
+      specol_cleaned
+    } else{
 
-    #reshape the macroinvetebrates data if more than 1 taxaorder is selected.
-    #form order dataframe rather than lists
-
-    taxafile <- tcheck(tx = taxa[ii])
-
-    if(taxafile=='macroinvertebrates' && is(taxagroup_data, 'list')){
-
-      taxagroup_data_final <- trans_macrodata(taxagroup_data)
-
-    }else{
-      taxagroup_data_final <- taxagroup_data
+       warning("No species name to extract the traits for the ", tcheck(taxanames), " ans will be skipped. ", call. = FALSE)
+      next
     }
 
-    for (iii in seq_along(taxagroup_data_final)) {
+    #reshape the macroinvetebrates data if more than 1 taxa group is selected.
+
+    #form order dataframe rather than lists
+
+    taxafile <- tcheck(tx = taxanames)
+
+    if(taxafile=='macroinvertebrates' && is(groupdata, 'list')){
+
+      groupdata_final <- trans_macrodata(groupdata)
+
+
+    }else{
+      groupdata_final <- groupdata
+
+    }
+
+    for (iii in seq_along(groupdata_final)) {
 
       #data filtered for each trait with each orders available forms
 
-      traitorderdf <- taxagroup_data_final[[iii]]
+      traitorderdf <- groupdata_final[[iii]]
 
-      if(nrow(traitorderdf)>=1) { #for phytobento that returns no data
+
+      if(nrow(traitorderdf)>=1) { #for phytobentho that returns no data
 
         #creates a complete species name on the data frame
 
@@ -107,7 +145,7 @@ extract_traits <- function(data, taxa, ecotraits = NULL, taxaorder = NULL,
 
         #remove any duplicate species
 
-        pp2 <- as.data.frame(pp1[!duplicated(pp1[c('speciesname')]),])#add more paramaters
+        pp2 <- pp1# as.data.frame(pp1[!duplicated(pp1[c('speciesname')]),])#add more parameters
 
       }else{
         next #skip to next
@@ -138,7 +176,6 @@ extract_traits <- function(data, taxa, ecotraits = NULL, taxaorder = NULL,
             if (length(abbr) > 1) cabbr[v]  <- clean_traits(x = cname) else cabbr[v]  <- clean_traits(x = abbr) # for diatoms with no values in all parameters
 
           } else if (length(abbr) == 1) {
-
 
             # if length = 1 then the val is the parameter to maintain since its the output
             #if the value has an empty string
@@ -174,7 +211,7 @@ extract_traits <- function(data, taxa, ecotraits = NULL, taxaorder = NULL,
           dfout <- data.frame(taxagroup = taxafile, species = spp, parameter = cabbr,
                               description = cvaluedescription, value = cvalue)
 
-          }
+        }
         dspecies[[iv]] <- dfout
 
         df1 <- do.call(rbind, dspecies)

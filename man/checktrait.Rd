@@ -18,7 +18,7 @@ and standard trait names.}
 \item{error}{\code{numeric}. Also percentage to improve the distance based checked implemented or set in
 mindist parameter}
 
-\item{grp}{\code{grp}. The taxa names checked for. see \code{\link{collatedata}}.}
+\item{grp}{\code{grp}. The taxa names checked for. see \code{\link{fw_searchdata}}.}
 
 \item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
 }

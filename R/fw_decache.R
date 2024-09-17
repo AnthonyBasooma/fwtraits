@@ -8,17 +8,33 @@
 #'
 #' @export
 #'
+#' @importFrom utils askYesNo
+#'
 #' @examples
+#'
+#' \dontrun{
+#'
+#' #to remove the token but not delete the folder
+#'
+#' fw_decache(type= 'token', action= 'reset' )
+#'
+#' #delete the folder
+#'
+#' fw_decache(type= 'token', action= 'destroy' )
+#'
+#' }
 #'
 fw_decache <- function(type = 'token', action= 'reset'){
 
   match.arg(type, choices = c('token', 'taxa'))
+
   match.arg(action, choices = c('destroy', 'reset'))
 
   if(type=='token'){
-    cacheddata <- cachem::cache_disk(dir = 'authkey')
+
+    cacheddata <- memoise::cache_filesystem(path = 'authtoken')
   }else{
-    cacheddata <- cachem::cache_disk(dir = 'taxadata')
+    cacheddata <- memoise::cache_filesystem(path = 'taxadata')
   }
 
   if(action=='reset'){
@@ -48,7 +64,7 @@ fw_decache <- function(type = 'token', action= 'reset'){
 
     cacheddata$destroy()
 
-    warning("The ", type," folder has been unreversibly removed from disk and cached data has to be re-downloaded.", call. = FALSE)
+    warning("The ", type," folder has been unreversibly removed from disk and you will restart the current R session.", call. = FALSE)
 
     invisible(NULL)
 

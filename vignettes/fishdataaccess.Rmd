@@ -1,0 +1,104 @@
+---
+title: "Acessing fish ecological parameters, traits or indicators"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Acessing fish ecological parameters, traits or indicators}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(httr2)
+library(fwtraits)
+```
+
+**Step 1: Get the before you start page for instructions on how to access the database**.
+
+```{r beforeyoure start procedure}
+#fw_be4ustart()
+```
+
+**Step 2: Get authentication token through the API key**.
+
+To publicly use the API key the following steps based on https://httr2.r-lib.org/articles/wrapping-apis.html are used
+
+a) Make a secret key using **`secret_make_key()`** and save it R-Environment using 
+**`usethis::edit_r_environ()`**. Please install usethis package in case you don't have it installed. In the R environment save it with an identifier such as **FWTRAITS = 'keymadein_secret_make_key function'**.
+
+b) Encrypt the API key obtained from the database administrators or during registration using 
+**`secret_encrypt()`**.
+
+c) From b) a scrambled key is generated which will be used in **`secret_decrypt()`**
+
+
+```{r generate token}
+
+#
+#encrypted token for my api key
+
+#sessionkey <- secret_make_key()
+
+#edit this page with usethis::edit_r_environ()
+
+#enc_api <- secret_encrypt(x = 'apikey', key = sessionkey)
+
+enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+
+#the FWTRAITS_KEY is the unlock key saved in my local environment
+#check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
+apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
+
+
+#download fish catchment region data
+
+apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+                              fwtraitskey =  'FWTRAITS_KEY')
+
+tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
+
+```
+
+**Access the fish traits data**
+
+```{r access species ecological traits}
+
+#One species 
+
+migration <- fw_fetchdata(data = "Abramis brama", organismgroup = 'fi',
+                          ecoparams = 'migration', 
+                          token = tokendata)
+
+data("speciesdata") #data archived in fwtraits
+
+fishtraits <- fw_fetchdata(data = speciesdata, organismgroup = 'fi', token = tokendata,
+                           spcol = 'scientificName', 
+                           ecoparams = c('migration', 'catchment region'),
+                           parallel = TRUE, cores = 3, sanitize = TRUE)
+
+```
+
+**Visualize**
+
+```{r viszualize outputs}
+
+fw_visualize(foutput = fishtraits, params = 'migration')
+
+fw_visualize(foutput = fishtraits)
+
+```
+
+
+**References**
+* Schmidt-Kloiber, A., & Hering, D. (2015). www.freshwaterecology.info - An online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007
+
+
+
+
+

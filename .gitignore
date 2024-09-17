@@ -1,3 +1,5 @@
 .Rproj.user
 .httr-oauth
 inst/doc
+taxadata
+authtoken

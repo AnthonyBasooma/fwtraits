@@ -11,7 +11,13 @@
 #'
 #' @examples
 #'
-fw_ecoparamdb <- function(taxagroup = NULL, traits = NULL){
+#' \dontrun{
+#'
+#' dbase <- fw_dbguide()
+#'
+#' }
+#'
+fw_dbguide <- function(taxagroup = NULL, traits = NULL){
 
   paramlist <- fw_paramlist()
 
@@ -45,9 +51,9 @@ fw_ecoparamdb <- function(taxagroup = NULL, traits = NULL){
 
       expl <- sapply(y, function(x) if(is.null(x[[3]])==TRUE) "Not explained" else x[[3]])
 
-      dfguide <- data.frame(taxagroup = taxanames, traitraw = traitunclean,
-                            traitname = traitclean, description = name, abbrevation = abbr,
-                            explanation = expl)
+      dfguide <- data.frame(organismgroup = taxanames, ecoparameters_raw = traitunclean,
+                            ecoparameters_cleaned = traitclean, parametervalue = name, parameterabbrevation = abbr,
+                            parameterexplanation = expl)
     }
 
     groupdata <- mapply(extract, y = xclean, traitname = xnamesclean, SIMPLIFY = FALSE)
