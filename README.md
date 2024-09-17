@@ -10,16 +10,95 @@
 
 <!-- badges: end -->
 
-The goal of fwtraits is to …
+**Aim of the package**
 
-## Installation
+**fwtraits** provides a seamless and robust access to the species
+ecological parameters, traits or indicators from the
+**Freshwaterecology.info database** (Schmidt-Kloiber, A., & Hering, D
+2015).
 
-You can install the development version of fwtraits from
-[GitHub](https://github.com/) with:
+**Package installation**
+
+The package is currently accessible of GitHub
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("AnthonyBasooma/fwtraits")
+
+if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+
+remotes::install_github("AnthonyBasooma/fwtraits")
 ```
 
-**Usage**
+**Package usage**
+
+------------------------------------------------------------------------
+
+The database is arranged into organism groups including
+macroinvertebrates, fishes, phytoplankton, macrophytes, and phytobenthos
+most especially the diatoms (Figure 1). The package is a wrapper around
+the [fweapi2](https://www.freshwaterecology.info/fweapi2docu.php)
+developed and maintained by the University of Natural Resources and Life
+Sciences (BOKU), Vienna, Austria.
+
+Before using the package, the user is strongly advised to run the
+**`fw_b4ustart()`** to get the steps required to access and use the
+package in accessing the species eological parameters, traits or
+indicators.
+
+<figure>
+<img src="man/figures/fwatraitsworkflow.png"
+alt="Figure 1. Accessing the species traits or ecological parameters from the Freshwaterecology.info database (FW DB)." />
+<figcaption aria-hidden="true"><strong>Figure 1. Accessing the species
+traits or ecological parameters from the Freshwaterecology.info database
+(FW DB).</strong></figcaption>
+</figure>
+
+**Main functions**
+
+- `fw_token()` for generating the user authentication token to allow
+  manage data access and maintenance. The `fw_token()` requires the API
+  key which is obtained during registration or submitting a request to
+  the database managers for already registered users.
+- `fw_searchdata()` To allow get data from the database. However, this
+  is mostly an internal function since the data is not already parsed to
+  enable usability.
+- `fw_extract()` extracts the pulled data but still the data is cannot
+  be used by the user.
+- `fw_fetchdata()` is the main function that provides all the parameters
+  for data access. The function is wrapped around `fw_searchdata()` and
+  `fw_extract()` function to allow the user to easily get and manipulate
+  the data during package usage.
+
+**Other utility functions**
+
+- `fw_decache()`to remove cached downloaded from the database from the
+  user computer.
+- `fw_check_names()` to check spellings species taxonomic names to allow
+  the user obtain the species traits.
+- `fw_checktraits()`harmonize species traits to allow effective between
+  user inputs and database information.
+- `fw_visualize()`provides graphical display of the information obtained
+  from the database.
+
+**Quick notes**
+
+- The package allows parallel computing, where different can be obtained
+  or organism groups can be accessed simultaneously.
+- The data is cached to allow user save information on ther user
+  computer.
+
+**Funding**
+
+The package was created with support from the AquaINFRA project which is
+aimed at developing data and services to support marine and freshwater
+scientists and stakeholders. Also, the DANUBE4All project and HR21
+Doctoral School under BOKU University provided logistical support during
+the development of this package.
+
+**References**
+
+Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info -
+An online tool that unifies, standardises and codifies more than 20,000
+European freshwater organisms and their ecological preferences.
+Ecological Indicators, 53, 271-282.
+<https://doi.org/10.1016/j.ecolind.2015.02.007>
