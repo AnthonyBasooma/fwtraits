@@ -1,10 +1,10 @@
 
 #' @title Standard table with taxonomic groups and their traits explanations.
 #'
-#' @param taxagroup \code{string or vector}. Taxa group names to aid the users in filtering the standard
+#' @param organismgroup \code{string or vector}. Taxa group names to aid the users in filtering the standard
 #'      table for species traits and their explanations.
-#' @param traits \code{string or vector}. Traits that can be filtered from the databases, given the taxonomic group
-#'      indicated in \code{taxagroup} parameter.
+#' @param traits \code{string or vector}. Traits that can be filtered from the databases, given the organism group
+#'      indicated in \code{organismgroup} parameter.
 #'
 #' @return \code{dataframe} A dataset with taxonomic groups, traits and their explanations.
 #' @export
@@ -17,7 +17,7 @@
 #'
 #' }
 #'
-fw_dbguide <- function(taxagroup = NULL, traits = NULL){
+fw_dbguide <- function(organismgroup = NULL, traits = NULL){
 
   paramlist <- fw_paramlist()
 
@@ -64,8 +64,20 @@ fw_dbguide <- function(taxagroup = NULL, traits = NULL){
 
   dfinal <- Reduce(rbind, groupfiles)
 
-  if(!is.null(traits)){
-    taxafinal <- dfinal[dfinal$taxagroup %in% taxagroup | dfinal$traitname %in% traits, ]
+  if(!is.null(organismgroup)){
+
+    standardabbr <- c('pp', 'fi', 'mi','di', 'pb', 'mp')
+
+    if(any(organismgroup %in% standardabbr)==TRUE){
+
+      xgroups <- unlist(sapply(organismgroup, function(x) tcheck(x),  USE.NAMES = FALSE))
+
+    }else{
+      stop('Use the stanadrd organism group abbreviations including ', standardabbr)
+    }
+
+    taxafinal <- dfinal[dfinal$organismgroup %in% xgroups, ]
+
   }else{
     taxafinal <- dfinal
   }

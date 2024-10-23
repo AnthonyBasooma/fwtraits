@@ -29,14 +29,13 @@ trans_macrodata <- function(m){
 #'
 #' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 #'
-#' apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
 #'
 #' #download fish catchment region data
 #' #setting the FWTRAITS_KEY
 #'
 #' #run this usethis::edit_r_environ()
 #'
-#' apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+#' apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
 #'                               fwtraitskey =  'FWTRAITS_KEY')
 #'
 #' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
@@ -127,7 +126,6 @@ fw_extract <- function(data, organismgroup, ecoparams = NULL, taxagroup = NULL,
       #data filtered for each trait with each orders available forms
 
       traitorderdf <- groupdata_final[[iii]]
-
 
       if(nrow(traitorderdf)>=1) { #for phytobentho that returns no data
 

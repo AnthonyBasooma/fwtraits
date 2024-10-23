@@ -23,7 +23,8 @@ Imports:
     stats,
     utils,
     rstudioapi,
-    ggplot2
+    ggplot2,
+    cachem
 Suggests: 
     knitr,
     rmarkdown,
