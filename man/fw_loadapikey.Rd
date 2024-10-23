@@ -4,13 +4,13 @@
 \alias{fw_loadapikey}
 \title{To load the API key}
 \usage{
-fw_loadapikey(test = FALSE, encrytedkey = NULL, fwtraitskey = NULL)
+fw_loadapikey(test = FALSE, sacrambled_apikey = NULL, fwtraitskey = NULL)
 }
 \arguments{
 \item{test}{\code{logical}. If TRUE, then function is used with \code{secret_make_key}
 to encrypt the API key while publicly testing shared code.}
 
-\item{encrytedkey}{\code{alphanumeric} An alphanumeric string generated from \code{secret_make_key} fucntion
+\item{sacrambled_apikey}{\code{alphanumeric} An alphanumeric string generated from \code{secret_make_key} fucntion
 while testing the codes.}
 
 \item{fwtraitskey}{\code{string} A string that indicates key in the edited Rsession.}
@@ -37,7 +37,7 @@ apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
 
 #run this usethis::edit_r_environ()
 
-apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
                               fwtraitskey =  'FWTRAITS_KEY')
 
 }

@@ -4,7 +4,15 @@
 \alias{fw_visualize}
 \title{ggplot2 visualization.}
 \usage{
-fw_visualize(foutput, scales = "free", ncol = 2, params = NULL, group = NULL)
+fw_visualize(
+  foutput,
+  scales = "free",
+  ncol = 2,
+  params = NULL,
+  group = NULL,
+  viridis = TRUE,
+  bg = 1
+)
 }
 \arguments{
 \item{foutput}{fetchdata output only accepted.}
@@ -15,7 +23,11 @@ fw_visualize(foutput, scales = "free", ncol = 2, params = NULL, group = NULL)
 
 \item{params}{species ecological parameters selected if there are more than one.}
 
-\item{group}{Particular organism group to filter out to allow visualisation.}
+\item{group}{Particular organism group to filter out to allow visualization.}
+
+\item{viridis}{\code{logical} Either to use scale_fill_viridis or scale_fill_grey}
+
+\item{bg}{\code{numeric} Either 1 for theme_bw, 2 for theme_classic and 0 the default ggplot2 theme.}
 }
 \value{
 ggplot2 display

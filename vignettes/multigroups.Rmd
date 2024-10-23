@@ -50,14 +50,10 @@ c) From b) a scrambled key is generated which will be used in **`secret_decrypt(
 
 enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 
-#the FWTRAITS_KEY is the unlock key saved in my local environment
-#check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
-apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
-
 
 #download fish catchment region data
 
-apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
                               fwtraitskey =  'FWTRAITS_KEY')
 
 tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
@@ -115,7 +111,7 @@ multigroupsdata <- fw_fetchdata(data =  specieslist,
                             organismgroup = c('mi',"pp","di","mp","fi", 'pb'),
                             ecoparams = ecologicaltraits,
                             token = tokendata,
-                            parallel = TRUE, cores = 4,
+                            parallel = TRUE, cores = 2,
                             na.rm = FALSE,
                             sanitize = TRUE)
 
@@ -124,7 +120,7 @@ multigroupsdata <- fw_fetchdata(data =  specieslist,
 
 **Visualize**
 
-```{r viszualize outputs}
+```{r viszualize outputs, fig.width = 6, fig.height= 5, fig.align='center'}
 
 fw_visualize(multigroupsdata, group = 'phytobentho')
 

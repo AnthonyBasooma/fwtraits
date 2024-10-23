@@ -15,8 +15,9 @@ fw_searchdata(
 )
 }
 \arguments{
-\item{organismgroup}{\code{string}. The organismgroup group to download from the platform.
-The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
+\item{organismgroup}{\code{string}. The organism group to download from the platform.
+The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes,
+macroinvertebrates, phytoplankton,
 phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
 \itemize{
 \item{\code{pp}: Pytoplankton.}
@@ -49,9 +50,9 @@ List of download species traits
 }
 \description{
 The function provides a seamless access and download of species ecological parameters, traits,
-or indicators from the Freshwaterecology.info database. The fucntion allows multiple inclusion
+or indicators from the Freshwaterecology.info database. The function allows multiple inclusion
 of organism groups, which include macroinvertebrates, fishes, phytoplankton, phytobenthos,
-macrophytes, and diatoms. Parallelisation can also enabled to allow faster data download from
+macrophytes, and diatoms. Parallelism can also enabled to allow faster data download from
 for the database severs.
 }
 \examples{
@@ -69,7 +70,7 @@ apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
 
 #run this usethis::edit_r_environ()
 
-apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
                               fwtraitskey =  'FWTRAITS_KEY')
 
 tokendata <- fw_token(key= apikeydecrypted, seed = 1234)

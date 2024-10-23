@@ -32,8 +32,9 @@ fw_fetchdata(
 \item{data}{\code{vector}. The list or vector with species names for which ecological references needs to be extracted from the
 database.}
 
-\item{organismgroup}{\code{string}. The organismgroup group to download from the platform.
-The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
+\item{organismgroup}{\code{string}. The organism group to download from the platform.
+The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes,
+macroinvertebrates, phytoplankton,
 phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
 \itemize{
 \item{\code{pp}: Pytoplankton.}
@@ -92,6 +93,9 @@ only the species data but not the whole user input dataset.}
 
 \item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
 
+\item{sanitize}{\code{logical} Either \code{TRUE} to return complete trait names but not abbreviations which is normally returned
+from the database.}
+
 \item{errorness}{\code{numeric} Similar to \code{pct}, \code{errorness} parameter uses the distance differences between the user-provided
 names and all the taxa group species standard names. The lower the percentage error, the higher the similarity in the species
 names provided. Default is 20 and beyond 30, a warning is showed to avoid wrong species replace the user provided name, which leads
@@ -111,21 +115,39 @@ Arranging and user friendly selection of traits at different taxonomic levels.
 
 \dontrun{
 
-#encrypted token for my api key
+library(httr2)
 
-enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+#PUBLIC TESTING OF THE fwtraits package
 
-#the FWTRAITS_KEY is the unlock key saved in my local environment
 #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
 
-apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
+#step 1: Generate a secret key using httr2:make_secret_key() function
 
-#download fish catchment region data
-#setting the FWTRAITS_KEY
+#secretkey <- secret_make_key() #secret key automatically generated
+# will be saved in the r environment
+
+#setting the FWTRAITS_KEY where to save the secretkey
 
 #run this usethis::edit_r_environ()
+#which open the r environment and type in
+#FWTRAITS_KEY = 'enter secretkey string generated in step 1'
+#the FWTRAITS_KEY is the unlock key saved in my local environment
 
-apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+#step2: Use the secret key to scramble the API key
+
+#scrambled_api_key <- secret_encrypt(apikey, secretkey)
+
+#encrypted token for my api key
+#step 3: use the scrambled api key in the public codes:
+#steps 1 and 2 are not included in the codes but rather
+#the output scrambled_key generated in step 2 is used
+
+sacrambled_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+#scrambled_api_key
+
+#download fish catchment region data
+
+apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = sacrambled_api,
                               fwtraitskey =  'FWTRAITS_KEY')
 
 tokendata <- fw_token(key= apikeydecrypted, seed = 1234)

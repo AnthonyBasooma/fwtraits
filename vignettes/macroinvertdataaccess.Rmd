@@ -19,13 +19,13 @@ library(httr2)
 library(fwtraits)
 ```
 
-**Step 1: Get the before you start page for instructions on how to access the database**.
+###Step 1: Get the before you start page for instructions on how to access the database.
 
 ```{r beforeyoure start procedure}
 #fw_be4ustart()
 ```
 
-**Step 2: Get authentication token through the API key**.
+###Step 2: Get authentication token through the API key.
 
 To publically use the API key the following steps based on https://httr2.r-lib.org/articles/wrapping-apis.html are used
 
@@ -53,21 +53,19 @@ enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9S
 
 #the FWTRAITS_KEY is the unlock key saved in my local environment
 #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
-apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
-
 
 #download fish catchment region data
 
-apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
                               fwtraitskey =  'FWTRAITS_KEY')
 
 tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
 
 ```
 
-**Access the fish traits data**
+###Step3: Access the macroinvertebrates traits data
 
-**NOTE**: Before accessing the species ecological preferences, the all data will first be downloaded even if one species is indicated. But after, the data will be loaded from memory for the proceeding queries. 
+* **NOTE**: Before accessing the species ecological preferences, all the indicates traits data will first be downloaded even if one species is indicated. But after, the data will be loaded from computer memory for the proceeding queries. 
 
 ```{r access species ecological traits}
 
@@ -75,15 +73,11 @@ tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
 
 mmdata_traits <- fw_fetchdata(data =  "Margaritifera margaritifera",
                             organismgroup = 'mi',
-                            ecoparams = c('ecoregional distribution sensu',
-                                          'tolerance score',
-                                            'sensitive speces',
-                                          'stream zonation preference',
-                                          'locomotion type'),
+                            ecoparams = c('stream zonation preference','locomotion type'),
                             token = tokendata,
                             parallel = TRUE)
 
-#for more than one species 
+#for more than one species in a list 
 
 specieslist <- c("Margaritifera margaritifera",
                  "Pseudunio auricularius",
@@ -93,25 +87,41 @@ specieslist <- c("Margaritifera margaritifera",
 
 multspp <- fw_fetchdata(data =  specieslist,
                             organismgroup = 'mi',
-                            ecoparams = c('ecoregional distribution sensu',
-                                          'tolerance score',
-                                            'sensitive speces',
-                                          'stream zonation preference',
-                                          'locomotion type'
-                                            ),
+                            ecoparams = c('stream zonation preference',
+                                          'locomotion type'),
+                            token = tokendata,
+                        parallel = TRUE, cores = 2,
+                        sanitize = TRUE)
+
+#species in a data frame 
+
+macrodf <- data.frame(organismgroup = rep('mi', 5),
+                      species = c("Margaritifera margaritifera",
+                 "Pseudunio auricularius",
+                 "Musculium lacustre",
+                 "Musculium transversum",
+                 "Parastenocaris germanica"))
+
+multspp_df <- fw_fetchdata(data =  macrodf,
+                            organismgroup = 'mi',
+                           spcol = 'species',
+                            ecoparams = c('stream zonation preference',
+                                          'locomotion type'),
                             token = tokendata,
                         parallel = TRUE, cores = 4,
                         sanitize = TRUE)
 
 ```
 
-**Visualize**
+###Step4. Visualize extracted outputs
 
-```{r viszualize outputs}
+```{r viszualize outputs, fig.width = 6, fig.height= 5, fig.align='center'}
 
 #fw_visualize(foutput = mmdata_traits)# not necessary since its one species
 
 fw_visualize(foutput = multspp)
+
+fw_visualize(foutput = multspp_df)
 
 ```
 

@@ -2,9 +2,7 @@
 #encrypted token for my api key
 encryted_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 
-apikey <- httr2::secret_decrypt(encrypted = encryted_api, key = 'FWTRAITS_KEY')
-
-apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = encryted_api, fwtraitskey =  'FWTRAITS_KEY')
+apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = encryted_api, fwtraitskey =  'FWTRAITS_KEY')
 
 tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
 
