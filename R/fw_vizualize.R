@@ -4,17 +4,20 @@
 #' @param scales indicate if the scales are free, free_x, and free_y.
 #' @param ncol Number of columns to display the data in facet_wrap.
 #' @param params species ecological parameters selected if there are more than one.
-#' @param group Particular organism group to filter out to allow visualisation.
+#' @param group Particular organism group to filter out to allow visualization.
+#' @param viridis \code{logical} Either to use scale_fill_viridis or scale_fill_grey
+#' @param bg \code{numeric} Either 1 for theme_bw, 2 for theme_classic and 0 the default ggplot2 theme.
 #'
 #' @importFrom stats aggregate
-#' @importFrom ggplot2 ggplot aes facet_wrap geom_bar scale_y_continuous element_blank element_text labs expansion theme ggtitle scale_fill_viridis_d
+#' @importFrom ggplot2 ggplot aes facet_wrap geom_bar scale_y_continuous element_blank element_text labs expansion theme ggtitle scale_fill_viridis_d scale_fill_grey theme_bw theme_classic
 #'
 #' @return ggplot2 display
 #'
 #' @export
 #'
 #'
-fw_visualize <- function(foutput, scales = 'free', ncol = 2, params = NULL, group = NULL){
+fw_visualize <- function(foutput, scales = 'free', ncol = 2, params = NULL,
+                         group = NULL, viridis = TRUE, bg = 1){
 
   #check if the foutput is fetch data
 
@@ -31,7 +34,6 @@ fw_visualize <- function(foutput, scales = 'free', ncol = 2, params = NULL, grou
   }else{
     getdf <- foutput
   }
-
 
   if(length(unique(getdf$organismgroup))>1){
 
@@ -92,8 +94,15 @@ fw_visualize <- function(foutput, scales = 'free', ncol = 2, params = NULL, grou
     }+
     scale_y_continuous(expand = expansion(mult = c(0, 0.1)))+
 
-    scale_fill_viridis_d()+
+    {if(isTRUE(viridis))scale_fill_viridis_d() else scale_fill_grey()}+
 
+    {if(bg==1){
+      theme_bw()
+    }else if(bg==2){
+      theme_classic()
+    }else{
+      NULL
+    }}+
     theme(text = element_text(size = 12),
 
           legend.position = 'none',

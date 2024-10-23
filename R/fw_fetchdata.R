@@ -20,6 +20,8 @@
 #' @param merge \code{logical}. If the data is a dataframe and not list or vector, merge allows to
 #'        affix the species ecological parameters on the user dataframe. Default \code{FALSE} to return
 #'        only the species data but not the whole user input dataset.
+#' @param sanitize \code{logical} Either \code{TRUE} to return complete trait names but not abbreviations which is normally returned
+#'      from the database.
 #'
 #'
 #' @importFrom memoise memoise
@@ -37,21 +39,39 @@
 #'
 #' \dontrun{
 #'
-#' #encrypted token for my api key
+#' library(httr2)
 #'
-#' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+#' #PUBLIC TESTING OF THE fwtraits package
 #'
-#' #the FWTRAITS_KEY is the unlock key saved in my local environment
 #' #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
 #'
-#' apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
+#' #step 1: Generate a secret key using httr2:make_secret_key() function
 #'
-#' #download fish catchment region data
-#' #setting the FWTRAITS_KEY
+#' #secretkey <- secret_make_key() #secret key automatically generated
+#' # will be saved in the r environment
+#'
+#' #setting the FWTRAITS_KEY where to save the secretkey
 #'
 #' #run this usethis::edit_r_environ()
+#' #which open the r environment and type in
+#' #FWTRAITS_KEY = 'enter secretkey string generated in step 1'
+#' #the FWTRAITS_KEY is the unlock key saved in my local environment
 #'
-#' apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+#' #step2: Use the secret key to scramble the API key
+#'
+#' #scrambled_api_key <- secret_encrypt(apikey, secretkey)
+#'
+#' #encrypted token for my api key
+#' #step 3: use the scrambled api key in the public codes:
+#' #steps 1 and 2 are not included in the codes but rather
+#' #the output scrambled_key generated in step 2 is used
+#'
+#' sacrambled_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
+#' #scrambled_api_key
+#'
+#' #download fish catchment region data
+#'
+#' apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = sacrambled_api,
 #'                               fwtraitskey =  'FWTRAITS_KEY')
 #'
 #' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
@@ -238,7 +258,7 @@ fw_fetchdata <- function(data, organismgroup, token,
 
     dfinal <- spfinal
   }
-  if(isTRUE(sanitize)){
+  if(isTRUE(sanitize) || as.logical(sanitize)){
 
     dfinal$tf <- dfinal$parameter== dfinal$abbreviation
 
@@ -248,17 +268,19 @@ fw_fetchdata <- function(data, organismgroup, token,
 
     dfinal <- dfinal[, !names(dfinal) %in% c("tf", "value2")]
 
-    #get the standard database names
+    # #get the standard database names
     dbstandard <- fw_dbguide()
 
     dbstandard$link <- paste0(dbstandard$ecoparameters_cleaned, dbstandard$parameterabbrevation)
 
     dbstandard <- dbstandard[, c("link", "parametervalue")]
 
-    sanitized <- merge(dfinal, dbstandard, by='link')
+    if(isTRUE(na.rm) || as.logical(na.rm)) all_x <- FALSE else all_x <- TRUE
+
+    sanitized <- merge(dfinal, dbstandard, by='link', all.x = all_x)
 
     sanitized <- sanitized[, !names(sanitized) %in% c('link')]
-
+    #
     attr(sanitized, 'fetch') <- "dataout"
     attr(sanitized, 'format') <- wide
     attr(sanitized, 'sanitize') <- sanitize

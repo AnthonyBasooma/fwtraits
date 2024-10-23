@@ -85,7 +85,7 @@ href='https://github.com/AnthonyBasooma/fwtraits/issues pages'> isuues page</a>
 #'
 #' @param test \code{logical}. If TRUE, then function is used with \code{secret_make_key}
 #'        to encrypt the API key while publicly testing shared code.
-#' @param encrytedkey \code{alphanumeric} An alphanumeric string generated from \code{secret_make_key} fucntion
+#' @param sacrambled_apikey \code{alphanumeric} An alphanumeric string generated from \code{secret_make_key} fucntion
 #'        while testing the codes.
 #' @param fwtraitskey \code{string} A string that indicates key in the edited Rsession.
 #'
@@ -108,14 +108,14 @@ href='https://github.com/AnthonyBasooma/fwtraits/issues pages'> isuues page</a>
 #'
 #' #run this usethis::edit_r_environ()
 #'
-#' apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+#' apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
 #'                               fwtraitskey =  'FWTRAITS_KEY')
 #'
 #' }
 #'
 #' @seealso \code{\link{fw_token}}, \code{\link{fw_fetchdata}}
 
-fw_loadapikey <- function(test = FALSE, encrytedkey= NULL, fwtraitskey= NULL) {
+fw_loadapikey <- function(test = FALSE, sacrambled_apikey = NULL, fwtraitskey= NULL) {
 
   if(isFALSE(test)){
 
@@ -152,7 +152,7 @@ fw_loadapikey <- function(test = FALSE, encrytedkey= NULL, fwtraitskey= NULL) {
       }
     }
   }else{
-    apikey <- secret_decrypt(encrytedkey, fwtraitskey)
+    apikey <- secret_decrypt(sacrambled_apikey, fwtraitskey)
   }
 }
 

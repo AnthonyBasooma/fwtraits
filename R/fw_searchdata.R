@@ -27,7 +27,7 @@ tcheck <- function(tx, taxafile = FALSE) {
 
 #' @noRd
 #'
-.getfimppp <- memoise::memoise(function(x, token, harmztaxa, url, allClasses = NULL) {
+getfimppp <- function(x, token, harmztaxa, url, allClasses = NULL) {
 
   traitcodes <- x[["code"]]
 
@@ -88,12 +88,12 @@ tcheck <- function(tx, taxafile = FALSE) {
     if(lastresp$status_code==403) stop("Either run the fw_token() to refresh the token and try again.", call. = FALSE)
   }
 
-}, cache = memoise::cache_filesystem(path = 'taxadata', compress = TRUE))
+}
 
 
 #'
 #' @noRd
-.getbenthos <- memoise::memoise(function(x, y, token, harmztaxa, url) {
+getbenthos <- function(x, y, token, harmztaxa, url) {
 
   codes <- y[[x]]
 
@@ -131,11 +131,11 @@ tcheck <- function(tx, taxafile = FALSE) {
 
     if(lastresp$status_code==403) stop("Run the fw_token() function to refresh the token and try again.", call. = FALSE)
   }
-}, cache = memoise::cache_filesystem(path = 'taxadata', compress = TRUE))
+}
 
 #'
 #' @noRd
-.getinverts <- memoise::memoise(function(x, y, token, harmztaxa, url) {
+getinverts <- function(x, y, token, harmztaxa, url) {
   set.seed(1124)
 
   ordata <- y[[x]]
@@ -148,7 +148,7 @@ tcheck <- function(tx, taxafile = FALSE) {
 
       req_auth_bearer_token(token = token)
 
-    #this combination leads to error if not provided up to family level
+    #this combination leads to error if not provided up to family level for Trichoptera
 
     if(y == 133 && x =="Trichoptera"){
 
@@ -221,21 +221,22 @@ tcheck <- function(tx, taxafile = FALSE) {
     }
 
   }, USE.NAMES = TRUE, simplify = FALSE)
-}, cache = memoise::cache_filesystem(path = 'taxadata', compress = TRUE))
+}
 
 
 #' @title To download data from the Freshwaterecology.info database.
 #'
 #' @description
 #' The function provides a seamless access and download of species ecological parameters, traits,
-#' or indicators from the Freshwaterecology.info database. The fucntion allows multiple inclusion
+#' or indicators from the Freshwaterecology.info database. The function allows multiple inclusion
 #' of organism groups, which include macroinvertebrates, fishes, phytoplankton, phytobenthos,
-#' macrophytes, and diatoms. Parallelisation can also enabled to allow faster data download from
+#' macrophytes, and diatoms. Parallelism can also enabled to allow faster data download from
 #' for the database severs.
 #'
 #'
-#' @param organismgroup \code{string}. The organismgroup group to download from the platform.
-#'      The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes, macroinvertebrates, phytoplankton,
+#' @param organismgroup \code{string}. The organism group to download from the platform.
+#'      The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes,
+#'      macroinvertebrates, phytoplankton,
 #'      phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
 #' \itemize{
 #'         \item{\code{pp}: Pytoplankton.}
@@ -261,6 +262,7 @@ tcheck <- function(tx, taxafile = FALSE) {
 #' @importFrom jsonlite toJSON
 #' @importFrom memoise memoise cache_filesystem
 #' @importFrom parallel detectCores clusterEvalQ makeCluster parSapply stopCluster
+#' @importFrom cachem cache_disk
 #'
 #' @return List of download species traits
 #'
@@ -281,7 +283,7 @@ tcheck <- function(tx, taxafile = FALSE) {
 #'
 #' #run this usethis::edit_r_environ()
 #'
-#' apikeydecrypted <- fw_loadapikey(test = TRUE, encrytedkey = enc_api,
+#' apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
 #'                               fwtraitskey =  'FWTRAITS_KEY')
 #'
 #' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
@@ -326,10 +328,6 @@ fw_searchdata <- function(organismgroup, taxagroup = NULL,
                            warn = warn)
 
     gettaxa_final <- gettaxa[which(stdf%in%ctraits ==TRUE)]
-
-    #carry on a group list of taxa group for pp to handle all classes aspect
-
-    #if(orgx=='mp') allclasses <- gettaxa
 
   }else{
 
@@ -438,7 +436,7 @@ fw_searchdata <- function(organismgroup, taxagroup = NULL,
       }
       if(isTRUE(parallel)){
 
-        dfout <- parSapply(clusters, names(taxasel), .getinverts,
+        dfout <- parSapply(clusters, names(taxasel), getinverts,
                            y = taxasel, token = token,
                            harmztaxa = harmztaxa, url = qurl)
 
@@ -446,7 +444,7 @@ fw_searchdata <- function(organismgroup, taxagroup = NULL,
 
         return(dfout)
       }else{
-        xsp <- sapply(names(taxasel), .getinverts, y = taxasel, token = token,
+        dfout <- sapply(names(taxasel), getinverts, y = taxasel, token = token,
                       harmztaxa = harmztaxa, url = qurl)#end of macro inverts
       }
     } else {#start phyto benthos
@@ -454,7 +452,7 @@ fw_searchdata <- function(organismgroup, taxagroup = NULL,
 
       if(isTRUE(parallel)){
 
-        dfout <- parSapply(clusters, names(taxasel), .getbenthos,
+        dfout <- parSapply(clusters, names(taxasel), getbenthos,
                            y = taxasel, token = token,
                            harmztaxa = harmztaxa, url = qurl,
                            simplify = FALSE, USE.NAMES = TRUE)
@@ -463,7 +461,7 @@ fw_searchdata <- function(organismgroup, taxagroup = NULL,
         return(dfout)
 
       }else{
-        dfout <- sapply(names(taxasel),.getbenthos, y = taxasel, token = token,
+        dfout <- sapply(names(taxasel),getbenthos, y = taxasel, token = token,
                         harmztaxa = harmztaxa, url = qurl,
                         simplify = FALSE, USE.NAMES = TRUE)
       }
@@ -474,7 +472,7 @@ fw_searchdata <- function(organismgroup, taxagroup = NULL,
 
     if(isTRUE(parallel)){
 
-      dfout <- parSapply(clusters, gettaxa_final, .getfimppp, token = token,
+      dfout <- parSapply(clusters, gettaxa_final, getfimppp, token = token,
                          harmztaxa = harmztaxa,
                          url = qurl, allClasses = fw_classes(paramlist = gettaxa),
                          simplify = FALSE, USE.NAMES = TRUE)
@@ -485,7 +483,7 @@ fw_searchdata <- function(organismgroup, taxagroup = NULL,
 
       #get taxa is carried over to handle all classes anomaly in macrophtes data
 
-      dfout <- sapply(gettaxa_final, .getfimppp, token = token, harmztaxa = harmztaxa,
+      dfout <- sapply(gettaxa_final, getfimppp, token = token, harmztaxa = harmztaxa,
                       url = qurl, allClasses = fw_classes(paramlist = gettaxa),
                       simplify = FALSE, USE.NAMES = TRUE)
     }

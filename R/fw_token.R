@@ -42,14 +42,12 @@
 #' #the FWTRAITS_KEY is the unlock key saved in my local environment
 #' #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
 #'
-#' apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
-#'
 #' #download fish catchment region data
 #' #setting the FWTRAITS_KEY
 #'
 #' #run this usethis::edit_r_environ()
 #'
-#' apikeydecrypted <- loadapikey(test = TRUE, encrytedkey = enc_api,
+#' apikeydecrypted <- loadapikey(test = TRUE, sacrambled_apikey = enc_api,
 #'                               fwtraitskey =  'FWTRAITS_KEY')
 #'
 #' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
@@ -58,7 +56,7 @@
 #'
 #'
 
-fw_token <- memoise::memoise(function(key = fw_loadapikey(), quietly = TRUE, seed= NULL) {
+fw_token <- function(key = fw_loadapikey(), quietly = TRUE, seed= NULL) {
 
   if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
 
@@ -89,4 +87,25 @@ fw_token <- memoise::memoise(function(key = fw_loadapikey(), quietly = TRUE, see
     stop("Unable to access the database.")
   }
   return(tokendata)
-}, cache = memoise::cache_filesystem(path = 'authtoken', compress = TRUE))
+}
+
+
+# fw_token <- function(key = fw_loadapikey(), quietly = TRUE, seed = NULL, verbose = FALSE){
+#
+#   checkcache <- memoise::has_cache(token)(key, quietly, seed)
+#
+#   if(isFALSE(checkcache)){
+#
+#     tokendata <- token(key, quietly, seed)
+#
+#     if(isTRUE(verbose))message("Token generated with ", seed, " and is memoised for the data downloaded within 6 hours.")
+#
+#     }else{
+#     token
+#   }
+# }
+#
+# tk <- readRDS(file = "C:\\Users\\anthbasooma\\Documents\\Anthony\\PhD\\AuaINFRA\\authtoken\\e8dab55102a55a836c2c8fb29d5122ed.rds")
+#
+
+
