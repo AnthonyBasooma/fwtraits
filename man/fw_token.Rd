@@ -4,31 +4,50 @@
 \alias{fw_token}
 \title{Access and loading the token key}
 \usage{
-fw_token(key = fw_loadapikey(), quietly = TRUE, seed = NULL)
+fw_token(
+  apikey = fw_loadapikey(),
+  seed = NULL,
+  inform = FALSE,
+  cachepath = NULL
+)
 }
 \arguments{
-\item{key}{\code{string} The API key which is automatically loaded using the loadapikey() internal function.}
-
-\item{quietly}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
+\item{apikey}{\code{string}. The API key which is automatically loaded using the loadapikey() internal function.}
 
 \item{seed}{\code{integer}. An integer to help track the caching of the access token generated during data collation.
 If a user wants to get a new token, then the seed should be changed.}
+
+\item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
+
+\item{cachepath}{\code{string}. The root path were the cached data will be saved on the user PC.
+If the path is not provided, the cached information will be saved in the current
+working directly.}
 }
 \value{
 \code{string} token authentication token key
 }
 \description{
 The function and updates the authentication token that is automatically generated every after
-six hours by the servers. The function gets the API key, which is a one time key that is provided
-during registration or by database managers for already registered users. Since the authentication
+six hours by the servers. The function uses the API key, which is a one time key that is provided
+during registration or provided by database managers for already registered users. Since the authentication
 token expires, the seed parameter is included to allow caching across user sessions. Therefore,
 the data downloaded with a particular seed will be in stored in memory and can be retrieved from the user
 PC than from servers and hence tremendously optimizing on the speed on data access.
+The token is generated in two different ways depending on whether the codes will be shared
+with others or they are personal use. If they are for personal use, then the API key is directly pasted in the
+pop up after fw_token is executed. However, in the latter circumstance, the API key advisable to
+be stored in the R user environment and encrypted during code execution. Check the vignettes for
+handling the API key on fwtraits GitHub.
 }
 \examples{
 
 \dontrun{
 
+#1.Use the API key in shared R examples
+
+#check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
+
+#step 1
 #sessionkey <- secret_make_key()
 
 #edit this page with usethis::edit_r_environ()
@@ -39,10 +58,10 @@ PC than from servers and hence tremendously optimizing on the speed on data acce
 
 enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 
-#the FWTRAITS_KEY is the unlock key saved in my local environment
-#check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
+#the FWTRAITS_KEY is the unlock key saved in my local environment.
 
 #download fish catchment region data
+
 #setting the FWTRAITS_KEY
 
 #run this usethis::edit_r_environ()
