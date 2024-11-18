@@ -17,17 +17,16 @@ Imports:
     curl,
     httr2,
     jsonlite,
-    memoise,
     methods,
-    parallel,
     stats,
     utils,
     rstudioapi,
-    ggplot2,
-    cachem
+    R.cache
 Suggests: 
-    knitr,
-    rmarkdown,
+    ggplot2,
+    knitr (>= 1.48),
+    rmarkdown (>= 2.28),
+    sf,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr

@@ -31,3 +31,73 @@
 #' and pressure-impact-recovery chains.
 #'
 "speciesdata"
+
+
+#' @title Taxonomic data for species in the freshwaterecology.info database
+#'
+#' @description A \code{tibble}
+#'
+#' @docType data
+#'
+#' @details
+#' fgdhdhdjd nfjdkedkdld
+#'
+#' @usage data(invertbackbone)
+#'
+#' @keywords European wide dataset
+#'
+#' @format A \code{tibble} 23333333333 rows and 2 columns.
+#'
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' data("invertbackbone")
+#' invertbackbone
+#' }
+#'
+#'
+#'
+#'
+#' @references Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info - An online tool that unifies,
+#' standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences.
+#' Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007.
+#'
+"invertbackbone"
+
+
+#' @title Taxonommic data for the phytobentho species in frehwaterecology.info database.
+#'
+#' @description A \code{tibble}
+#'
+#' @docType data
+#'
+#' @details
+#' fhfhdld fnfmf...
+#'
+#' @usage data(pbenthobackbone)
+#'
+#' @keywords Phytobentho data
+#'
+#' @format A \code{tibble} 1857 rows and 2 columns.
+#'
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' data("pbenthobackbone")
+#'
+#' pbenthobackbone
+#' }
+#'
+#'
+#'
+#'
+#' @references Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info - An online tool that unifies,
+#' standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences.
+#' Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007.
+#'
+"pbenthobackbone"
+

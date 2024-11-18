@@ -42,16 +42,10 @@ Sciences (BOKU), Vienna, Austria.
 
 Before using the package, the user is strongly advised to run the
 **`fw_b4ustart()`** to get the steps required to access and use the
-package in accessing the species eological parameters, traits or
+package in accessing the species ecological parameters, traits or
 indicators.
 
-<figure>
-<img src="man/figures/fwatraitsworkflow.png"
-alt="Figure 1. Accessing the species traits or ecological parameters from the Freshwaterecology.info database (FW DB)." />
-<figcaption aria-hidden="true"><strong>Figure 1. Accessing the species
-traits or ecological parameters from the Freshwaterecology.info database
-(FW DB).</strong></figcaption>
-</figure>
+<!-- ![**Figure 1. Accessing the species traits or ecological parameters from the Freshwaterecology.info database (FW DB).**](man/figures/fwatraitsworkflow.png) -->
 
 **Main functions**
 
