@@ -11,15 +11,11 @@ fw_fetchdata(
   spcol = NULL,
   groupcol = NULL,
   ecoparams = NULL,
-  traits = "all",
-  level = NULL,
-  taxagroup = NULL,
-  parallel = FALSE,
-  cores = 2,
+  lat = NULL,
+  lon = NULL,
+  cachepath = NULL,
+  inform = FALSE,
   wide = FALSE,
-  subspecies = FALSE,
-  selectvalue = NULL,
-  descvalue = NULL,
   na.rm = TRUE,
   merge = FALSE,
   warn = FALSE,
@@ -35,7 +31,7 @@ database.}
 \item{organismgroup}{\code{string}. The organism group to download from the platform.
 The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes,
 macroinvertebrates, phytoplankton,
-phytobenthos, diatoms, and macrophytes. Multiple groups allowed such as \code{'pp', 'di'}.
+phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed such as \code{'pp', 'di'}.
 \itemize{
 \item{\code{pp}: Pytoplankton.}
 \item{\code{mp}: Macrophtytes}
@@ -58,31 +54,17 @@ the \code{groupcol} is required to iterate over the taxonomic groups separately.
 \item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organismgroup group. Check \code{\link{fw_dbguide}} for the allowed
 traits in the database.}
 
-\item{traits}{\code{string or vector}. If \code{all} is indicated, then all the traits will be extracted. Otherwise,
-individual traits can be indicated in a vector format. Check the allowed traits in \code{\link{fw_dbguide}} function and identify
-all the traits allowed for each group and their explanation.}
+\item{lat, lon}{\code{string}. These are columns that have both the longitude and latitude
+values in the species dataset.}
 
-\item{level}{\code{string}. The taxonomic orders allowed for each species including \code{species, genus, order or family}.}
+\item{cachepath}{\code{string}. The root path were the cached data will be saved on the user PC.
+If the path is not provided, the cached information will be saved in the current
+working directly.}
 
-\item{taxagroup}{\code{vector}. If \code{organismgroup} is \code{mi}, the \code{taxagroup} must be indicated for data to be downloaded.
-The different macroinvertebrates orders allowed can be obtained using \code{\link{fw_taxagroup}} function.}
-
-\item{parallel}{\code{logical}. If \code{TRUE} then the parallel data download is enabled.}
-
-\item{cores}{\code{integer} An integer indicating the number of cores to be be used in parallelisng the
-the data download. Default is 2.}
+\item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
 
 \item{wide}{\code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
 taxonomic groups.}
-
-\item{subspecies}{To consider subspecies while carrying taxonomic names checks. For example, Salmo trutta fario
-will not be truncated to Salmo trutta if \code{subspecies is TRUE}:}
-
-\item{selectvalue}{\code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
-then the species native in the Danube region can be selected and retained.}
-
-\item{descvalue}{\code{vector}. To allow traits selection within the traits, for example, for fishes and catchment regions is
-is considered, 'Danu' can be selected.}
 
 \item{na.rm}{\code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
 Default \code{TRUE}.}
@@ -117,31 +99,6 @@ Arranging and user friendly selection of traits at different taxonomic levels.
 
 library(httr2)
 
-#PUBLIC TESTING OF THE fwtraits package
-
-#check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
-
-#step 1: Generate a secret key using httr2:make_secret_key() function
-
-#secretkey <- secret_make_key() #secret key automatically generated
-# will be saved in the r environment
-
-#setting the FWTRAITS_KEY where to save the secretkey
-
-#run this usethis::edit_r_environ()
-#which open the r environment and type in
-#FWTRAITS_KEY = 'enter secretkey string generated in step 1'
-#the FWTRAITS_KEY is the unlock key saved in my local environment
-
-#step2: Use the secret key to scramble the API key
-
-#scrambled_api_key <- secret_encrypt(apikey, secretkey)
-
-#encrypted token for my api key
-#step 3: use the scrambled api key in the public codes:
-#steps 1 and 2 are not included in the codes but rather
-#the output scrambled_key generated in step 2 is used
-
 sacrambled_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 #scrambled_api_key
 
@@ -154,14 +111,12 @@ tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
 
 fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
                              ecoparams = 'catchment region',
-                             token = tokendata,
-                             errorness = 27,
-                             pct = 70)#the species spelling is checked
+                             token = tokendata)#the species spelling is checked
 }
 
 }
 \seealso{
-\code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_extract}}
+\code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_split}}
 }
 \author{
 {

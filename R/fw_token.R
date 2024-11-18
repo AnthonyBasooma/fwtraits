@@ -2,24 +2,29 @@
 #'
 #' @description
 #' The function and updates the authentication token that is automatically generated every after
-#' six hours by the servers. The function gets the API key, which is a one time key that is provided
-#' during registration or by database managers for already registered users. Since the authentication
+#' six hours by the servers. The function uses the API key, which is a one time key that is provided
+#' during registration or provided by database managers for already registered users. Since the authentication
 #' token expires, the seed parameter is included to allow caching across user sessions. Therefore,
 #' the data downloaded with a particular seed will be in stored in memory and can be retrieved from the user
 #' PC than from servers and hence tremendously optimizing on the speed on data access.
+#' The token is generated in two different ways depending on whether the codes will be shared
+#' with others or they are personal use. If they are for personal use, then the API key is directly pasted in the
+#' pop up after fw_token is executed. However, in the latter circumstance, the API key advisable to
+#' be stored in the R user environment and encrypted during code execution. Check the vignettes for
+#' handling the API key on fwtraits GitHub.
 #'
 #'
-#' @param key \code{string} The API key which is automatically loaded using the loadapikey() internal function.
-#' @param quietly \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
+#' @param apikey \code{string}. The API key which is automatically loaded using the loadapikey() internal function.
 #' @param seed \code{integer}. An integer to help track the caching of the access token generated during data collation.
 #'        If a user wants to get a new token, then the seed should be changed.
-#'
+#' @param inform \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
+#' @param cachepath \code{string}. The root path were the cached data will be saved on the user PC.
+#'      If the path is not provided, the cached information will be saved in the current
+#'      working directly.
 #'
 #' @importFrom curl has_internet
-#' @importFrom httr2 req_headers
+#' @importFrom httr2 req_headers secret_decrypt
 #' @importFrom askpass askpass
-#' @importFrom httr2 secret_decrypt
-#'
 #'
 #' @return \code{string} token authentication token key
 #'
@@ -29,6 +34,11 @@
 #'
 #' \dontrun{
 #'
+#' #1.Use the API key in shared R examples
+#'
+#' #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
+#'
+#' #step 1
 #' #sessionkey <- secret_make_key()
 #'
 #' #edit this page with usethis::edit_r_environ()
@@ -39,10 +49,10 @@
 #'
 #' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 #'
-#' #the FWTRAITS_KEY is the unlock key saved in my local environment
-#' #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
+#' #the FWTRAITS_KEY is the unlock key saved in my local environment.
 #'
 #' #download fish catchment region data
+#'
 #' #setting the FWTRAITS_KEY
 #'
 #' #run this usethis::edit_r_environ()
@@ -56,56 +66,58 @@
 #'
 #'
 
-fw_token <- function(key = fw_loadapikey(), quietly = TRUE, seed= NULL) {
+fw_token <- function(apikey = fw_loadapikey(), seed= NULL, inform = FALSE, cachepath = NULL) {
 
-  if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
+  if(is.null(seed))stop("The seed must be provided")
 
-  if (is.null(key)) stop("The APIKEY is not provided. Please register at https://www.freshwaterecology.info/register/index.php")
+  if(!is(seed, 'numeric')) stop("The seed must be a numeric e.g. 11211, 3421 ...")
 
-  if(is.null(seed)) stop('Please set seed to properly cache the data while interacting with the platform.')
-  turl <- request("https://www.freshwaterecology.info/fweapi2/v1/token")
+  cachedir <- fw_path(cachepath)
 
-  set.seed(seed)
+  setCacheRootPath(path= cachedir)
 
-  #set seed to return the same token at particular moment
-  reqtk <- tryCatch(expr = turl |> req_headers("Content-Type" = "application/json") |>
-                      req_body_raw(body = toJSON(list(apikey = key), auto_unbox = TRUE)) |>
-                      req_perform(), error = function(e) e)
+  cache.root = getCacheRootPath()
 
-  if (inherits(reqtk, "error")) {
+  key <- list(apikey, seed)
 
-    stop("Invalid API key provided, please apply for an API key at  https://www.freshwaterecology.info/register/index.php or visit before_u_start() function to set or get API key.")
+  token <- loadCache(key)
 
-    } else if (!inherits(reqtk, "error")) {
+  if(!is.null(token)){
 
-    tkperf <- reqtk |> resp_body_json()
+    if(isTRUE(inform)) message('The token is being loaded from memory.')
 
-    tokendata <- tkperf$access_token
+    return(token)
 
-    if (isFALSE(quietly)) message("Token genereated successfully.")
-  } else {
-    stop("Unable to access the database.")
+  }else{
+
+    if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
+
+    if (is.null(key)) stop("The APIKEY is not provided. Please register at https://www.freshwaterecology.info/register/index.php")
+
+    if(is.null(seed)) stop('Please set seed to properly cache the data while interacting with the platform.')
+
+    turl <- request("https://www.freshwaterecology.info/fweapi2/v1/token")
+
+    set.seed(seed)
+
+    #set seed to return the same token at particular moment
+    reqtk <- tryCatch(expr = turl |> req_headers("Content-Type" = "application/json") |>
+
+                        req_body_raw(body = toJSON(list(apikey = apikey), auto_unbox = TRUE)) |>
+
+                        req_perform(), error = function(e) return(NULL))
+
+    if (!is.null(reqtk)) {
+
+      tokenout <- reqtk |> resp_body_json()
+
+      token <- tokenout$access_token
+
+      saveCache(token, key=key, comment="token code generated")
+      #token;
+    } else {
+      stop("Invalid API key and apply at  https://www.freshwaterecology.info/register/index.php or visit fw_be4ustart().")
+    }
+
   }
-  return(tokendata)
 }
-
-
-# fw_token <- function(key = fw_loadapikey(), quietly = TRUE, seed = NULL, verbose = FALSE){
-#
-#   checkcache <- memoise::has_cache(token)(key, quietly, seed)
-#
-#   if(isFALSE(checkcache)){
-#
-#     tokendata <- token(key, quietly, seed)
-#
-#     if(isTRUE(verbose))message("Token generated with ", seed, " and is memoised for the data downloaded within 6 hours.")
-#
-#     }else{
-#     token
-#   }
-# }
-#
-# tk <- readRDS(file = "C:\\Users\\anthbasooma\\Documents\\Anthony\\PhD\\AuaINFRA\\authtoken\\e8dab55102a55a836c2c8fb29d5122ed.rds")
-#
-
-

@@ -17,8 +17,6 @@
 #' @param full \code{logical} \code{TRUE} if a dataframe with both cleaned and uncleaned species are required. If \code{FALSE} then the
 #'       a species list will be produced after cleaning. Default \code{FALSE}.
 #' @param warn To alert user on the species names cleaning errors and warnings.
-#' @param subspecies To consider subspecies while carrying taxonomic names checks. For example, Salmo trutta fario
-#'      will not be truncated to Salmo trutta if \code{subspecies is TRUE}:
 #'
 #' @importFrom utils adist
 #'
@@ -27,7 +25,7 @@
 #'
 clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
                            group = NULL, full = FALSE,
-                           warn= FALSE, subspecies = FALSE) {
+                           warn= FALSE) {
   #get the standard lists
   if(is.null(group)) stop("Provide the organism group")
 
@@ -82,7 +80,7 @@ clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
 
     }else{
       #reduce the species to get only the species name
-      if(isTRUE(subspecies) && length(spclean)>2){
+      if(length(spclean)>2){
 
         spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:3], collapse = ' ')
 

@@ -1,14 +1,4 @@
 
-#' @noRd
-trans_macrodata <- function(m){
-  md <- list()
-  for (i in seq_along(m)) {
-    md[[i]] <- m[[i]]
-    d <- do.call(c, md)
-  }
-  invisible(d)
-}
-
 #' @title Extracting the traits from the downloaded data.
 #'
 #' @inheritParams fw_searchdata
@@ -17,6 +7,7 @@ trans_macrodata <- function(m){
 #'         database.
 #'
 #' @importFrom methods is
+#' @importFrom R.cache addMemoization
 #'
 #' @return \code{dataframe} A dataframe species traits for all orders.
 #'
@@ -25,7 +16,8 @@ trans_macrodata <- function(m){
 #' @examples
 #'
 #' \dontrun{
-#' #' #' #encrypted token for my api key
+#'
+#' #encrypted token for my api key
 #'
 #' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 #'
@@ -48,13 +40,15 @@ trans_macrodata <- function(m){
 #' }
 #'
 
-fw_extract <- function(data, organismgroup, ecoparams = NULL, taxagroup = NULL,
-                        token  = NULL,  parallel = FALSE,
-                        cores = NULL,
-                        pct = 80,
-                       subspecies = FALSE,
-                        errorness = 20,
-                        warn = FALSE) {
+fw_split <- function(data,
+                     organismgroup,
+                     ecoparams = NULL,
+                     token  = NULL,
+                     pct = 80,
+                     errorness = 20,
+                     warn = FALSE,
+                     inform = FALSE,
+                     cachepath = NULL) {
 
 
   #if multiple groups are considered
@@ -69,11 +63,14 @@ fw_extract <- function(data, organismgroup, ecoparams = NULL, taxagroup = NULL,
   groupData <- list()
   spdetails <- list()
 
+  if(any(organismgroup=='mi' | organismgroup =='pb')==TRUE) refdata <- data else refdata <- NULL
+
   groupoutputlists <- fw_searchdata(organismgroup = organismgroup, ecoparams = ecoparams,
-                           taxagroup = taxagroup,
-                           token  = token,
-                           parallel = parallel, cores = cores,
-                           warn = warn)
+                                    refdata  = data,
+                                    token  = token,
+                                    warn = warn,
+                                    inform = inform,
+                                    cachepath = cachepath)
 
   for (ii in seq_along(groupoutputlists)) {
 
@@ -91,7 +88,6 @@ fw_extract <- function(data, organismgroup, ecoparams = NULL, taxagroup = NULL,
                                    pct = pct, errorness = errorness,
                                    group = tcheck(taxanames),
                                    full = TRUE,
-                                   subspecies = subspecies,
                                    warn = warn)
 
     specol_cleaned <- spdetails[[ii]]$ clean[!is.na(spdetails[[ii]]$clean)]
@@ -101,31 +97,20 @@ fw_extract <- function(data, organismgroup, ecoparams = NULL, taxagroup = NULL,
       specol_cleaned
     } else{
 
-       warning("No species name to extract the traits for the ", tcheck(taxanames), " ans will be skipped. ", call. = FALSE)
+      warning("No species name to extract the traits for the ", tcheck(taxanames), " and will be skipped. ", call. = FALSE)
       next
     }
-
-    #reshape the macroinvetebrates data if more than 1 taxa group is selected.
 
     #form order dataframe rather than lists
 
     taxafile <- tcheck(tx = taxanames)
 
-    if(taxafile=='macroinvertebrates' && is(groupdata, 'list')){
-
-      groupdata_final <- trans_macrodata(groupdata)
-
-
-    }else{
-      groupdata_final <- groupdata
-
-    }
-
-    for (iii in seq_along(groupdata_final)) {
+    for (iii in seq_along(groupdata)) {
 
       #data filtered for each trait with each orders available forms
 
-      traitorderdf <- groupdata_final[[iii]]
+      traitorderdf <- groupdata[[iii]]
+
 
       if(nrow(traitorderdf)>=1) { #for phytobentho that returns no data
 
@@ -146,6 +131,7 @@ fw_extract <- function(data, organismgroup, ecoparams = NULL, taxagroup = NULL,
         pp2 <- pp1# as.data.frame(pp1[!duplicated(pp1[c('speciesname')]),])#add more parameters
 
       }else{
+
         next #skip to next
       }
 
@@ -232,3 +218,6 @@ fw_extract <- function(data, organismgroup, ecoparams = NULL, taxagroup = NULL,
   }
   return(list(dfinal, speciesdetails))
 }
+
+
+fw_extract <- addMemoization(fw_split)

@@ -191,5 +191,33 @@ fw_classes <- function(paramlist) {
   return(txallfinal)
 }
 
+#' @noRd
+#'
+fw_path <- function(dir = NULL){
+
+  wd <- getwd()
+
+  if(is.null(dir)){
+
+    stop('Provide the cache directory.')
+
+  }else{
+
+    cachedir <- paste0(wd,'/',dir)
+
+    if(dir.exists(cachedir)==FALSE){
+
+      dir.create(dir)
+
+      path = paste0(wd, '/', dir)
+
+    }else{
+
+      path = cachedir
+    }
+  }
+  return(path)
+}
+
 
 

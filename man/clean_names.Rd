@@ -11,8 +11,7 @@ clean_names(
   errorness = 30,
   group = NULL,
   full = FALSE,
-  warn = FALSE,
-  subspecies = FALSE
+  warn = FALSE
 )
 }
 \arguments{
@@ -38,9 +37,6 @@ group names include macroinvertebrates, fishes, macrophytes, phytoplankton, diat
 a species list will be produced after cleaning. Default \code{FALSE}.}
 
 \item{warn}{To alert user on the species names cleaning errors and warnings.}
-
-\item{subspecies}{To consider subspecies while carrying taxonomic names checks. For example, Salmo trutta fario
-will not be truncated to Salmo trutta if \code{subspecies is TRUE}:}
 }
 \value{
 \code{vector or string} clean species name that is also found in the database.

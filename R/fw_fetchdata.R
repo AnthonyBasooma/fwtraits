@@ -1,20 +1,14 @@
 #' @title Arranging and user friendly selection of traits at different taxonomic levels.
 #'
-#' @inheritParams fw_extract
+#' @inheritParams fw_split
 #' @param spcol \code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
 #'        The column should have complete species name and not genus and species provided separately.
 #' @param groupcol \code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
 #'      the \code{groupcol} is required to iterate over the taxonomic groups separately.
-#' @param traits \code{string or vector}. If \code{all} is indicated, then all the traits will be extracted. Otherwise,
-#'      individual traits can be indicated in a vector format. Check the allowed traits in \code{\link{fw_dbguide}} function and identify
-#'      all the traits allowed for each group and their explanation.
-#' @param level \code{string}. The taxonomic orders allowed for each species including \code{species, genus, order or family}.
 #' @param wide \code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
 #'      taxonomic groups.
-#' @param selectvalue \code{vector}. To allow user selection within the traits, for example, for fishes if catchment region is considered
-#'      then the species native in the Danube region can be selected and retained.
-#' @param descvalue \code{vector}. To allow traits selection within the traits, for example, for fishes and catchment regions is
-#'        is considered, 'Danu' can be selected.
+#' @param lat,lon \code{string}. These are columns that have both the longitude and latitude
+#'        values in the species dataset.
 #' @param na.rm \code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
 #'        Default \code{TRUE}.
 #' @param merge \code{logical}. If the data is a dataframe and not list or vector, merge allows to
@@ -24,7 +18,6 @@
 #'      from the database.
 #'
 #'
-#' @importFrom memoise memoise
 #' @importFrom stats reshape
 #'
 #' @return \code{dataframe} A dataframe species traits at a selected taxonomic level.
@@ -41,31 +34,6 @@
 #'
 #' library(httr2)
 #'
-#' #PUBLIC TESTING OF THE fwtraits package
-#'
-#' #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
-#'
-#' #step 1: Generate a secret key using httr2:make_secret_key() function
-#'
-#' #secretkey <- secret_make_key() #secret key automatically generated
-#' # will be saved in the r environment
-#'
-#' #setting the FWTRAITS_KEY where to save the secretkey
-#'
-#' #run this usethis::edit_r_environ()
-#' #which open the r environment and type in
-#' #FWTRAITS_KEY = 'enter secretkey string generated in step 1'
-#' #the FWTRAITS_KEY is the unlock key saved in my local environment
-#'
-#' #step2: Use the secret key to scramble the API key
-#'
-#' #scrambled_api_key <- secret_encrypt(apikey, secretkey)
-#'
-#' #encrypted token for my api key
-#' #step 3: use the scrambled api key in the public codes:
-#' #steps 1 and 2 are not included in the codes but rather
-#' #the output scrambled_key generated in step 2 is used
-#'
 #' sacrambled_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 #' #scrambled_api_key
 #'
@@ -78,30 +46,27 @@
 #'
 #' fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
 #'                              ecoparams = 'catchment region',
-#'                              token = tokendata,
-#'                              errorness = 27,
-#'                              pct = 70)#the species spelling is checked
+#'                              token = tokendata)#the species spelling is checked
 #' }
 #'
-#' @seealso \code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_extract}}
+#' @seealso \code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_split}}
 
 fw_fetchdata <- function(data, organismgroup, token,
                          spcol = NULL,
                          groupcol = NULL,
                          ecoparams = NULL,
-                         traits = 'all', level= NULL,
-                         taxagroup = NULL,
-                         parallel = FALSE, cores = 2,
+                         lat = NULL,
+                         lon = NULL,
+                         cachepath = NULL,
+                         inform = FALSE,
                          wide = FALSE,
-                         subspecies = FALSE,
-                         selectvalue = NULL,
-                         descvalue = NULL,
                          na.rm = TRUE,
                          merge= FALSE,
                          warn = FALSE,
                          sanitize = FALSE,
                          errorness = 27,
-                         pct = 80){
+                         pct = 80
+){
 
   if(is(data, "data.frame")){
 
@@ -142,26 +107,21 @@ fw_fetchdata <- function(data, organismgroup, token,
 
   #get species as they exist in the taxon names of the Freshwaterecology.info
   #generates the traits[[1]] and species details[[2]]
-  extracteddata <- fw_extract(data = specieslist, ecoparams = ecoparams,
+  extracteddata <- fw_extract(data = specieslist,
+                              ecoparams = ecoparams,
                               organismgroup = organismgroup,
-                              taxagroup = taxagroup, token  = token,
-                              parallel = parallel,
-                              subspecies = subspecies,
-                              cores = cores, warn = warn,
+                              token  = token,
+                              warn = warn,
                               errorness = errorness,
-                              pct = pct)
+                              pct = pct,
+                              inform = inform,
+                              cachepath = cachepath)
 
   if(nrow(extracteddata[[1]])<1) stop("No data found for the species entered. Confirm right group of taxa has been selected.")
 
-  if(traits=="all"){
-    #get traits
-    traitwords <- unique(unlist(extracteddata[[1]]$parameter))
+  traitwords <- unique(unlist(extracteddata[[1]]$parameter))
 
-  }else{
-    traitwords <- compare_traits(traits= traits)
-  }
-
-  traitlist <- sapply(traitwords, function(twords){ #twords are the trait words looped
+  traitlist <- sapply(traitwords, function(twords){ #t-words are the trait words looped
 
     ftraits <- extracteddata[[1]][extracteddata[[1]][, "parameter"] %in% twords, ]
 
@@ -186,7 +146,8 @@ fw_fetchdata <- function(data, organismgroup, token,
 
       traitvalue <-  strsplit(x$value,split="_ ",fixed=TRUE)
 
-      traits <- mapply(FUN = function(taxagroup, sp, par, desc, value) data.frame(organismgroup = taxagroup, species = species, parameter = parameter,
+      traits <- mapply(FUN = function(taxagroup, sp, par, desc, value) data.frame(organismgroup = taxagroup,
+                                                                                  species = species, parameter = parameter,
                                                                                   abbreviation = desc, value = value),
                        taxagroup = taxagroup, sp = species, par = parameter,  desc = descvalue , value = traitvalue, SIMPLIFY = FALSE)
 
@@ -205,22 +166,10 @@ fw_fetchdata <- function(data, organismgroup, token,
   # initialize the row names
   rownames(traitdf_long) <- NULL
 
-  if(!is.null(selectvalue) & !is.null(descvalue)) {
-
-    traitdfsel <- traitdf_long[traitdf_long[, "value"] %in% selectvalue &  traitdf_long[, "description"]%in% descvalue, ]
-
-  }else if(any(!is.null(selectvalue) | !is.null(descvalue))){
-
-    traitdfsel <- traitdf_long[traitdf_long[, "value"] %in% selectvalue |  traitdf_long[, "description"]%in% descvalue, ]
-  }else{
-    traitdfsel <- traitdf_long
-  }
-
-  if(nrow(traitdfsel)<1)stop('Wrong selection has been made.check the traitguide dataset from the description and values allowed.', call. = FALSE)
 
   #remove traits with no data
 
-  if(isTRUE(na.rm)) traitdf <- traitdfsel[!traitdfsel$value=="nodata",] else traitdf <-traitdfsel
+  if(isTRUE(na.rm)) traitdf <- traitdf_long[!traitdf_long$value=="nodata",] else traitdf <-traitdf_long
 
   #add the traits and description to make it wide
 
@@ -233,27 +182,34 @@ fw_fetchdata <- function(data, organismgroup, token,
     spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = c('organismgroup', 'species') ,
                        direction = 'wide', sep = "_")
 
-    #remove the value_created by reshape function
+    #remove the value_ created by reshape function
 
     colnames(spfinal) <- sapply(colnames(spfinal), function(x) gsub("value_", "", x))
 
   }else{
     spfinal <- traitdf
   }
+
   if(isTRUE(merge) && is(data, 'data.frame')){
 
     #standardize the column which one in the data
-    spd <- extracteddata[[2]]
+    #Two columns with species checked and unchecked names
+    speciescheckenames <- extracteddata[[2]] #error in sp names addressed
 
-    colnames(spd)[1] <- spcol
+    #change the first column unchecked column name to match the data
+    colnames(speciescheckenames)[1] <- spcol
 
-    dfmerge <- data |> merge(spd, by.x = spcol)
+    dfmerge <- data |> merge(speciescheckenames, by.x = spcol)
 
     colnames(dfmerge)[1] <- 'speciesunchecked'
 
     colnames(dfmerge)[which(names(dfmerge) == "clean")] <- spcol
 
-    dfinal <- dfmerge |> merge(spfinal, by.x = spcol)
+    colnames(spfinal)[which(names(spfinal) == "species")] <- spcol
+
+    dfall <- dfmerge |> merge(spfinal, by.x = spcol)
+
+    dfinal <- as.data.frame(dfall[!duplicated(dfall[c(lat,lon, spcol)]),])
   }else{
 
     dfinal <- spfinal
@@ -280,18 +236,15 @@ fw_fetchdata <- function(data, organismgroup, token,
     sanitized <- merge(dfinal, dbstandard, by='link', all.x = all_x)
 
     sanitized <- sanitized[, !names(sanitized) %in% c('link')]
-    #
-    attr(sanitized, 'fetch') <- "dataout"
-    attr(sanitized, 'format') <- wide
-    attr(sanitized, 'sanitize') <- sanitize
   }else{
-    #not sanitized
     sanitized <- dfinal
-    attr(sanitized, 'fetch') <- "dataout"
-    attr(sanitized, 'format') <- wide
-    attr(sanitized, 'sanitize') <- sanitize
   }
-  return(sanitized)
+  attr(sanitized, 'fetch') <- "dataout"
+  attr(sanitized, 'format') <- wide
+  attr(sanitized, 'sanitize') <- sanitize
+  attr(sanitized, 'merged') <- merge
+
+  return( sanitized)
 }
 
 

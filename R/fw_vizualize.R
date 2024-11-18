@@ -1,6 +1,6 @@
 #' @title ggplot2 visualization.
 #'
-#' @param foutput fetchdata output only accepted.
+#' @param output fetchdata output only accepted.
 #' @param scales indicate if the scales are free, free_x, and free_y.
 #' @param ncol Number of columns to display the data in facet_wrap.
 #' @param params species ecological parameters selected if there are more than one.
@@ -9,30 +9,29 @@
 #' @param bg \code{numeric} Either 1 for theme_bw, 2 for theme_classic and 0 the default ggplot2 theme.
 #'
 #' @importFrom stats aggregate
-#' @importFrom ggplot2 ggplot aes facet_wrap geom_bar scale_y_continuous element_blank element_text labs expansion theme ggtitle scale_fill_viridis_d scale_fill_grey theme_bw theme_classic
 #'
 #' @return ggplot2 display
 #'
 #' @export
 #'
 #'
-fw_visualize <- function(foutput, scales = 'free', ncol = 2, params = NULL,
+fw_visualize <- function(output, scales = 'free', ncol = 2, params = NULL,
                          group = NULL, viridis = TRUE, bg = 1){
 
-  #check if the foutput is fetch data
+  #check if the output is fetch data
 
-  if(attributes(foutput)$fetch !="dataout") stop("Please indicate the fetch data out only.")
+  if(is.null(attributes(output)$fetch)) stop("Please indicate the fetch data out only.")
 
-  if(attributes(foutput)$format==TRUE) stop("Spread or wide format fetch data not acceptable for visualistion.")
+  if(attributes(output)$format==TRUE) stop("Spread or wide format fetch data not acceptable for visualistion.")
 
   #one species is not necessary
-  if(length(unique(foutput$species))==1) stop("Not necessary to display output for one species.")
+  if(length(unique(output$species))==1) stop("Not necessary to display output for one species.")
 
   if(!is.null(params)){
 
-    getdf <- foutput[foutput[,"parameter"] %in% params,]
+    getdf <- output[output[,"parameter"] %in% params,]
   }else{
-    getdf <- foutput
+    getdf <- output
   }
 
   if(length(unique(getdf$organismgroup))>1){
@@ -61,7 +60,7 @@ fw_visualize <- function(foutput, scales = 'free', ncol = 2, params = NULL,
 
   datafinal <- getdfinal[getdfinal$parameter%in%nameOut,]
 
-  if(attributes(foutput)$sanitize==TRUE){
+  if(attributes(output)$sanitize==TRUE){
     datafinal$valuedata <- datafinal$parametervalue
     angle <- 45; hjust <- 1
   }else{
@@ -81,37 +80,38 @@ fw_visualize <- function(foutput, scales = 'free', ncol = 2, params = NULL,
 
   valuedata <- NULL
 
-  gout <- ggplot(dfsummary, aes(x = valuedata, y = x, fill = parameter))+
+  gout <- ggplot2::ggplot(dfsummary, ggplot2::aes(x = valuedata, y = x, fill = parameter))+
 
-    geom_bar(stat = 'identity')+
+    ggplot2::geom_bar(stat = 'identity')+
 
     {if(length(unique(dfsummary$parameter))>1){
 
-      facet_wrap(~ parameter, scales = scales, ncol = ncol)
+      ggplot2::facet_wrap(~ parameter, scales = scales, ncol = ncol)
     }else{
-      ggtitle(paramname)
+      ggplot2::ggtitle(paramname)
     }
     }+
-    scale_y_continuous(expand = expansion(mult = c(0, 0.1)))+
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.1)))+
 
-    {if(isTRUE(viridis))scale_fill_viridis_d() else scale_fill_grey()}+
+    {if(isTRUE(viridis)) ggplot2::scale_fill_viridis_d() else ggplot2::scale_fill_grey()}+
 
     {if(bg==1){
-      theme_bw()
+      ggplot2::theme_bw()
     }else if(bg==2){
-      theme_classic()
+      ggplot2::theme_classic()
     }else{
       NULL
     }}+
-    theme(text = element_text(size = 12),
+    ggplot2::theme(text = ggplot2::element_text(size = 12),
 
           legend.position = 'none',
 
-          axis.text.x = element_text(angle = angle, hjust = hjust),
+          axis.text.x = ggplot2::element_text(angle = angle, hjust = hjust),
 
-          strip.text = element_text(face = 'bold'))+
+          strip.text = ggplot2::element_text(face = 'bold'))+
 
-    labs(x=" ", y ="Number of species")
+    ggplot2::labs(x=" ", y ="Number of species")
 
   return(gout)
 }
+
