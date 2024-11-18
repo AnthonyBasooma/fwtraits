@@ -21,45 +21,25 @@ library(fwtraits)
 
 ###Step 1: Get the before you start page for instructions on how to access the database.
 
+To ably set the API key and obtain the token, check the secure_api_key.html vignettes. Briefly, they are two ways to set the API key: 1) in private user codes and 2) public/shared codes. Since in the vignettes the codes are shared, the API key willl be encryted and decrypted on querying the database.
+
 ```{r beforeyoure start procedure}
 #fw_be4ustart()
 ```
 
 ###Step 2: Get authentication token through the API key.
 
-To publically use the API key the following steps based on https://httr2.r-lib.org/articles/wrapping-apis.html are used
-
-a) Make a secret key using **`secret_make_key()`** and save it R-Environment using 
-**`usethis::edit_r_environ()`**. Please install usethis package in case you don't have it installed. In the R environment save it with an identifier such as **FWTRAITS = 'keymadein_secret_make_key function'**.
-
-b) Encrypt the API key obtained from the database administrators or during registration using 
-**`secret_encrypt()`**.
-
-c) From b) a scrambled key is generated which will be used in **`secret_decrypt()`**
-
-
 ```{r generate token}
-
-#
-#encrypted token for my api key
-
-#sessionkey <- secret_make_key()
-
-#edit this page with usethis::edit_r_environ()
-
-#enc_api <- secret_encrypt(x = 'apikey', key = sessionkey)
 
 enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 
-#the FWTRAITS_KEY is the unlock key saved in my local environment
-#check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
+#download macroinvertebrates data
 
-#download fish catchment region data
-
-apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
+apikeydecrypted <- fw_loadapikey(test = TRUE, 
+                                 sacrambled_apikey = enc_api,
                               fwtraitskey =  'FWTRAITS_KEY')
 
-tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
+tokendata <- fw_token(apikey= apikeydecrypted, seed = 1234, cachepath = 'cache')
 
 ```
 
@@ -73,9 +53,10 @@ tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
 
 mmdata_traits <- fw_fetchdata(data =  "Margaritifera margaritifera",
                             organismgroup = 'mi',
-                            ecoparams = c('stream zonation preference','locomotion type'),
+                            ecoparams = c('stream zonation preference'),
                             token = tokendata,
-                            parallel = TRUE)
+                            inform = TRUE,
+                            cachepath = 'cache')
 
 #for more than one species in a list 
 
@@ -87,11 +68,11 @@ specieslist <- c("Margaritifera margaritifera",
 
 multspp <- fw_fetchdata(data =  specieslist,
                             organismgroup = 'mi',
-                            ecoparams = c('stream zonation preference',
-                                          'locomotion type'),
+                            ecoparams = c('stream zonation preference'),
                             token = tokendata,
-                        parallel = TRUE, cores = 2,
-                        sanitize = TRUE)
+                        inform = TRUE,
+                        sanitize = TRUE,
+                        cachepath = 'cache')
 
 #species in a data frame 
 
@@ -100,16 +81,16 @@ macrodf <- data.frame(organismgroup = rep('mi', 5),
                  "Pseudunio auricularius",
                  "Musculium lacustre",
                  "Musculium transversum",
-                 "Parastenocaris germanica"))
+                 "Parastenocaris germaica"))
 
 multspp_df <- fw_fetchdata(data =  macrodf,
                             organismgroup = 'mi',
                            spcol = 'species',
-                            ecoparams = c('stream zonation preference',
-                                          'locomotion type'),
+                            ecoparams = c('stream zonation preference'),
                             token = tokendata,
-                        parallel = TRUE, cores = 4,
-                        sanitize = TRUE)
+                        inform = TRUE,
+                        sanitize = TRUE,
+                        cachepath = 'cache')
 
 ```
 
@@ -119,9 +100,9 @@ multspp_df <- fw_fetchdata(data =  macrodf,
 
 #fw_visualize(foutput = mmdata_traits)# not necessary since its one species
 
-fw_visualize(foutput = multspp)
+fw_visualize(output = multspp)
 
-fw_visualize(foutput = multspp_df)
+fw_visualize(output = multspp_df)
 
 ```
 

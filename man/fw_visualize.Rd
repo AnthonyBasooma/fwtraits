@@ -5,7 +5,7 @@
 \title{ggplot2 visualization.}
 \usage{
 fw_visualize(
-  foutput,
+  output,
   scales = "free",
   ncol = 2,
   params = NULL,
@@ -15,7 +15,7 @@ fw_visualize(
 )
 }
 \arguments{
-\item{foutput}{fetchdata output only accepted.}
+\item{output}{fetchdata output only accepted.}
 
 \item{scales}{indicate if the scales are free, free_x, and free_y.}
 
