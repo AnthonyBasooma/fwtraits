@@ -23,32 +23,39 @@
 #' @return \code{vector or string} clean species name that is also found in the database.
 #'
 #'
-clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
-                           group = NULL, full = FALSE,
-                           warn= FALSE) {
-  #get the standard lists
-  if(is.null(group)) stop("Provide the organism group")
+clean_names <- function(sp, grouplists = NULL, prechecks = FALSE, standardnames = NULL, pct = 80, errorness = 30,
+                        group = NULL, full = FALSE,
+                        warn= FALSE) {
 
-  #compiles all species from all the list of the group extracted
-  if(group=='macroinvertebrates'){
+  if(isTRUE(prechecks)){
 
-    #macro invertebrates is downloaded and arranged differently since the groups cannot retrieved in one file.
-    if(is(grouplists, 'list')){
+    stlist <- unlist(standardnames[,"Taxon"])
 
-      stlistcheck <- unlist(unique(Reduce(c, sapply(grouplists, function(yy){sapply(yy, function(zz){paste0(zz$Genus," ", zz$Species)})}))))
+  } else{
+    #get the standard lists
+    if(is.null(group)) stop("Provide the organism group")
 
-      #some return list of dataframe not list of list of dataframes
-      if(length(stlistcheck)<=1) stlist <- unlist(unique(sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))) else stlist <- stlistcheck
+    #compiles all species from all the list of the group extracted
+    if(group=='macroinvertebrates'){
+
+      #macro invertebrates is downloaded and arranged differently since the groups cannot retrieved in one file.
+      if(is(grouplists, 'list')){
+
+        stlistcheck <- unlist(unique(Reduce(c, sapply(grouplists, function(yy){sapply(yy, function(zz){paste0(zz$Genus," ", zz$Species)})}))))
+
+        #some return list of dataframe not list of list of dataframes
+        if(length(stlistcheck)<=1) stlist <- unlist(unique(sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))) else stlist <- stlistcheck
+
+      }else{
+        stlist <- unlist(unique(sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species))))
+
+      }
 
     }else{
-      stlist <- unlist(unique(sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species))))
+      stlist <- unlist(unique(Reduce(c, sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))))
 
     }
-
-  }else{
-    stlist <- unlist(unique(Reduce(c, sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))))
-
-    }
+  }
 
   #get unique only
   spunique <- unique(sp)
@@ -85,7 +92,7 @@ clean_names <- function(sp, grouplists, pct = 80, errorness = 30,
         spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:3], collapse = ' ')
 
       }else{
-      spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:2], collapse = ' ')
+        spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:2], collapse = ' ')
 
       }
       inOut2 <- spclean2%in%stlist

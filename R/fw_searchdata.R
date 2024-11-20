@@ -179,6 +179,10 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
   }
 }
 
+#internal names for benthos and macroinvertebrates
+
+
+
 
 #' @title To download data from the Freshwaterecology.info database.
 #'
@@ -252,7 +256,7 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
                           inform = FALSE,
                           cachepath = NULL) {
 
-  sapply (organismgroup, function(xx) match.arg(xx, choices = c('fi','mi', 'pp', 'di','pb')))
+  sapply (organismgroup, function(xx) match.arg(xx, choices = c('fi','mi', 'pp', 'di','pb', 'mp')))
 
   if(is.null(token)) stop("Provide the token key to continue or run fw_be4ustart() and learn to set the token.",
                           call. = FALSE)
@@ -301,18 +305,28 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
 
       #Load reference dataset for either macroinvertebrates or benthos
 
+      #clean species names
+
       if(gg =='mi'){
         data("invertbackbone", envir = environment())
 
         invdata <- get("invertbackbone", envir  = environment())
 
-        speciestaxa <- unique(invdata$Taxagroup[which(unlist(invdata$Taxon)%in%refdata ==TRUE)])
+        #clean taxa names before searching
+
+        taxaclean <- clean_names(refdata, prechecks = TRUE, standardnames = invdata)
+
+        speciestaxa <- unique(invdata$Taxagroup[which(unlist(invdata$Taxon)%in%taxaclean ==TRUE)])
       }else{
         data("pbenthobackbone", envir = environment())
 
         bendata <- get("pbenthobackbone", envir  = environment())
 
-        speciestaxa <- unique(bendata$Class[which(unlist(bendata$Taxon)%in%refdata ==TRUE)])
+        #clean taxa names before searching
+
+        taxaclean <- clean_names(refdata, prechecks = TRUE, standardnames = bendata)
+
+        speciestaxa <- unique(bendata$Class[which(unlist(bendata$Taxon)%in%taxaclean ==TRUE)])
 
       }
 

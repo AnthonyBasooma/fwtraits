@@ -29,7 +29,9 @@ library(httr2)
 
 4. A token will be automatically generated, which will be used in all the queries.
 
-Note: Even for private codes, dont share the key in the codes.
+Note: Even for private codes, don't share the key in the codes.
+
+5. You can then proceed to collating data for fish or macroinvertebrates in the files attached.
 
 ```{r}
 
