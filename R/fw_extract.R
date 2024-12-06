@@ -17,25 +17,8 @@
 #'
 #' \dontrun{
 #'
-#' #encrypted token for my api key
-#'
-#' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
-#'
-#'
-#' #download fish catchment region data
-#' #setting the FWTRAITS_KEY
-#'
-#' #run this usethis::edit_r_environ()
-#'
-#' apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
-#'                               fwtraitskey =  'FWTRAITS_KEY')
-#'
-#' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
-#'
-#' #extract is for specific species or multiple number of species
-#'
-#' dfextract <- fw_extract(data = "Abramis brama", organismgroup = 'fi',
-#' ecoparams = 'migration', token = tokendata)
+#'dfextract <- fw_split(data = "Abramis brama", organismgroup = 'fi', inform = TRUE,
+#'                             ecoparams = 'migration', cachefolder = 'cache' )
 #'
 #' }
 #'
@@ -43,12 +26,14 @@
 fw_split <- function(data,
                      organismgroup,
                      ecoparams = NULL,
-                     token  = NULL,
+                     apikey  = NULL,
+                     seed = 1134,
+                     secure = TRUE,
                      pct = 80,
                      errorness = 20,
                      warn = FALSE,
                      inform = FALSE,
-                     cachepath = NULL) {
+                     cachefolder = NULL) {
 
 
   #if multiple groups are considered
@@ -65,19 +50,23 @@ fw_split <- function(data,
 
   if(any(organismgroup=='mi' | organismgroup =='pb')==TRUE) refdata <- data else refdata <- NULL
 
-  groupoutputlists <- fw_searchdata(organismgroup = organismgroup, ecoparams = ecoparams,
+  datalists <- fw_searchdata(organismgroup = organismgroup,
+                                    ecoparams = ecoparams,
                                     refdata  = data,
-                                    token  = token,
+                                    apikey =   apikey,
+                                    secure = secure,
+                                    seed = seed,
                                     warn = warn,
                                     inform = inform,
-                                    cachepath = cachepath)
+                                    cachefolder = cachefolder)
+  #check if the lists returned data
 
-  for (ii in seq_along(groupoutputlists)) {
+  for (ii in seq_along(datalists)) {
 
 
-    taxanames <- names(groupoutputlists)[ii]
+    taxanames <- names(datalists)[ii]
 
-    groupdata <- groupoutputlists[[ii]]
+    groupdata <- datalists[[ii]]
 
     # get only the organism group list
 
@@ -111,6 +100,7 @@ fw_split <- function(data,
 
       traitorderdf <- groupdata[[iii]]
 
+      if(!is.null(traitorderdf)) traitorderdf else next
 
       if(nrow(traitorderdf)>=1) { #for phytobentho that returns no data
 
@@ -126,9 +116,7 @@ fw_split <- function(data,
 
         if (nrow(rowsdata) >= 1) pp1 <- rowsdata else next
 
-        #remove any duplicate species
-
-        pp2 <- pp1# as.data.frame(pp1[!duplicated(pp1[c('speciesname')]),])#add more parameters
+        pp2 <- pp1#
 
       }else{
 
@@ -209,14 +197,10 @@ fw_split <- function(data,
     }
     groupData[[ii]] <- df2
 
-    attr(groupData, 'speciesnames') <- spdetails
-
-    speciesdetails <- do.call(rbind, attributes(groupData)$speciesnames)
-
     dfinal <- do.call(rbind, groupData)
 
   }
-  return(list(dfinal, speciesdetails))
+  return(dfinal)
 }
 
 

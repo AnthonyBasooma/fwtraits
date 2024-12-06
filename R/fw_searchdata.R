@@ -5,17 +5,17 @@ tcheck <- function(tx, taxafile = FALSE) {
   orgroup <- sapply(tx, function(xx){
 
     if (xx == "fi" || xx == "fish" || xx == "fishes") {
-      if (isTRUE(taxafile)) organismgroup <- "fi" else organismgroup <- "fishes"
+      if (isTRUE(taxafile)) organismgroup <- "fi" else organismgroup <- "Fish"
     } else if (xx == "pp" || xx == "phyto" || xx == "phytoplankton") {
-      if (isTRUE(taxafile)) organismgroup <- "pp" else organismgroup <- "phytoplankton"
+      if (isTRUE(taxafile)) organismgroup <- "pp" else organismgroup <- "Phytoplankton"
     } else if (xx == "mi" || xx == "macro" || xx == "macroinvertebrates") {
-      if (isTRUE(taxafile)) organismgroup <- "mi" else organismgroup <- "macroinvertebrates"
+      if (isTRUE(taxafile)) organismgroup <- "mi" else organismgroup <- "Macroinvertebrates"
     } else if (xx == "di" || xx == "diatoms") {
-      if (isTRUE(taxafile)) organismgroup <- "di" else organismgroup <- "diatoms"
+      if (isTRUE(taxafile)) organismgroup <- "di" else organismgroup <- "Diatoms"
     } else if (xx == "pb" || xx == "phytobentho" || xx == "bentho") {
-      if (isTRUE(taxafile)) organismgroup <- "pb" else organismgroup <- "phytobentho"
+      if (isTRUE(taxafile)) organismgroup <- "pb" else organismgroup <- "Phytobentho"
     } else if (xx == "mp" || xx == "macrophyte") {
-      if (isTRUE(taxafile)) organismgroup <- "mp" else organismgroup <- "macrophytes"
+      if (isTRUE(taxafile)) organismgroup <- "mp" else organismgroup <- "Macrophytes"
     } else {
       stop("Incorrect taxanomic group are entered. Use 'pp', 'fi', 'mi','di', 'pb', and 'mp' or run tcheck()")
     }
@@ -67,6 +67,7 @@ getfimppp <- function(x, token, organismgroup, url, allClasses = NULL, inform = 
         ), type = "application/json")
     } else {
       # "mp", "pb", "di" and "pp" are at class level vs fi and mi-order
+
       extdata <- ldata |>
         req_body_raw(body = toJSON(
           list(
@@ -124,8 +125,6 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 
   }else{
 
-    if(isTRUE(inform)) message(tcheck(organismgroup), ' data is downloading; grab a cup of coffee...')
-
     reqdata <- request(base_url = urlx) |>
 
       req_auth_bearer_token(token = token)
@@ -155,15 +154,23 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
         req_user_agent(string = "fwtraits, ('anthony.basooma@boku.ac.at')" )
     }
 
-    ldata_out <- tryCatch(expr = exdata |> req_perform(), error = function(e) return(NULL))
+    if(isTRUE(inform)) message(tcheck(organismgroup), ' for parameter -', codes,'- data is downloading. Be patient..')
 
+    ldata_out <- tryCatch(expr = exdata |> req_perform() |> resp_body_json(), error = function(e) return(NULL))
+
+    if(is.null(ldata_out)){
+
+      if(codes=='5') {
+        warning('Data download was not successful. please consider downloading first Chironomidae if ecological distribution sensu is querried.', call. = FALSE)
+      }else{
+        warning("Data download failed. please consider downloading in batches or contact database admin.", call. = FALSE)
+        }
+    }
     #if successfully executed
 
     if(!is.null(ldata_out)){
 
-      fxdata <- ldata_out |> resp_body_json()
-
-      finalData <- as.data.frame(do.call(rbind, fxdata$searchResult))
+      finalData <- as.data.frame(do.call(rbind, ldata_out$searchResult))
 
       saveCache(finalData, key = invertkey, comment = 'invertebrates data')
 
@@ -180,9 +187,6 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 }
 
 #internal names for benthos and macroinvertebrates
-
-
-
 
 #' @title To download data from the Freshwaterecology.info database.
 #'
@@ -207,17 +211,15 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #'           }
 #' @param ecoparams \code{vector}. Selected traits that should be downloaded for particular organismgroup group. Check \code{\link{fw_dbguide}} for the allowed
 #'      traits in the database.
-#' @param token \code{string}. This is a required parameter to allow user authentication with the platform. To get the token, use
-#'      \code{\link{fw_be4ustart}} function to get the required steps. Remember that the token is saved in memory such that
-#'      the data downloaded is not re-downloaded in the next session.
 #' @param refdata \code{string} An internal placeholder to accommodate the standard taxonomic names for
 #'        invertebrates and phytobenthos from the database.
 #' @param inform \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
-#' @param cachepath \code{string}. The root path were the cached data will be saved on the user PC.
+#' @param cachefolder \code{string}. The root path were the cached data will be saved on the user PC.
 #'      If the path is not provided, the cached information will be saved in the current
 #'      working directly.
 #'
 #' @inheritParams checktrait
+#' @inheritParams fw_token
 #'
 #' @importFrom httr2 request req_body_raw  req_perform resp_body_json req_auth_bearer_token req_user_agent last_response
 #' @importFrom jsonlite toJSON
@@ -231,39 +233,29 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #' @examples
 #'
 #' \dontrun{
-#'
-#' #encrypted token for my api key
-#'
-#' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
-#'
-#' apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
-#'
-#' #download fish catchment region data
-#' #setting the FWTRAITS_KEY
-#'
-#' #run this usethis::edit_r_environ()
-#'
-#' apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
-#'                               fwtraitskey =  'FWTRAITS_KEY')
-#'
-#' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
-#'
-#' dfpull <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', token = tokendata)
+#
+#' dfsearch <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', cachefolder = 'cache')
 #' }
 
 fw_searchdata <- function(organismgroup, refdata = NULL,
-                          ecoparams = NULL, token, warn = TRUE,
+                          ecoparams = NULL,
+                          apikey = NULL,
+                          warn = TRUE,
+                          seed = 1135,
+                          secure = TRUE,
                           inform = FALSE,
-                          cachepath = NULL) {
+                          cachefolder = NULL) {
 
   sapply (organismgroup, function(xx) match.arg(xx, choices = c('fi','mi', 'pp', 'di','pb', 'mp')))
+
+  token <- fw_token(apikey= apikey, seed = seed, secure = secure, inform = inform, cachefolder = cachefolder)
 
   if(is.null(token)) stop("Provide the token key to continue or run fw_be4ustart() and learn to set the token.",
                           call. = FALSE)
 
   #set R.cache folder based on the user working directory
 
-  cachedir <- fw_path(cachepath)
+  cachedir <- fw_path(cachefolder)
 
   setCacheRootPath(path= cachedir)
 
@@ -286,7 +278,7 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
     #clean to standardize the trait names
     stdf <- clean_traits(standardtraits)
 
-    if(is(ecoparams, 'list')) ecoparamlist <- ecoparams[[gg]] else ecoparamlist <- ecoparams
+    if(is(ecoparams, 'list')) ecoparamlist <- unique(ecoparams[[gg]]) else ecoparamlist <- unique(ecoparams)
 
     #compare with the clean and user provided trait names
     ctraits <-  checktrait(x= ecoparamlist, std = stdf, grp = tcheck(tx = gg), warn = warn)
@@ -317,6 +309,7 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
         taxaclean <- clean_names(refdata, prechecks = TRUE, standardnames = invdata)
 
         speciestaxa <- unique(invdata$Taxagroup[which(unlist(invdata$Taxon)%in%taxaclean ==TRUE)])
+
       }else{
         data("pbenthobackbone", envir = environment())
 
@@ -351,7 +344,7 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
 
         searchdata <- sapply(names(taxawithdata), function(ww){
 
-          if(ww == "133") families <- unique(invdata$Family[which(invdata$Taxagroup=='Trichoptera' & invdata$Taxon%in%refdata)]) else families <- NULL
+          if(ww == "133") families <- unique(invdata$Family[which(invdata$Taxagroup=='Trichoptera' & invdata$Taxon%in%taxaclean)]) else families <- NULL
 
           taxain <- taxawithdata[[ww]]
 
@@ -388,6 +381,8 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
     }
 
   },simplify = FALSE)
+
+
 
 
   return(organismdata)

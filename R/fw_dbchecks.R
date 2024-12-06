@@ -16,6 +16,10 @@
 #'      group names include macroinvertebrates, fishes, macrophytes, phytoplankton, diatoms, and phytobenthos.
 #' @param full \code{logical} \code{TRUE} if a dataframe with both cleaned and uncleaned species are required. If \code{FALSE} then the
 #'       a species list will be produced after cleaning. Default \code{FALSE}.
+#' @param prechecks,standardnames \code{logical}. If \code{TRUE} the standard prechecks will be done on both the invertebrates
+#'        and bentho species names before search for ecological parameters from the database. The
+#'        standard names is provided with the dataset to reduce on the time in identifying the
+#'        standard tyxonomic names for the macroinvertebrates in the database.
 #' @param warn To alert user on the species names cleaning errors and warnings.
 #'
 #' @importFrom utils adist
@@ -29,14 +33,15 @@ clean_names <- function(sp, grouplists = NULL, prechecks = FALSE, standardnames 
 
   if(isTRUE(prechecks)){
 
-    stlist <- unlist(standardnames[,"Taxon"])
+    #caters for the prechecks in fw_maps
+    if(is(standardnames, 'data.frame')) stlist <- unlist(standardnames[,"Taxon"]) else stlist <- standardnames
 
   } else{
     #get the standard lists
     if(is.null(group)) stop("Provide the organism group")
 
     #compiles all species from all the list of the group extracted
-    if(group=='macroinvertebrates'){
+    if(group=='Macroinvertebrates'){
 
       #macro invertebrates is downloaded and arranged differently since the groups cannot retrieved in one file.
       if(is(grouplists, 'list')){
@@ -106,6 +111,7 @@ clean_names <- function(sp, grouplists = NULL, prechecks = FALSE, standardnames 
 
         dst <- adist(spclean2, stlist)
 
+
         errorsp <- (min(dst)/nchar(spclean2))*100
 
         if(isTRUE(warn))if(errorsp>30) warning("The returned species name ", stlist[which.min(dst)], " has a high percentage error compared to ", spclean2, " and wrong traits may be returned.", call. = FALSE)
@@ -118,7 +124,7 @@ clean_names <- function(sp, grouplists = NULL, prechecks = FALSE, standardnames 
           #check %length of the species replacing
           ncpct <- (nchar(spsel)/nchar(spclean2))*100
 
-          if(ncpct > pct) {
+          if( ncpct > pct) {
 
             spch <- spsel
 
