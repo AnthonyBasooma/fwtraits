@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 **Aim of the package**
 
-**fwtraits** provides a seamless and robust access to the species ecological parameters, traits or indicators from the **Freshwaterecology.info database** (Schmidt-Kloiber, A., & Hering, D 2015).
+**fwtraits** provides a seamless and robust access to the species ecological parameters, traits or indicators from the **www.freshwaterecology.info database** (Schmidt-Kloiber & Hering 2015).
 
 **Package installation**
 
@@ -48,22 +48,16 @@ Before using the package, the user is strongly advised to run the **`fw_b4ustart
 
 **Main functions**
 
-* `fw_token()` for generating the user authentication token to allow manage data access and maintenance. The `fw_token()` requires the API key which is obtained during registration or submitting a request to the database managers for already registered users.
+* `set_api_key()` for securing API key in the user R environment.
 * `fw_searchdata()` To allow get data from the database. However, this is mostly an internal function since the data is not already parsed to enable usability.
-* `fw_extract()` extracts the pulled data but still the data is cannot be used by the user.
-* `fw_fetchdata()` is the main function that provides all the parameters for data access. The function is wrapped around `fw_searchdata()` and `fw_extract()` function to allow the user to easily get and manipulate the data during package usage.
+* `fw_split()` extracts the downloaded data before its tokenised for proper usage.
+* `fw_fetchdata()` is the main function that provides all the parameters for data access. The function is wrapped around `fw_searchdata()` and `fw_split()` function to allow the user to easily get and manipulate the data during package usage.
 
 **Other utility functions**
 
-* `fw_decache()`to remove cached downloaded from the database from the user computer.
 * `fw_check_names()` to check spellings species taxonomic names to allow the user obtain the species traits.
 * `fw_checktraits()`harmonize species traits to allow effective between user inputs and database information.
 * `fw_visualize()`provides graphical display of the information obtained from the database.
-
-**Quick notes**
-
-* The package allows parallel computing, where different can be obtained or organism groups can be accessed simultaneously. 
-* The data is cached to allow user save information on ther user computer.
 
 **Funding**
 

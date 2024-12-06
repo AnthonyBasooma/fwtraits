@@ -34,7 +34,7 @@ fw_keyload <- function() {
 
   key_loaded <- Sys.getenv("API_KEY")
 
-  if(key_loaded=="") stop('The API key has not been well set in the .Renviron file. Run fw_setapi() and follow the instruction carefully.')
+  if(key_loaded=="") stop('The API key has not been well set in the .Renviron file. Run fw_setapikey() and follow the instruction carefully.')
 
   if(grepl("[A-Za-z0-9]", key_loaded) !=TRUE) stop("The key provided save in .Renviron mis wrong. Please repeat saving and run again.")
 
