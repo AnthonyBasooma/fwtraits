@@ -5,15 +5,18 @@
 \title{ggplot2 visualization.}
 \usage{
 fw_maps(
+  data,
   output,
   lat = NULL,
   lon = NULL,
   basin,
   params = NULL,
+  reduce = FALSE,
   group = NULL,
-  viridis = TRUE,
   bgtheme = "bw",
-  bgcolor = "grey50"
+  color = "purple",
+  bgcolor = "grey50",
+  epsg = 4326
 )
 }
 \arguments{
@@ -30,12 +33,12 @@ or basin boundary.}
 
 \item{group}{Particular organism group to filter out to allow visualization.}
 
-\item{viridis}{\code{logical} Either to use scale_fill_viridis or scale_fill_grey.}
-
 \item{bgtheme}{\code{string}. The theme to be used for the map based on the ggplot2 package
 themes including \code{theme_bw}, \code{theme_classic}.}
 
 \item{bgcolor}{\code{string}. The color which will be used to fill the maps.}
+
+\item{viridis}{\code{logical} Either to use scale_fill_viridis or scale_fill_grey.}
 }
 \value{
 ggplot2 display

@@ -17,14 +17,21 @@
 #' @param apikey \code{string}. The API key which is automatically loaded using the loadapikey() internal function.
 #' @param seed \code{integer}. An integer to help track the caching of the access token generated during data collation.
 #'        If a user wants to get a new token, then the seed should be changed.
-#' @param inform \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
-#' @param cachepath \code{string}. The root path were the cached data will be saved on the user PC.
+#' @param secure \code{logical}. If \code{TRUE}, the user will be prompted to set the API key in the
+#'        .Renviron file by running the \code{\link{fw_setapikey}} function. The User must strictly
+#'        type in API_KEY = 'api key', save, close the file and restart the R session or RStudio
+#'        for the API_KEY environment to be captured.
+#'        If \code{FALSE}, then the key will be entered directly in the API_KEY directly in the
+#'        fw_token() function. This method is insecure, since the key can be obtained from the codes
+#'        by other users.
+#' @param cachefolder \code{string}. The root path were the cached data will be saved on the user PC.
 #'      If the path is not provided, the cached information will be saved in the current
 #'      working directly.
+#' @param inform \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
+#'
 #'
 #' @importFrom curl has_internet
-#' @importFrom httr2 req_headers secret_decrypt
-#' @importFrom askpass askpass
+#' @importFrom httr2 req_headers
 #'
 #' @return \code{string} token authentication token key
 #'
@@ -36,43 +43,14 @@
 #'
 #' #1.Use the API key in shared R examples
 #'
-#' #check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
-#'
-#' #step 1
-#' #sessionkey <- secret_make_key()
-#'
-#' #edit this page with usethis::edit_r_environ()
-#'
-#' #enc_api <- secret_encrypt(x = 'apikey', key = sessionkey)
-#'
-#' #encrypted token for my api key
-#'
-#' enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
-#'
-#' #the FWTRAITS_KEY is the unlock key saved in my local environment.
-#'
-#' #download fish catchment region data
-#'
-#' #setting the FWTRAITS_KEY
-#'
-#' #run this usethis::edit_r_environ()
-#'
-#' apikeydecrypted <- loadapikey(test = TRUE, sacrambled_apikey = enc_api,
-#'                               fwtraitskey =  'FWTRAITS_KEY')
-#'
-#' tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
-#'
 #' }
 #'
-#'
+#' @seealso \code{\link{fw_setapikey}}
 
-fw_token <- function(apikey = fw_loadapikey(), seed= NULL, inform = FALSE, cachepath = NULL) {
+fw_token <- function(apikey = NULL, seed= NULL, cachefolder = NULL, secure = TRUE, inform = FALSE ) {
 
-  if(is.null(seed))stop("The seed must be provided")
 
-  if(!is(seed, 'numeric')) stop("The seed must be a numeric e.g. 11211, 3421 ...")
-
-  cachedir <- fw_path(cachepath)
+  cachedir <- fw_path(cachefolder)
 
   setCacheRootPath(path= cachedir)
 
@@ -84,7 +62,7 @@ fw_token <- function(apikey = fw_loadapikey(), seed= NULL, inform = FALSE, cache
 
   if(!is.null(token)){
 
-    if(isTRUE(inform)) message('The token is being loaded from memory.')
+    #if(isTRUE(inform)) message('The token is being loaded from memory.')
 
     return(token)
 
@@ -92,13 +70,15 @@ fw_token <- function(apikey = fw_loadapikey(), seed= NULL, inform = FALSE, cache
 
     if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
 
-    if (is.null(key)) stop("The APIKEY is not provided. Please register at https://www.freshwaterecology.info/register/index.php")
-
     if(is.null(seed)) stop('Please set seed to properly cache the data while interacting with the platform.')
 
     turl <- request("https://www.freshwaterecology.info/fweapi2/v1/token")
 
+    if(is.null(apikey)&& isFALSE(secure)) stop("Since you have set secure to FALSE, provide the API key directly in the apikey parameter. NOT A SAFE OPTION")
+
     set.seed(seed)
+
+    if(isTRUE(secure)) apikey <- fw_keyload()
 
     #set seed to return the same token at particular moment
     reqtk <- tryCatch(expr = turl |> req_headers("Content-Type" = "application/json") |>
@@ -114,9 +94,10 @@ fw_token <- function(apikey = fw_loadapikey(), seed= NULL, inform = FALSE, cache
       token <- tokenout$access_token
 
       saveCache(token, key=key, comment="token code generated")
-      #token;
+
+      token;
     } else {
-      stop("Invalid API key and apply at  https://www.freshwaterecology.info/register/index.php or visit fw_be4ustart().")
+      stop("Invalid API key, check properly or apply for a key at  https://www.freshwaterecology.info/register/index.php or visit fw_be4ustart().")
     }
 
   }

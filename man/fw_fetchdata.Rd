@@ -7,17 +7,16 @@
 fw_fetchdata(
   data,
   organismgroup,
-  token,
   spcol = NULL,
   groupcol = NULL,
   ecoparams = NULL,
-  lat = NULL,
-  lon = NULL,
-  cachepath = NULL,
+  apikey = NULL,
+  seed = 1135,
+  secure = TRUE,
+  cachefolder = NULL,
   inform = FALSE,
   wide = FALSE,
   na.rm = TRUE,
-  merge = FALSE,
   warn = FALSE,
   sanitize = FALSE,
   errorness = 27,
@@ -41,10 +40,6 @@ phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed su
 \item{\code{pb}: Phytobenthos without diatoms}
 }}
 
-\item{token}{\code{string}. This is a required parameter to allow user authentication with the platform. To get the token, use
-\code{\link{fw_be4ustart}} function to get the required steps. Remember that the token is saved in memory such that
-the data downloaded is not re-downloaded in the next session.}
-
 \item{spcol}{\code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
 The column should have complete species name and not genus and species provided separately.}
 
@@ -54,10 +49,20 @@ the \code{groupcol} is required to iterate over the taxonomic groups separately.
 \item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organismgroup group. Check \code{\link{fw_dbguide}} for the allowed
 traits in the database.}
 
-\item{lat, lon}{\code{string}. These are columns that have both the longitude and latitude
-values in the species dataset.}
+\item{apikey}{\code{string}. The API key which is automatically loaded using the loadapikey() internal function.}
 
-\item{cachepath}{\code{string}. The root path were the cached data will be saved on the user PC.
+\item{seed}{\code{integer}. An integer to help track the caching of the access token generated during data collation.
+If a user wants to get a new token, then the seed should be changed.}
+
+\item{secure}{\code{logical}. If \code{TRUE}, the user will be prompted to set the API key in the
+.Renviron file by running the \code{\link{fw_setapikey}} function. The User must strictly
+type in API_KEY = 'api key', save, close the file and restart the R session or RStudio
+for the API_KEY environment to be captured.
+If \code{FALSE}, then the key will be entered directly in the API_KEY directly in the
+fw_token() function. This method is insecure, since the key can be obtained from the codes
+by other users.}
+
+\item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
 If the path is not provided, the cached information will be saved in the current
 working directly.}
 
@@ -68,10 +73,6 @@ taxonomic groups.}
 
 \item{na.rm}{\code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
 Default \code{TRUE}.}
-
-\item{merge}{\code{logical}. If the data is a dataframe and not list or vector, merge allows to
-affix the species ecological parameters on the user dataframe. Default \code{FALSE} to return
-only the species data but not the whole user input dataset.}
 
 \item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
 
@@ -97,17 +98,9 @@ Arranging and user friendly selection of traits at different taxonomic levels.
 
 \dontrun{
 
-library(httr2)
-
-sacrambled_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
-#scrambled_api_key
 
 #download fish catchment region data
 
-apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = sacrambled_api,
-                              fwtraitskey =  'FWTRAITS_KEY')
-
-tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
 
 fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
                              ecoparams = 'catchment region',

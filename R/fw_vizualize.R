@@ -60,13 +60,6 @@ fw_visualize <- function(output, scales = 'free', ncol = 2, params = NULL,
 
   datafinal <- getdfinal[getdfinal$parameter%in%nameOut,]
 
-  if(attributes(output)$sanitize==TRUE){
-    datafinal$valuedata <- datafinal$parametervalue
-    angle <- 45; hjust <- 1
-  }else{
-    datafinal$valuedata <- datafinal$value
-    angle <- 0; hjust <- 1
-  }
 
   dfsummary <- aggregate(datafinal$valuedata,
                          by= list(organismgroup = datafinal$organismgroup,

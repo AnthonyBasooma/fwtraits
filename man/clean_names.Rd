@@ -6,7 +6,9 @@
 \usage{
 clean_names(
   sp,
-  grouplists,
+  grouplists = NULL,
+  prechecks = FALSE,
+  standardnames = NULL,
   pct = 80,
   errorness = 30,
   group = NULL,
@@ -20,6 +22,11 @@ should check for the species name provided to avoid not being being detected in 
 
 \item{grouplists}{\code{list}. List of data downloaded in the \code{\link{fw_searchdata}} function. If species considered in \code{sp}
 parameter are fishes, then the fishes lists should be provided otherwise the species names will be rejected.}
+
+\item{prechecks, standardnames}{\code{logical}. If \code{TRUE} the standard prechecks will be done on both the invertebrates
+and bentho species names before search for ecological parameters from the database. The
+standard names is provided with the dataset to reduce on the time in identifying the
+standard tyxonomic names for the macroinvertebrates in the database.}
 
 \item{pct}{\code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
 The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{pct}
