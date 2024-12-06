@@ -8,10 +8,12 @@ fw_searchdata(
   organismgroup,
   refdata = NULL,
   ecoparams = NULL,
-  token,
+  apikey = NULL,
   warn = TRUE,
+  seed = 1135,
+  secure = TRUE,
   inform = FALSE,
-  cachepath = NULL
+  cachefolder = NULL
 )
 }
 \arguments{
@@ -34,15 +36,24 @@ invertebrates and phytobenthos from the database.}
 \item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organismgroup group. Check \code{\link{fw_dbguide}} for the allowed
 traits in the database.}
 
-\item{token}{\code{string}. This is a required parameter to allow user authentication with the platform. To get the token, use
-\code{\link{fw_be4ustart}} function to get the required steps. Remember that the token is saved in memory such that
-the data downloaded is not re-downloaded in the next session.}
+\item{apikey}{\code{string}. The API key which is automatically loaded using the loadapikey() internal function.}
 
 \item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
 
+\item{seed}{\code{integer}. An integer to help track the caching of the access token generated during data collation.
+If a user wants to get a new token, then the seed should be changed.}
+
+\item{secure}{\code{logical}. If \code{TRUE}, the user will be prompted to set the API key in the
+.Renviron file by running the \code{\link{fw_setapikey}} function. The User must strictly
+type in API_KEY = 'api key', save, close the file and restart the R session or RStudio
+for the API_KEY environment to be captured.
+If \code{FALSE}, then the key will be entered directly in the API_KEY directly in the
+fw_token() function. This method is insecure, since the key can be obtained from the codes
+by other users.}
+
 \item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
 
-\item{cachepath}{\code{string}. The root path were the cached data will be saved on the user PC.
+\item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
 If the path is not provided, the cached information will be saved in the current
 working directly.}
 }
@@ -58,23 +69,6 @@ macrophytes, and diatoms.
 \examples{
 
 \dontrun{
-
-#encrypted token for my api key
-
-enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
-
-apikey <- httr2::secret_decrypt(encrypted = enc_api, key = 'FWTRAITS_KEY')
-
-#download fish catchment region data
-#setting the FWTRAITS_KEY
-
-#run this usethis::edit_r_environ()
-
-apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
-                              fwtraitskey =  'FWTRAITS_KEY')
-
-tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
-
-dfpull <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', token = tokendata)
+dfsearch <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', cachefolder = 'cache')
 }
 }

@@ -14,51 +14,37 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(httr2)
+```{r}
 library(fwtraits)
 ```
 
+
 ###Step 1: Get the before you start page for instructions on how to access the database.
 
-To ably set the API key and obtain the token, check the secure_api_key.html vignettes. Briefly, they are two ways to set the API key: 1) in private user codes and 2) public/shared codes. Since in the vignettes the codes are shared, the API key willl be encryted and decrypted on querying the database.
+Please follow the secure_the_api_key to identify how the API is secured in the user R environment before retrieving the species traits.
 
-```{r beforeyoure start procedure}
-#fw_be4ustart()
-```
-
-###Step 2: Get authentication token through the API key.
-
-```{r generate token}
-
-enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
-
-#download macroinvertebrates data
-
-apikeydecrypted <- fw_loadapikey(test = TRUE, 
-                                 sacrambled_apikey = enc_api,
-                              fwtraitskey =  'FWTRAITS_KEY')
-
-tokendata <- fw_token(apikey= apikeydecrypted, seed = 1234, cachepath = 'cache')
-
-```
 
 ###Step3: Access the macroinvertebrates traits data
 
-* **NOTE**: Before accessing the species ecological preferences, all the indicates traits data will first be downloaded even if one species is indicated. But after, the data will be loaded from computer memory for the proceeding queries. 
+* The macroinvertebrates data is easily accessed by identifying the species traits needed by the user. To ably get trait spellings, the user is strongly advised to run **`fw_dbguide()`** function and filter out the organism groups. The trait names can be copied and pasted in the **`ecoparams`** parameter of the function.
+* Multiple species can be set as indicated below but also multiple species in a dataframe of vector of names in acceptable.
+* Ensure that right species names are indicated to avoid detailed checks that delays data search and might lead to erroneous trait extraction or errors. Checks are conducted on the species names to ensure they are harmonized to trait searches. However, these checks have operational overheads in data searches.
 
-```{r access species ecological traits}
+*1. Access single species name.*
+
+```{r access single species name}
 
 #One species 
-
 mmdata_traits <- fw_fetchdata(data =  "Margaritifera margaritifera",
-                            organismgroup = 'mi',
-                            ecoparams = c('stream zonation preference'),
-                            token = tokendata,
-                            inform = TRUE,
-                            cachepath = 'cache')
+                                        organismgroup = 'mi',
+                                        ecoparams = c('stream zonation preference'),
+                                        inform = TRUE,
+                                        cachefolder = 'cache')
+```
 
-#for more than one species in a list 
+*2. Accsess more than one species in a list*
+
+```{r species names in alist or vector}
 
 specieslist <- c("Margaritifera margaritifera",
                  "Pseudunio auricularius",
@@ -67,14 +53,17 @@ specieslist <- c("Margaritifera margaritifera",
                  "Parastenocaris germanica")
 
 multspp <- fw_fetchdata(data =  specieslist,
-                            organismgroup = 'mi',
-                            ecoparams = c('stream zonation preference'),
-                            token = tokendata,
+                        organismgroup = 'mi',
+                        ecoparams = c('stream zonation preference'),
                         inform = TRUE,
                         sanitize = TRUE,
-                        cachepath = 'cache')
+                        cachefolder = 'cache')
 
-#species in a data frame 
+```
+
+*3 Species names accessed in a data frame*
+
+```{r species names in a dataframe not list or vector}
 
 macrodf <- data.frame(organismgroup = rep('mi', 5),
                       species = c("Margaritifera margaritifera",
@@ -84,25 +73,27 @@ macrodf <- data.frame(organismgroup = rep('mi', 5),
                  "Parastenocaris germaica"))
 
 multspp_df <- fw_fetchdata(data =  macrodf,
-                            organismgroup = 'mi',
-                           spcol = 'species',
-                            ecoparams = c('stream zonation preference'),
-                            token = tokendata,
-                        inform = TRUE,
-                        sanitize = TRUE,
-                        cachepath = 'cache')
+                                     organismgroup = 'mi',
+                                     spcol = 'species',
+                                     ecoparams = c('stream zonation preference'),
+                                     inform = TRUE,
+                                     sanitize = TRUE,
+                                     cachefolder = 'cache')
 
 ```
 
-###Step4. Visualize extracted outputs
+
+**Post data searches: visualizing traits fetched from the database.**
+
+If the species considered are more than 1, then visualization can be to determine the frequency of each trait. This is an optional function for post data searches.
 
 ```{r viszualize outputs, fig.width = 6, fig.height= 5, fig.align='center'}
 
 #fw_visualize(foutput = mmdata_traits)# not necessary since its one species
 
-fw_visualize(output = multspp)
-
-fw_visualize(output = multspp_df)
+# fw_visualize(output = multspp)
+# 
+# fw_visualize(output = multspp_df)
 
 ```
 

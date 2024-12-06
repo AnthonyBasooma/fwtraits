@@ -5,10 +5,11 @@
 \title{Access and loading the token key}
 \usage{
 fw_token(
-  apikey = fw_loadapikey(),
+  apikey = NULL,
   seed = NULL,
-  inform = FALSE,
-  cachepath = NULL
+  cachefolder = NULL,
+  secure = TRUE,
+  inform = FALSE
 )
 }
 \arguments{
@@ -17,11 +18,19 @@ fw_token(
 \item{seed}{\code{integer}. An integer to help track the caching of the access token generated during data collation.
 If a user wants to get a new token, then the seed should be changed.}
 
-\item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
-
-\item{cachepath}{\code{string}. The root path were the cached data will be saved on the user PC.
+\item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
 If the path is not provided, the cached information will be saved in the current
 working directly.}
+
+\item{secure}{\code{logical}. If \code{TRUE}, the user will be prompted to set the API key in the
+.Renviron file by running the \code{\link{fw_setapikey}} function. The User must strictly
+type in API_KEY = 'api key', save, close the file and restart the R session or RStudio
+for the API_KEY environment to be captured.
+If \code{FALSE}, then the key will be entered directly in the API_KEY directly in the
+fw_token() function. This method is insecure, since the key can be obtained from the codes
+by other users.}
+
+\item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
 }
 \value{
 \code{string} token authentication token key
@@ -45,33 +54,9 @@ handling the API key on fwtraits GitHub.
 
 #1.Use the API key in shared R examples
 
-#check https://httr2.r-lib.org/articles/wrapping-apis.html for more information
-
-#step 1
-#sessionkey <- secret_make_key()
-
-#edit this page with usethis::edit_r_environ()
-
-#enc_api <- secret_encrypt(x = 'apikey', key = sessionkey)
-
-#encrypted token for my api key
-
-enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
-
-#the FWTRAITS_KEY is the unlock key saved in my local environment.
-
-#download fish catchment region data
-
-#setting the FWTRAITS_KEY
-
-#run this usethis::edit_r_environ()
-
-apikeydecrypted <- loadapikey(test = TRUE, sacrambled_apikey = enc_api,
-                              fwtraitskey =  'FWTRAITS_KEY')
-
-tokendata <- fw_token(key= apikeydecrypted, seed = 1234)
-
 }
 
-
+}
+\seealso{
+\code{\link{fw_setapikey}}
 }

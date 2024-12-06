@@ -21,7 +21,7 @@ library(fwtraits)
 
 **Step 1: Get the before you start page for instructions on how to access the database**.
 
-To ably set the API key and obtain the token, check the secure_api_key.html vignettes. Briefly, they are two ways to set the API key: 1) in private user codes and 2) public/shared codes. Since in the vignettes the codes are shared, the API key willl be encryted and decrypted on querying the database.
+Its optional to check how the database can be accessed but in step 2, I have created a document on how to set the API key and get the access token automatically.
 
 ```{r beforeyoure start procedure}
 #fw_be4ustart()
@@ -29,57 +29,52 @@ To ably set the API key and obtain the token, check the secure_api_key.html vign
 
 **Step 2: Get authentication token using the API key**.
 
-```{r generate token}
+For data to be accessed, the Application Programming Interface Key (API key) must be provided. This is a time key provided during registration or a request to the database managers on registration@freshwaterecology.info for already registered members.
+If the key is acquired, please follow  \code{\link{How to handle the API key in public and private codes.}}.
 
-#please check secure_api page to learn how to secure the API key
 
-enc_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
 
-#download fish catchment region data
+**Step 3: Access the fish traits data**
 
-apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = enc_api,
-                              fwtraitskey =  'FWTRAITS_KEY')
-
-tokendata <- fw_token(apikey= apikeydecrypted, seed = 1234, cachepath = 'cache')
-
-```
-
-**Access the fish traits data**
+* The fish data is easily accessed by identifying the traits needed by the user. To ably get trait spellings, the user is strongly advised to run **`fw_dbguide()`** function and filter out the organism groups. The trait names can be copied and pasted in the **`ecoparams`** parameter of the function.
+* Multiple species can be set as indicated below but also multiple species in a dataframe of vector of names in acceptable.
+* Ensure that right species names are indicated to avoid detailed checks that delays data search and might lead to erroneous trait extraction or errors. Checks are conducted on the species names to ensure they are harmonized to trait searches. However, these checks have operational overheads in data searches.
 
 ```{r access species ecological traits}
 
 #One species 
-
-
 migration <- fw_fetchdata(data = "Abramis brama", organismgroup = 'fi',
-                          ecoparams = 'migration', 
-                          token = tokendata,
-                          cachepath = 'cache',
+                          ecoparams = 'migration',
+                          cachefolder = 'cache',
                           inform = TRUE)
 
-
+#For multiple species, the species column should be provided.
+#For detailed understanding of the function, run ?fw_fetchdata
 
 data("speciesdata") #data archived in fwtraits
 
 fishtraits <- fw_fetchdata(data = speciesdata, 
-                           organismgroup = 'fi', 
-                           token = tokendata,
+                           organismgroup = 'fi',
                            spcol = 'scientificName', 
                            ecoparams = c('migration', 'threat austria',
                                          'oxygen tolerence', 'migration fibs'),
+                           seed = 1123,
                            sanitize = TRUE,
-                           cachepath = 'cache',
+                           cachefolder  = 'cache',
                            inform = TRUE)
+head(fishtraits)
 
 ```
 
-**Visualize**
+**step 4: Post data searches: visualizing traits fetched from the database.**
+
+If the species considered are more than 1, then visualization can be to determine the frequency of each trait. This is an optional function for post data searches.
 
 ```{r viszualize outputs, fig.width = 6, fig.height= 5, fig.align='center'}
 
-fw_visualize(output = fishtraits, params = 'migration')
-
-fw_visualize(output = fishtraits, params = 'migration fibs')
+# fw_visualize(output = fishtraits, params = 'migration')
+# 
+# fw_visualize(output = fishtraits, params = 'migration fibs')
 
 ```
 

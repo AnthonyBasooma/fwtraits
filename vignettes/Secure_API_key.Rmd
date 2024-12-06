@@ -16,82 +16,34 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(fwtraits)
-library(httr2)
+
 ```
 
-## 1. API key used in private codes.
+## Steps in securing the API key.
 
 1. Acquire the API key, the user can follow the steps elucidated in **`fw_be4ustart()`** function.
 
-2. Copy the API key beforehand.
+2. Edit the .Renviron file by running **`fw_setapikey()`**. 
 
-3. Provide the seed parameter in the **`fw_token()`** function and execute. A pop up will appear and paste in the copied API key in step 2.
+3. If the .Renviron window opens, please type in
+API_KEY = "9f7be425-e099-11ee--.............." (alphanumeric API key obtained in step 1 and save.)
 
-4. A token will be automatically generated, which will be used in all the queries.
+4. Save and restart the R session.
 
-Note: Even for private codes, don't share the key in the codes.
+5. The key will be ready for use and will not required to be provided anywhere within the codes thereafter.
 
-5. You can then proceed to collating data for fish or macroinvertebrates in the files attached.
-
-```{r}
-
-#apikey <-  '36 character code provided during registration'
-
-#tokendata <- fw_token(seed = 1122)# the seed is digit used to cache the data.
-
-```
+6. When you test with the codes, a welcome message will be printed before data is retrieved.
 
 
-
-## 2. Public codes sharing and use
+### Test if the API key is well saved
 
 ```{r}
 
-#step 1: Generate a secret key using httr2:make_secret_key() function
 
-secretkey <- secret_make_key() #secret key automatically generated will be saved in the r environment
-
-#step 2: setting the FWTRAITS_KEY where to save the secretkey
-
-#run this usethis::edit_r_environ()
-
-#which open the r environment and type in
-#FWTRAITS_KEY = 'enter secretkey string generated in step 1'
-#the FWTRAITS_KEY is the unlock key saved in my local environment
-
-#step3: Use the secret key to scramble the API key
-
-#scrambled_api_key <- secret_encrypt(apikey, secretkey)
-
-
-#encrypted token for api key
-
-#step 4: use the scrambled api key in the public codes:
-
-#steps 1 and 2 are not included in the codes but rather the output scrambled_key
-#generated in step 2 is used
-
-
-```
-
-### Use scrambled API key to retrieve data from freshwaterecology.info database.
-
-```{r}
-
-sacrambled_api <- "p6-9gAvYXveyC_B_0hTzyYl5FwLRwZEPD-ZE9Y4KrIBstgNc8K2Mr4u6t39LGZ2E1m9SOw"
-#scrambled_api_key
-
-#Download fish catchment region data
-
-apikeydecrypted <- fw_loadapikey(test = TRUE, sacrambled_apikey = sacrambled_api,
-                              fwtraitskey =  'FWTRAITS_KEY')
-
-tokendata <- fw_token(apikey= apikeydecrypted, seed = 1234, cachepath = 'cache')
-
-fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
-                             ecoparams = 'catchment region',
-                             token = tokendata,
-                         cachepath = 'cache')#the species spelling is checked
+fishdata <- fw_fetchdata(data = 'Abramis brmaam', 
+                         organismgroup = 'fi',
+                         ecoparams = 'migration',
+                         cachefolder = 'cache')#the species spelling is checked
 
 ```
 
