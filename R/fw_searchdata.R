@@ -269,7 +269,7 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
 
   #loop through organism group
 
-  organismdata <- sapply(organismgroup, function(gg){
+  organismdata <- sapply(unlist(organismgroup), function(gg){
 
     #get standard names for traits in the database
 
@@ -295,6 +295,10 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
 
     if(gg == 'mi' | gg=='pb'){
 
+      #get the references list
+
+      if(is(refdata, 'list')) refs <- refdata[[gg]] else refs <- refdata
+
       #Load reference dataset for either macroinvertebrates or benthos
 
       #clean species names
@@ -306,7 +310,7 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
 
         #clean taxa names before searching
 
-        taxaclean <- clean_names(refdata, prechecks = TRUE, standardnames = invdata)
+        taxaclean <- clean_names(sp = refs, prechecks = TRUE, standardnames = invdata)
 
         speciestaxa <- unique(invdata$Taxagroup[which(unlist(invdata$Taxon)%in%taxaclean ==TRUE)])
 
@@ -317,7 +321,7 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
 
         #clean taxa names before searching
 
-        taxaclean <- clean_names(refdata, prechecks = TRUE, standardnames = bendata)
+        taxaclean <- clean_names(sp = refs, prechecks = TRUE, standardnames = bendata)
 
         speciestaxa <- unique(bendata$Class[which(unlist(bendata$Taxon)%in%taxaclean ==TRUE)])
 
@@ -381,9 +385,6 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
     }
 
   },simplify = FALSE)
-
-
-
 
   return(organismdata)
 }

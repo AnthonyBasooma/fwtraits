@@ -1,5 +1,6 @@
 #' @title ggplot2 visualization.
 #'
+#' @param data The species data either in sf format or with coordinate columns to enable plotting.
 #' @param output fetchdata output only accepted.
 #' @param params species ecological parameters selected if there are more than one.
 #' @param lat,lon \code{string}. These are columns that have both the longitude and latitude
@@ -8,12 +9,13 @@
 #'        visualization maps. The species coordinates must within the indicated bounding box
 #'        or basin boundary.
 #' @param group Particular organism group to filter out to allow visualization.
-#' @param viridis \code{logical} Either to use scale_fill_viridis or scale_fill_grey.
+#' @param reduce \code{logical}. If TRUE, the coordinates are rounded off which reduces the distinct points
+#'        to ease ploting. Default FALSE.
 #' @param bgcolor \code{string}. The color which will be used to fill the maps.
 #' @param bgtheme \code{string}. The theme to be used for the map based on the ggplot2 package
 #'        themes including \code{theme_bw}, \code{theme_classic}.
+#' @param epsg Coordinate reference number. Default is 4326.
 #'
-#' @importFrom stats aggregate
 #'
 #' @return ggplot2 display
 #'
@@ -22,7 +24,7 @@
 #'
 fw_maps <- function(data, output, lat = NULL, lon = NULL, basin,
                     params = NULL, reduce = FALSE,
-                    group = NULL, bgtheme = 'bw', color = 'purple',
+                    group = NULL, bgtheme = 'bw',
                     bgcolor = 'grey50', epsg = 4326){
 
   #check if the species input is a dataframe
@@ -132,7 +134,7 @@ fw_maps <- function(data, output, lat = NULL, lon = NULL, basin,
 
     ggplot2::geom_sf(data = basin, fill = bgcolor)+
 
-    ggplot2::geom_sf(data = spdatafinal, color = color, na.rm = TRUE)+
+    ggplot2::geom_sf(data = spdatafinal, na.rm = TRUE)+
 
     ggplot2::facet_wrap(~parametervalue, ncol = ncols)+
 

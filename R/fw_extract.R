@@ -48,8 +48,6 @@ fw_split <- function(data,
   groupData <- list()
   spdetails <- list()
 
-  if(any(organismgroup=='mi' | organismgroup =='pb')==TRUE) refdata <- data else refdata <- NULL
-
   datalists <- fw_searchdata(organismgroup = organismgroup,
                                     ecoparams = ecoparams,
                                     refdata  = data,
@@ -62,7 +60,6 @@ fw_split <- function(data,
   #check if the lists returned data
 
   for (ii in seq_along(datalists)) {
-
 
     taxanames <- names(datalists)[ii]
 

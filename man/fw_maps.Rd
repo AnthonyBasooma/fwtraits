@@ -14,12 +14,13 @@ fw_maps(
   reduce = FALSE,
   group = NULL,
   bgtheme = "bw",
-  color = "purple",
   bgcolor = "grey50",
   epsg = 4326
 )
 }
 \arguments{
+\item{data}{The species data either in sf format or with coordinate columns to enable plotting.}
+
 \item{output}{fetchdata output only accepted.}
 
 \item{lat, lon}{\code{string}. These are columns that have both the longitude and latitude
@@ -31,6 +32,9 @@ or basin boundary.}
 
 \item{params}{species ecological parameters selected if there are more than one.}
 
+\item{reduce}{\code{logical}. If TRUE, the coordinates are rounded off which reduces the distinct points
+to ease ploting. Default FALSE.}
+
 \item{group}{Particular organism group to filter out to allow visualization.}
 
 \item{bgtheme}{\code{string}. The theme to be used for the map based on the ggplot2 package
@@ -38,7 +42,7 @@ themes including \code{theme_bw}, \code{theme_classic}.}
 
 \item{bgcolor}{\code{string}. The color which will be used to fill the maps.}
 
-\item{viridis}{\code{logical} Either to use scale_fill_viridis or scale_fill_grey.}
+\item{epsg}{Coordinate reference number. Default is 4326.}
 }
 \value{
 ggplot2 display

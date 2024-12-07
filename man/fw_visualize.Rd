@@ -10,8 +10,7 @@ fw_visualize(
   ncol = 2,
   params = NULL,
   group = NULL,
-  viridis = TRUE,
-  bg = 1
+  viridis = TRUE
 )
 }
 \arguments{
@@ -26,8 +25,6 @@ fw_visualize(
 \item{group}{Particular organism group to filter out to allow visualization.}
 
 \item{viridis}{\code{logical} Either to use scale_fill_viridis or scale_fill_grey}
-
-\item{bg}{\code{numeric} Either 1 for theme_bw, 2 for theme_classic and 0 the default ggplot2 theme.}
 }
 \value{
 ggplot2 display

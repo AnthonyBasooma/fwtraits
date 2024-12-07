@@ -18,7 +18,7 @@ fw_fetchdata(
   wide = FALSE,
   na.rm = TRUE,
   warn = FALSE,
-  sanitize = FALSE,
+  sanitize = TRUE,
   errorness = 27,
   pct = 80
 )

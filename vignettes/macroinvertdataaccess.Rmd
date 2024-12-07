@@ -72,10 +72,15 @@ macrodf <- data.frame(organismgroup = rep('mi', 5),
                  "Musculium transversum",
                  "Parastenocaris germaica"))
 
+db <- fw_dbguide('mi')
+
 multspp_df <- fw_fetchdata(data =  macrodf,
                                      organismgroup = 'mi',
                                      spcol = 'species',
-                                     ecoparams = c('stream zonation preference'),
+                                     ecoparams = c('stream zonation preference',
+                                                   "temperature range preference",
+                                                   "salinity preference I",
+                                                   "feeding type"),
                                      inform = TRUE,
                                      sanitize = TRUE,
                                      cachefolder = 'cache')
@@ -89,11 +94,10 @@ If the species considered are more than 1, then visualization can be to determin
 
 ```{r viszualize outputs, fig.width = 6, fig.height= 5, fig.align='center'}
 
-#fw_visualize(foutput = mmdata_traits)# not necessary since its one species
 
-# fw_visualize(output = multspp)
-# 
-# fw_visualize(output = multspp_df)
+fw_visualize(output = multspp)
+
+fw_visualize(output = multspp_df)
 
 ```
 

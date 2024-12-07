@@ -67,10 +67,10 @@ clean_names <- function(sp, grouplists = NULL, prechecks = FALSE, standardnames 
 
   #run through the species list
 
-  spcleandata <- sapply(spunique, function(x){
+  spcleandata <- sapply(spunique, function(mm){
 
     # convert all letters to lower
-    tlw <- tolower(x)
+    tlw <- tolower(mm)
     # remove accents
     actr <- iconv(tlw, from = "UTF-8", to = "ASCII//TRANSLIT")
 

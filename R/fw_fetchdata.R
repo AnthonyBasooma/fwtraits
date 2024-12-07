@@ -50,7 +50,7 @@ fw_fetchdata <- function(data, organismgroup,
                          wide = FALSE,
                          na.rm = TRUE,
                          warn = FALSE,
-                         sanitize = FALSE,
+                         sanitize = TRUE,
                          errorness = 27,
                          pct = 80
 ){

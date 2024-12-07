@@ -2,3 +2,4 @@
 .httr-oauth
 inst/doc
 ^vignettes/cache
+^cache$

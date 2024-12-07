@@ -36,7 +36,7 @@ fw_keyload <- function() {
 
   if(key_loaded=="") stop('The API key has not been well set in the .Renviron file. Run fw_setapikey() and follow the instruction carefully.')
 
-  if(grepl("[A-Za-z0-9]", key_loaded) !=TRUE) stop("The key provided save in .Renviron mis wrong. Please repeat saving and run again.")
+  if(grepl("[A-Za-z0-9]", key_loaded) !=TRUE) stop("The key provided save in .Renviron is wrong. Please repeat saving and run again.")
 
   if (nchar(key_loaded) != 36) stop("Please check the API Key provided it exceeds 36 characters.")
 
