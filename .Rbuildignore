@@ -8,3 +8,5 @@
 ^docs$
 ^cache$
 ^.csv$
+^_pkgdown\.yml$
+^pkgdown$
