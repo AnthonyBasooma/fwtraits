@@ -1,6 +1,6 @@
 .Rproj.user
 .httr-oauth
 inst/doc
-^vignettes/cache
-^cache$
+vignettes/cache
+cache
 docs
