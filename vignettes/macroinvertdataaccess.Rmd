@@ -94,7 +94,6 @@ If the species considered are more than 1, then visualization can be to determin
 
 ```{r viszualize outputs, fig.width = 6, fig.height= 5, fig.align='center'}
 
-
 fw_visualize(output = multspp)
 
 fw_visualize(output = multspp_df)
