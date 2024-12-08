@@ -1,0 +1,231 @@
+---
+title: "Retrieve data for taxomomic groups."
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Retrieve data for taxomomic groups.}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(fwtraits)
+```
+
+## Step 1: Securing and loading the API key.
+
+Please follow the secure_the_api_key steps and secure the API in the R environment before retrieving the species traits form the database. To check on the available traits in the database, you can check with the **`fw_dbguide()`** or browse the database directly in [database traits](https://www.freshwaterecology.info/abbreviations.php).
+
+
+## Step2: Fetching groups data and visualisation
+
+* To ensure the exact trait spellings are used, the user is strongly advised to run **`fw_dbguide()`** function and filter out the organism groups. The trait names can be copied and pasted in the **`ecoparams`** parameter of the **`fw_fetchdata()`** function.
+
+* Multiple species can be set in a list or dataframe.
+
+* Wide data formats can be displayed, but the longer version is the output by default.
+
+* Ensure the right species names are indicated to avoid detailed checks that delays data search and might lead to erroneous trait extraction or errors. Checks are conducted on the species names to ensure they are harmonized to trait searches.
+
+
+### 1. Fishes
+
+**1.1: Single species**
+
+```{r Retrieve fish species data for one species}
+
+migration <- fw_fetchdata(data = "Abramis brama",
+                          organismgroup = 'fi',
+                          ecoparams = 'migration',
+                          cachefolder = 'cache')
+
+head(migration)
+```
+
+
+```{r Retrieve fish species data for one fish species}
+
+#species data archived in fwtraits
+
+data("speciesdata") 
+
+traitsout <- fw_fetchdata(data = speciesdata, 
+                           organismgroup = 'fi',
+                           spcol = 'scientificName', 
+                           ecoparams = c('migration', 'threat austria',
+                                         'oxygen tolerence', 'migration fibs'),
+                           cachefolder  = 'cache')
+head(traitsout)
+
+```
+
+**1.3 Visualizing fish traits**
+
+```{r Viszualize outputs for fish, fig.width = 8, fig.height= 6, fig.align='center'}
+ 
+fw_visualize(output = traitsout)
+
+```
+
+
+### 2. Macroinvertebrates
+
+**2.1: Single species**
+
+```{r Macroinvertebrates traits retrieval for one species}
+
+mmdata_traits <- fw_fetchdata(data =  "Margaritifera margaritifera",
+                                        organismgroup = 'mi',
+                                        ecoparams = c('stream zonation preference'),
+                                        inform = TRUE,
+                                        cachefolder = 'cache')
+```
+
+**2.2: More than one species in a vector/list**
+
+```{r Species names in alist or vector for macroinvertebrates}
+
+speciesvec <- c("Margaritifera margaritifera",
+                 "Pseudunio auricularius",
+                 "Musculium lacustre",
+                 "Musculium transversum",
+                 "Parastenocaris germanica")
+
+multspp <- fw_fetchdata(data =  speciesvec,
+                        organismgroup = 'mi',
+                        ecoparams = c('stream zonation preference'),
+                        inform = TRUE,
+                        cachefolder = 'cache')
+head(multspp)
+
+```
+
+**2.3: More than one species in a dataframe**
+
+```{r Species names in a dataframe not list or vector}
+
+macrodf <- data.frame(organismgroup = rep('mi', 13),
+                      species = c("Margaritifera margaritifera",
+                                  "Pseudunio auricularius",
+                                  "Musculium lacustre",
+                                  "Musculium transversum",
+                                  "Corbicula fluminea",
+                                  "Congeria leucophaeata",
+                                  "Dreissena polymorpha",
+                                  "Dreissena rostriformis bugensis",
+                                  "Parastenocaris germaica",
+                                  "Branchiobdella balcanica",
+                                  "Branchiobdella hexadonta",
+                                  "Branchiobdella parasita",
+                                  "Branchiobdella pentadonta"))
+
+multspp_df <- fw_fetchdata(data =  macrodf,
+                           organismgroup = 'mi',
+                           spcol = 'species',
+                           ecoparams = c("stream zonation preference", "feeding type"),
+                           cachefolder = 'cache')
+head(multspp_df)
+
+```
+
+
+**2.4: Data visualization for macroinvertebrates**
+
+If the species considered are more than 1, then visualization can be to determine the frequency of each trait. This is an optional function for post data searches.
+
+```{r Viszualize outputs for macroinvertebrates, fig.width = 6, fig.height= 5, fig.align='center'}
+
+fw_visualize(output = multspp)
+
+fw_visualize(output = multspp_df)
+
+```
+
+### 3. Macrophytes
+
+```{r Species names in list or vector for macrophytes}
+
+mpp <- fw_fetchdata(data = c("Amblystegium fluviatile",
+                               "Amblystegium humile",
+                               "Amblystegium riparium",
+                               "Amblystegium serpens",
+                               "Amblystegium tenax",
+                               "Amblystegium varium"),
+                          organismgroup = 'mp',
+                          ecoparams = c('zone - systema'),
+                          cachefolder = 'cache')
+
+```
+
+### 4. Phytobenthos
+
+```{r Species names in a list or vector for phytobenthos}
+
+pbdata <- fw_fetchdata(data = c("Gongrosira debaryana",
+                             "Gongrosira fluminensis",
+                             "Hydrodictyon reticulatum",
+                             "Sphaerobotrys fluviatilis",
+                             "Stigeoclonium farctum",
+                             "Stigeoclonium tenue",
+                             "Tetraspora gelatinosa",
+                             "Thorea hispida"),
+                      organismgroup = 'pb',
+                      ecoparams = c('substrate preference'),
+                      cachefolder = 'cache', na.rm = FALSE)
+head(pbdata)
+
+```
+
+```{r Species names in a list for phytobenthos and macroinvertebrates}
+
+mipbdata <- fw_fetchdata(data = list(mi=c("Congeria kusceri",
+                            "Congeria leucophaeata",
+                            "Dreissena polymorpha",
+                            "Dreissena rostriformis bugensis"),
+                            pb= c("Gongrosira debaryana",
+                                   "Gongrosira fluminensis",
+                                   "Hydrodictyon reticulatum",
+                                   "Sphaerobotrys fluviatilis",
+                                   "Stigeoclonium farctum",
+                                   "Stigeoclonium tenue",
+                                   "Tetraspora gelatinosa",
+                                   "Thorea hispida")),
+                   organismgroup = c('mi','pb'),
+                   ecoparams = list(mi = c('stream zonation preference'),
+                                    pb = c('substrate preference')),
+                   cachefolder = 'cache')
+
+head(mipbdata)
+
+```
+
+### 5. Phytoplankton
+
+```{r Species names in list or vector for phytoplankton}
+
+ppdata <- fw_fetchdata(data = c("Anathece clathrata",
+                             "Anathece minutissima",
+                             "Anthophysa vegetans",
+                             "Apocalathium aciculiferum",
+                             "Adlafia minuscula var. muralis"),
+                    organismgroup = 'pp',
+                    ecoparams = c('stenoecy factor', 'life form'),
+                    cachefolder = 'cache')
+
+head(ppdata)
+
+```
+
+## step3. References
+
+* Schmidt-Kloiber, A., & Hering, D. (2015). www.freshwaterecology.info - An online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007
+
+
+
+

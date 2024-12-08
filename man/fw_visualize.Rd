@@ -10,7 +10,7 @@ fw_visualize(
   ncol = 2,
   params = NULL,
   group = NULL,
-  viridis = TRUE
+  color = "purple"
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ fw_visualize(
 
 \item{group}{Particular organism group to filter out to allow visualization.}
 
-\item{viridis}{\code{logical} Either to use scale_fill_viridis or scale_fill_grey}
+\item{color}{\code{string} Change the color for the bar graphs being plotted.}
 }
 \value{
 ggplot2 display

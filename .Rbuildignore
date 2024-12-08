@@ -10,3 +10,4 @@
 ^.csv$
 ^_pkgdown\.yml$
 ^pkgdown$
+^datachecks$

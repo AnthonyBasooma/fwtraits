@@ -5,7 +5,7 @@
 #' @param ncol Number of columns to display the data in facet_wrap.
 #' @param params species ecological parameters selected if there are more than one.
 #' @param group Particular organism group to filter out to allow visualization.
-#' @param viridis \code{logical} Either to use scale_fill_viridis or scale_fill_grey
+#' @param color \code{string} Change the color for the bar graphs being plotted.
 #'
 
 #' @return ggplot2 display
@@ -14,7 +14,7 @@
 #'
 #'
 fw_visualize <- function(output, scales = 'free', ncol = 2, params = NULL,
-                         group = NULL, viridis = TRUE){
+                         group = NULL, color = 'purple'){
 
   #check if the output is fetch data
 
@@ -39,9 +39,13 @@ fw_visualize <- function(output, scales = 'free', ncol = 2, params = NULL,
 
   if(!requireNamespace('dplyr', quietly = TRUE))stop('Install dplyr package to continue.')
 
+  if(!requireNamespace('ggplot2', quietly = TRUE))stop('Install ggplot2 package to continue.')
+
+  if(!requireNamespace('tidytext', quietly = TRUE))stop('Install tidytext package to continue.')
+
   species <- NULL
 
-  datafinal <- getdfinal |> dplyr::group_by(species, parametervalue, parameter) |>
+  datafinal <- getdfinal |> dplyr::group_by(parametervalue, parameter) |>
 
    dplyr::summarise(cts = length(species), .groups = 'drop')
 
@@ -49,68 +53,38 @@ fw_visualize <- function(output, scales = 'free', ncol = 2, params = NULL,
 
   parametervalue <- NULL
 
-  x <- NULL
+  cts <- NULL
 
-  gout <- ggplot2::ggplot(datafinal, ggplot2::aes(x = parametervalue, fill = parameter))+
+  gout <- ggplot2::ggplot(datafinal, ggplot2::aes(x = tidytext::reorder_within(parametervalue, -cts , parameter),
+                                                  y= cts))+
 
-    ggplot2::geom_bar()+
+    ggplot2::geom_bar(stat = 'identity', fill = color)+
 
     {if(length(unique(unlist(datafinal$parameter)))>1){
 
       ggplot2::facet_wrap(~ parameter, scales = scales, ncol = ncol)
 
     }
-      #else{
-      #ggplot2::ggtitle(paramname)
-    #}
     }+
     ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.1)))+
 
-    {if(isTRUE(viridis)) ggplot2::scale_fill_viridis_d() else ggplot2::scale_fill_grey()}+
-
     ggplot2:: theme_bw()+
+
+    tidytext::scale_x_reordered()+
 
     ggplot2::theme(text = ggplot2::element_text(size = 12),
 
-          legend.position = 'none',
+                   panel.grid.major = ggplot2::element_blank(),
 
-          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                   panel.grid.minor = ggplot2::element_blank(),
 
-          strip.text = ggplot2::element_text(face = 'bold'))+
+                   legend.position = 'none',
 
-    ggplot2::labs(x=" ", y ="Number of species")
+                   axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+
+                   strip.text = ggplot2::element_text(face = 'bold'))+
+
+    ggplot2::labs(x= "Species traits", y ="Number of species")
 
   return(gout)
 }
-
-
-
-# #remove parameter that have only one count
-# counts <- table(getdfinal$parameter)
-#
-# nameOut <- names(counts[which(counts>=2)])
-#
-# if(length(nameOut)<1){
-#   stop("No species ecological parameters to viusualise after removing singular ones")
-# }  else if(length(nameOut)==1){
-#   paramname <- nameOut
-#   nameOut
-# } else{
-#   nameOut
-# }
-#
-# datafinal <- getdfinal[getdfinal$parameter%in%nameOut,]
-#
-#
-# dfsummary <- aggregate(datafinal$valuedata,
-#                        by= list(organismgroup = datafinal$organismgroup,
-#                                 parameter = datafinal$parameter,
-#                                 valuedata = datafinal$valuedata),
-#                        FUN = length)
-#
-#
-#
-#
-#
-#
-

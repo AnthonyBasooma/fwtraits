@@ -9,8 +9,6 @@
 #'      taxonomic groups.
 #' @param na.rm \code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
 #'        Default \code{TRUE}.
-#' @param sanitize \code{logical} Either \code{TRUE} to return complete trait names but not abbreviations which is normally returned
-#'      from the database.
 #'
 #'
 #' @importFrom stats reshape
@@ -32,8 +30,7 @@
 #'
 #'
 #' fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
-#'                              ecoparams = 'catchment region',
-#'                              token = tokendata)#the species spelling is checked
+#'                              ecoparams = 'migration')#the species spelling is checked
 #' }
 #'
 #' @seealso \code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_split}}
@@ -50,7 +47,6 @@ fw_fetchdata <- function(data, organismgroup,
                          wide = FALSE,
                          na.rm = TRUE,
                          warn = FALSE,
-                         sanitize = TRUE,
                          errorness = 27,
                          pct = 80
 ){
@@ -133,7 +129,7 @@ fw_fetchdata <- function(data, organismgroup,
 
       descvalue  <-  strsplit(x$description,split="_ ",fixed=TRUE)
 
-      traitvalue <-  strsplit(x$value,split="_ ",fixed=TRUE)
+      if(grepl('_', x$value)==TRUE) traitvalue <-  strsplit(x$value,split="_ ",fixed=TRUE) else  traitvalue <-  strsplit(x$value,split=", ",fixed=TRUE)
 
       traits <- mapply(FUN = function(taxagroup, sp, par, desc, value) data.frame(organismgroup = taxagroup,
                                                                                   species = species, parameter = parameter,
@@ -162,38 +158,33 @@ fw_fetchdata <- function(data, organismgroup,
 
   #add the traits and description to make it wide
 
-  if(isTRUE(sanitize) || as.logical(sanitize)){
+  traitdf$tf <- traitdf$parameter== traitdf$description
 
-    traitdf$tf <- traitdf$parameter== traitdf$description
+  traitdf$value2 <- ifelse(traitdf$tf==TRUE,  traitdf$value, traitdf$description)
 
-    traitdf$value2 <- ifelse(traitdf$tf==TRUE,  traitdf$value, traitdf$description)
+  #handle for catchment region
 
-    #handle for catchment region
+  traitdf$link = paste0(traitdf$parameter, traitdf$value2)
 
-    traitdf$link = paste0(traitdf$parameter, traitdf$value2)
+  traitdf <- traitdf[, !names(traitdf) %in% c("tf", "value2")]
 
-    traitdf <- traitdf[, !names(traitdf) %in% c("tf", "value2")]
+  # #get the standard database names
+  dbstandard <- fw_dbguide()
 
-    # #get the standard database names
-    dbstandard <- fw_dbguide()
+  dbstandard$link <- paste0(dbstandard$ecoparameters_cleaned, dbstandard$parameterabbrevation)
 
-    dbstandard$link <- paste0(dbstandard$ecoparameters_cleaned, dbstandard$parameterabbrevation)
+  dbstandard <- dbstandard[, c("link", "parametervalue")]
 
-    dbstandard <- dbstandard[, c("link", "parametervalue")]
+  if(isTRUE(na.rm) || as.logical(na.rm)) all_x <- FALSE else all_x <- TRUE
 
-    if(isTRUE(na.rm) || as.logical(na.rm)) all_x <- FALSE else all_x <- TRUE
+  sanitized <- merge(traitdf, dbstandard, by='link', all.x = all_x)
 
-    sanitized <- merge(traitdf, dbstandard, by='link', all.x = all_x)
+  if("catchment region" %in%ecoparams==TRUE) sanitized$parametervalue <- ifelse(sanitized$parameter=='catchment region'&sanitized$value=='n', 'native',
+                                                                                ifelse(sanitized$parameter=='catchment region'&sanitized$value=='a', 'alien',
+                                                                                       sanitized$parametervalue))
 
-    if("catchment region" %in%ecoparams==TRUE) sanitized$parametervalue <- ifelse(sanitized$parameter=='catchment region'&sanitized$value=='n', 'native',
-                                                                                  ifelse(sanitized$parameter=='catchment region'&sanitized$value=='a', 'alien',
-                                                                                  sanitized$parametervalue))
+  sanitized <- sanitized[, !names(sanitized) %in% c('link')]
 
-    sanitized <- sanitized[, !names(sanitized) %in% c('link')]
-  }else{
-    sanitized <- traitdf
-
-  }
 
   if(isTRUE(wide)){
 

@@ -18,7 +18,6 @@ fw_fetchdata(
   wide = FALSE,
   na.rm = TRUE,
   warn = FALSE,
-  sanitize = TRUE,
   errorness = 27,
   pct = 80
 )
@@ -76,9 +75,6 @@ Default \code{TRUE}.}
 
 \item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
 
-\item{sanitize}{\code{logical} Either \code{TRUE} to return complete trait names but not abbreviations which is normally returned
-from the database.}
-
 \item{errorness}{\code{numeric} Similar to \code{pct}, \code{errorness} parameter uses the distance differences between the user-provided
 names and all the taxa group species standard names. The lower the percentage error, the higher the similarity in the species
 names provided. Default is 20 and beyond 30, a warning is showed to avoid wrong species replace the user provided name, which leads
@@ -103,8 +99,7 @@ Arranging and user friendly selection of traits at different taxonomic levels.
 
 
 fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
-                             ecoparams = 'catchment region',
-                             token = tokendata)#the species spelling is checked
+                             ecoparams = 'migration')#the species spelling is checked
 }
 
 }
