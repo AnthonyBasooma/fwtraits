@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml)
-[![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/graph/badge.svg?token=07OUlLSQus)](https://codecov.io/gh/AnthonyBasooma/fwtraits)
+[![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg?token=07OUlLSQus)](https://codecov.io/gh/AnthonyBasooma/fwtraits)
 
 <!-- badges: end -->
 
@@ -48,7 +48,7 @@ Before using the package, the user is strongly advised to run the **`fw_b4ustart
 
 **Main functions**
 
-* `set_api_key()` for securing API key in the user R environment.
+* `fw_setapikey()` for securing API key in the user R environment.
 * `fw_searchdata()` To allow get data from the database. However, this is mostly an internal function since the data is not already parsed to enable usability.
 * `fw_split()` extracts the downloaded data before its tokenised for proper usage.
 * `fw_fetchdata()` is the main function that provides all the parameters for data access. The function is wrapped around `fw_searchdata()` and `fw_split()` function to allow the user to easily get and manipulate the data during package usage.

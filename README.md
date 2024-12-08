@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml)
-[![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/graph/badge.svg?token=07OUlLSQus)](https://codecov.io/gh/AnthonyBasooma/fwtraits)
+[![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg?token=07OUlLSQus)](https://codecov.io/gh/AnthonyBasooma/fwtraits)
 
 <!-- badges: end -->
 
@@ -48,7 +48,7 @@ indicators.
 
 **Main functions**
 
-- `set_api_key()` for securing API key in the user R environment.
+- `fw_setapikey()` for securing API key in the user R environment.
 - `fw_searchdata()` To allow get data from the database. However, this
   is mostly an internal function since the data is not already parsed to
   enable usability.

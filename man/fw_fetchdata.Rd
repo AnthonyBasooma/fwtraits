@@ -99,7 +99,8 @@ Arranging and user friendly selection of traits at different taxonomic levels.
 
 
 fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
-                             ecoparams = 'migration')#the species spelling is checked
+                             ecoparams = 'migration',
+                             cachefolder = 'cache')#the species spelling is checked
 }
 
 }

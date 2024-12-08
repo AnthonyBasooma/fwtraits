@@ -30,7 +30,8 @@
 #'
 #'
 #' fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
-#'                              ecoparams = 'migration')#the species spelling is checked
+#'                              ecoparams = 'migration',
+#'                              cachefolder = 'cache')#the species spelling is checked
 #' }
 #'
 #' @seealso \code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_split}}

@@ -195,51 +195,6 @@ clean_traits <- function(x){
 }
 
 
-#' @title Traits comparison for the user and standard triat names.
-#'
-#' @param traits \code{string}. Trait name provided by the user that will be compared with the
-#'      standard names in the database.
-#'
-#' @return \code{string} accepted trait names based on the database
-#'
-#'
-
-compare_traits <- function(traits){
-
-  xtraits <- fw_paramlist()
-
-  ecopa <- xtraits$ecologicalParameterList
-
-  #get the name of all traits for the groups
-
-  xstraits <- Reduce(c, sapply(ecopa, function(x){sapply(x, function(y) y[['name']])}))
-
-  alltraits <- clean_traits(x = xstraits)
-
-  #clean user input word
-  traitsuser <- clean_traits(traits)
-
-  sapply(traitsuser, function(uw){ #uw-user word
-
-    checkIn <- uw%in%alltraits
-
-    if(all(checkIn)==TRUE){
-
-      #return the user input
-
-      traitfinal <- uw
-    }else{
-
-      dst1 <- adist(uw, alltraits)
-
-      traitfinal <- alltraits[which.min(dst1)]
-    }
-
-    return(traitfinal)
-
-  }, USE.NAMES = FALSE)
-}
-
 
 #' @title Checks the traits spelling compared to user input.
 #'
@@ -285,6 +240,7 @@ checktrait<- function(x, std, mindist = 0.3, error = 0.8, grp = NULL, warn= TRUE
 
   }, simplify = TRUE, USE.NAMES = FALSE)
 }
+
 #' @noRd
 str_sentence <- function(x){
 
