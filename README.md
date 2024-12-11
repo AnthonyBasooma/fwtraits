@@ -40,7 +40,7 @@ developed and maintained by the University of Natural Resources and Life
 Sciences (BOKU), Vienna, Austria.
 
 Before using the package, the user is strongly advised to run the
-**`fw_b4ustart()`** to get the steps required to access and use the
+**`fw_be4ustart()`** to get the steps required to access and use the
 package in accessing the species ecological parameters, traits or
 indicators.
 

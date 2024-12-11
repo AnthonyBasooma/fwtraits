@@ -45,17 +45,17 @@ fw_visualize <- function(output, scales = 'free', ncol = 2, params = NULL,
 
   species <- NULL
 
-  datafinal <- getdfinal |> dplyr::group_by(parametervalue, parameter) |>
+  datafinal <- getdfinal |> dplyr::group_by(traitvalue, parameter) |>
 
    dplyr::summarise(cts = length(species), .groups = 'drop')
 
   parameter <- NULL
 
-  parametervalue <- NULL
+  traitvalue <- NULL
 
   cts <- NULL
 
-  gout <- ggplot2::ggplot(datafinal, ggplot2::aes(x = tidytext::reorder_within(parametervalue, -cts , parameter),
+  gout <- ggplot2::ggplot(datafinal, ggplot2::aes(x = tidytext::reorder_within(traitvalue, -cts , parameter),
                                                   y= cts))+
 
     ggplot2::geom_bar(stat = 'identity', fill = color)+

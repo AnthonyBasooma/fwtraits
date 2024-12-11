@@ -49,9 +49,9 @@ for acquistion of the API key which will be shortly sent to the email entered. A
 
  <p> <b>STEP 3</b>: Apply for the API Key by sending your request for the key to registration@freshwaterecology.info </p>
 
- <p> <b>STEP 4</b>: The API key is an alphanumeric 36 character string.
- Advisable to copy and paste the key in the prompt got after executing the fw_token(). For safety reasons
- do not put or save your key in the analysis codes as the fw_token will use user sessions to store your key.</p>
+ <p> <b>STEP 4</b>: The API key is an alphanumeric 36 character string. Run the fw_setapikey() to set up
+ secure the key in the R user environment. After this the key will be automatically picked
+ in the all the forthcoming scripts on that particular computer.</p>
 
  <p> <b>STEP 5</b>: Congratulations: Ready to interact with Freshwaterecology.info database will appear.</p>
 

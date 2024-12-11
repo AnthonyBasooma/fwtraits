@@ -20,7 +20,7 @@ library(fwtraits)
 
 ## Step 1: Securing and loading the API key.
 
-Please follow the secure_the_api_key steps and secure the API in the R environment before retrieving the species traits form the database. To check on the available traits in the database, you can check with the **`fw_dbguide()`** or browse the database directly in [database traits](https://www.freshwaterecology.info/abbreviations.php).
+Please follow the [secure_the_api_key](https://anthonybasooma.github.io/fwtraits/articles/Secure_API_key.html)) steps and secure the API in the R environment before retrieving the species traits form the database. To check on the available traits in the database, you can check with the **`fw_dbguide()`** or browse the database directly in the [species traits](https://www.freshwaterecology.info/abbreviations.php).
 
 
 ## Step2: Fetching groups data and visualisation
@@ -33,6 +33,18 @@ Please follow the secure_the_api_key steps and secure the API in the R environme
 
 * Ensure the right species names are indicated to avoid detailed checks that delays data search and might lead to erroneous trait extraction or errors. Checks are conducted on the species names to ensure they are harmonized to trait searches.
 
+**Data output columns and meaning**
+
+* **`organismgroup`**: is the high taxonomic group nomenclature, which includes five groups, namely macroinvertebrates, fish, phytoplankton, phtyobenthos (diatoms) and macrophtes.
+
+* **`species`**: are the species names searched from the database as provided by the user.
+
+* **`parameter`**: is the ecological parameter or species trait or indicator based on the frehwaterecology.info database.
+
+* **`description`**: this column is displayed if the catchment region for fish is querried. The description will provide the description of the basin were the species is native or alien.
+
+* **`traitvalue`**: is the different parameter value for each species. if a species has more than one trait value, they will all be displayed separately. For example, if a species is a long/medium distance migratory species, it will appear twice in the dataset.
+
 
 ### 1. Fishes
 
@@ -42,7 +54,7 @@ Please follow the secure_the_api_key steps and secure the API in the R environme
 
 migration <- fw_fetchdata(data = "Abramis brama",
                           organismgroup = 'fi',
-                          ecoparams = 'migration',
+                          ecoparams = 'catchment region',
                           cachefolder = 'cache')
 
 head(migration)
@@ -61,6 +73,7 @@ traitsout <- fw_fetchdata(data = speciesdata,
                            ecoparams = c('migration', 'threat austria',
                                          'oxygen tolerence', 'migration fibs'),
                            cachefolder  = 'cache')
+
 head(traitsout)
 
 ```
@@ -219,6 +232,7 @@ ppdata <- fw_fetchdata(data = c("Anathece clathrata",
                     cachefolder = 'cache')
 
 head(ppdata)
+
 
 ```
 

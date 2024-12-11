@@ -103,7 +103,7 @@ fw_maps <- function(data, output, lat = NULL, lon = NULL, basin,
 
   #select particular columns
 
-  if(inherits(data, 'sf')) colselected <- c(colsp, "parametervalue", "geometry") else colselected <- c(lat, lon, colsp, "parametervalue")
+  if(inherits(data, 'sf')) colselected <- c(colsp, "traitvalue", "geometry") else colselected <- c(lat, lon, colsp, "traitvalue")
 
   dfseld <- datafinal[,colselected]
 
@@ -121,13 +121,13 @@ fw_maps <- function(data, output, lat = NULL, lon = NULL, basin,
 
   spdatafinal <- sf::st_filter(spdata, basin)
 
-  spdatafinal <- spdatafinal[!is.na(spdatafinal$parametervalue),]
+  spdatafinal <- spdatafinal[!is.na(spdatafinal$traitvalue),]
 
   #determine number of columns for facets
 
-  if(length(unique(spdatafinal$parametervalue))<= 4) ncols <- 2 else ncols <- 3
+  if(length(unique(spdatafinal$traitvalue))<= 4) ncols <- 2 else ncols <- 3
 
-  parametervalue <- NULL
+  traitvalue <- NULL
 
 
   map <- ggplot2::ggplot()+
@@ -136,7 +136,7 @@ fw_maps <- function(data, output, lat = NULL, lon = NULL, basin,
 
     ggplot2::geom_sf(data = spdatafinal, na.rm = TRUE)+
 
-    ggplot2::facet_wrap(~parametervalue, ncol = ncols)+
+    ggplot2::facet_wrap(~traitvalue, ncol = ncols)+
 
     ggplot2::theme(text = ggplot2::element_text(size = 12))+
 

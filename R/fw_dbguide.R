@@ -51,8 +51,8 @@ fw_dbguide <- function(organismgroup = NULL, traits = NULL){
 
       expl <- sapply(y, function(x) if(is.null(x[[3]])==TRUE) "Not explained" else x[[3]])
 
-      dfguide <- data.frame(organismgroup = taxanames, ecoparameters_raw = traitunclean,
-                            ecoparameters_cleaned = traitclean, parametervalue = name, parameterabbrevation = abbr,
+      dfguide <- data.frame(organismgroup = taxanames, parameters_raw = traitunclean,
+                            parameters_cleaned = traitclean, traitvalue = name, parameterabbrevation = abbr,
                             parameterexplanation = expl)
     }
 

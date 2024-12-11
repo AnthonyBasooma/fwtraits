@@ -45,7 +45,7 @@ test_that(desc = 'Dataframe with sanitized species data ',
 
             expect_equal(nrow(fetchdata), 1)
 
-            expect_contains(colnames(fetchdata), 'parametervalue') #sanitized column
+            expect_contains(colnames(fetchdata), 'traitvalue') #sanitized column
           })
 test_that(desc = 'dataframe of species traits',
           code = {

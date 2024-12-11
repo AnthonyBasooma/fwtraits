@@ -130,7 +130,10 @@ fw_fetchdata <- function(data, organismgroup,
 
       descvalue  <-  strsplit(x$description,split="_ ",fixed=TRUE)
 
+      #if a species has more than on trait value for the same trait, it will be
+      #split bse the standard database trait values are split
       if(grepl('_', x$value)==TRUE) traitvalue <-  strsplit(x$value,split="_ ",fixed=TRUE) else  traitvalue <-  strsplit(x$value,split=", ",fixed=TRUE)
+
 
       traits <- mapply(FUN = function(taxagroup, sp, par, desc, value) data.frame(organismgroup = taxagroup,
                                                                                   species = species, parameter = parameter,
@@ -172,36 +175,43 @@ fw_fetchdata <- function(data, organismgroup,
   # #get the standard database names
   dbstandard <- fw_dbguide()
 
-  dbstandard$link <- paste0(dbstandard$ecoparameters_cleaned, dbstandard$parameterabbrevation)
+  dbstandard$link <- paste0(dbstandard$parameters_cleaned, dbstandard$parameterabbrevation)
 
-  dbstandard <- dbstandard[, c("link", "parametervalue")]
+  dbstandard <- dbstandard[, c("link", "traitvalue")]
 
   if(isTRUE(na.rm) || as.logical(na.rm)) all_x <- FALSE else all_x <- TRUE
 
   sanitized <- merge(traitdf, dbstandard, by='link', all.x = all_x)
 
-  if("catchment region" %in%ecoparams==TRUE) sanitized$parametervalue <- ifelse(sanitized$parameter=='catchment region'&sanitized$value=='n', 'native',
+  if("catchment region" %in%ecoparams==TRUE) sanitized$traitvalue <- ifelse(sanitized$parameter=='catchment region'&sanitized$value=='n', 'native',
                                                                                 ifelse(sanitized$parameter=='catchment region'&sanitized$value=='a', 'alien',
-                                                                                       sanitized$parametervalue))
+                                                                                       sanitized$traitvalue))
 
   sanitized <- sanitized[, !names(sanitized) %in% c('link')]
 
-
   if(isTRUE(wide)){
 
-    sanitized['traitdesc'] <- paste(sanitized$parameter,'_',sanitized$description )
+    sanitized$tf <- sanitized$parameter==sanitized$description
 
-    dfsel <- sanitized[, c("organismgroup", 'species', 'parametervalue', "traitdesc")]
+    sanitized['traitdesc'] <- ifelse(sanitized$tf == FALSE,
+                                     paste(sanitized$parameter,'_',sanitized$description ),
+                                     paste(sanitized$parameter,'_',sanitized$value ))
+
+    dfsel <- sanitized[, c("organismgroup", 'species', 'traitvalue', "traitdesc")]
 
     spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = c('organismgroup', 'species') ,
                        direction = 'wide', sep = "_")
 
-    #remove the parametervalue_ecoparameter created by reshape function
+    #remove the traitvalue created by reshape function
 
-    colnames(spfinal) <- sapply(colnames(spfinal), function(x) gsub("^[^_]*_[^_]*_", "", x))
+    colnames(spfinal) <- sapply(colnames(spfinal), function(x) sub('traitvalue_', '', x ))
 
   }else{
-    spfinal <- sanitized
+    spfinal <- sanitized[, !names(sanitized) %in% c('value')]
+
+    spfinal$description <- ifelse(sanitized$parameter=='catchment region', sanitized$description, NA )
+
+    spfinal <- Filter(function(x)!all(is.na(x)), spfinal)
   }
   attr(spfinal, 'fetch') <- "dataout"
 
