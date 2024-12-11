@@ -70,11 +70,12 @@
 <div class="section level2">
 <h2 id="step-1-securing-and-loading-the-api-key-">Step 1: Securing and loading the API key.<a class="anchor" aria-label="anchor" href="#step-1-securing-and-loading-the-api-key-"></a>
 </h2>
-<p>Please follow the secure_the_api_key steps and secure the API in the
-R environment before retrieving the species traits form the database. To
-check on the available traits in the database, you can check with the
+<p>Please follow the <a href="https://anthonybasooma.github.io/fwtraits/articles/Secure_API_key.html">secure_the_api_key</a>)
+steps and secure the API in the R environment before retrieving the
+species traits form the database. To check on the available traits in
+the database, you can check with the
 <strong><code><a href="../reference/fw_dbguide.html">fw_dbguide()</a></code></strong> or browse the database
-directly in <a href="https://www.freshwaterecology.info/abbreviations.php" class="external-link">database
+directly in the <a href="https://www.freshwaterecology.info/abbreviations.php" class="external-link">species
 traits</a>.</p>
 </div>
 <div class="section level2">
@@ -95,6 +96,27 @@ checks that delays data search and might lead to erroneous trait
 extraction or errors. Checks are conducted on the species names to
 ensure they are harmonized to trait searches.</p></li>
 </ul>
+<p><strong>Data output columns and meaning</strong></p>
+<ul>
+<li><p><strong><code>organismgroup</code></strong>: is the high
+taxonomic group nomenclature, which includes five groups, namely
+macroinvertebrates, fish, phytoplankton, phtyobenthos (diatoms) and
+macrophtes.</p></li>
+<li><p><strong><code>species</code></strong>: are the species names
+searched from the database as provided by the user.</p></li>
+<li><p><strong><code>parameter</code></strong>: is the ecological
+parameter or species trait or indicator based on the
+frehwaterecology.info database.</p></li>
+<li><p><strong><code>description</code></strong>: this column is
+displayed if the catchment region for fish is querried. The description
+will provide the description of the basin were the species is native or
+alien.</p></li>
+<li><p><strong><code>traitvalue</code></strong>: is the different
+parameter value for each species. if a species has more than one trait
+value, they will all be displayed separately. For example, if a species
+is a long/medium distance migratory species, it will appear twice in the
+dataset.</p></li>
+</ul>
 <div class="section level3">
 <h3 id="fishes">1. Fishes<a class="anchor" aria-label="anchor" href="#fishes"></a>
 </h3>
@@ -103,15 +125,20 @@ ensure they are harmonized to trait searches.</p></li>
 <code class="sourceCode R"><span></span>
 <span><span class="va">migration</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Abramis brama"</span>,</span>
 <span>                          organismgroup <span class="op">=</span> <span class="st">'fi'</span>,</span>
-<span>                          ecoparams <span class="op">=</span> <span class="st">'migration'</span>,</span>
+<span>                          ecoparams <span class="op">=</span> <span class="st">'catchment region'</span>,</span>
 <span>                          cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  ======================================================================== </span></span>
 <span><span class="co">#&gt;  Congratulations!!! Ready to interact with Freshwaterecology.info database </span></span>
 <span><span class="co">#&gt;  =========================================================================</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">migration</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organismgroup       species parameter description value parametervalue</span></span>
-<span><span class="co">#&gt; 1          Fish Abramis brama migration   migration   pot  potamodromous</span></span></code></pre></div>
+<span><span class="co">#&gt;   organismgroup       species        parameter description traitvalue</span></span>
+<span><span class="co">#&gt; 1          Fish Abramis brama catchment region        AnCo     native</span></span>
+<span><span class="co">#&gt; 2          Fish Abramis brama catchment region        BaSe     native</span></span>
+<span><span class="co">#&gt; 3          Fish Abramis brama catchment region        BlSe     native</span></span>
+<span><span class="co">#&gt; 4          Fish Abramis brama catchment region        BrCh     native</span></span>
+<span><span class="co">#&gt; 5          Fish Abramis brama catchment region        Danu     native</span></span>
+<span><span class="co">#&gt; 6          Fish Abramis brama catchment region        EC13     native</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#species data archived in fwtraits</span></span>
@@ -124,21 +151,15 @@ ensure they are harmonized to trait searches.</p></li>
 <span>                           ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'migration'</span>, <span class="st">'threat austria'</span>,</span>
 <span>                                         <span class="st">'oxygen tolerence'</span>, <span class="st">'migration fibs'</span><span class="op">)</span>,</span>
 <span>                           cachefolder  <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">traitsout</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organismgroup                species      parameter description value</span></span>
-<span><span class="co">#&gt; 1          Fish      Anguilla anguilla migration fibs        long     1</span></span>
-<span><span class="co">#&gt; 2          Fish            Salmo salar migration fibs        long     1</span></span>
-<span><span class="co">#&gt; 3          Fish          Barbus barbus migration fibs      medium     1</span></span>
-<span><span class="co">#&gt; 4          Fish       Lampetra planeri migration fibs      medium     1</span></span>
-<span><span class="co">#&gt; 5          Fish Gasterosteus aculeatus migration fibs      medium     1</span></span>
-<span><span class="co">#&gt; 6          Fish      Alburnus alburnus migration fibs       short     1</span></span>
-<span><span class="co">#&gt;   parametervalue</span></span>
-<span><span class="co">#&gt; 1           long</span></span>
-<span><span class="co">#&gt; 2           long</span></span>
-<span><span class="co">#&gt; 3         medium</span></span>
-<span><span class="co">#&gt; 4         medium</span></span>
-<span><span class="co">#&gt; 5         medium</span></span>
-<span><span class="co">#&gt; 6          short</span></span></code></pre></div>
+<span><span class="co">#&gt;   organismgroup                species      parameter traitvalue</span></span>
+<span><span class="co">#&gt; 1          Fish      Anguilla anguilla migration fibs       long</span></span>
+<span><span class="co">#&gt; 2          Fish            Salmo salar migration fibs       long</span></span>
+<span><span class="co">#&gt; 3          Fish          Barbus barbus migration fibs     medium</span></span>
+<span><span class="co">#&gt; 4          Fish       Lampetra planeri migration fibs     medium</span></span>
+<span><span class="co">#&gt; 5          Fish Gasterosteus aculeatus migration fibs     medium</span></span>
+<span><span class="co">#&gt; 6          Fish      Alburnus alburnus migration fibs      short</span></span></code></pre></div>
 <p><strong>1.3 Visualizing fish traits</strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> </span>
@@ -180,13 +201,13 @@ ensure they are harmonized to trait searches.</p></li>
 <span><span class="co">#&gt; 4 Macroinvertebrates Margaritifera margaritifera stream zonation preference</span></span>
 <span><span class="co">#&gt; 5 Macroinvertebrates          Musculium lacustre stream zonation preference</span></span>
 <span><span class="co">#&gt; 6 Macroinvertebrates          Musculium lacustre stream zonation preference</span></span>
-<span><span class="co">#&gt;   description value parametervalue</span></span>
-<span><span class="co">#&gt; 1         epo     2     epipotamal</span></span>
-<span><span class="co">#&gt; 2         epo     3     epipotamal</span></span>
-<span><span class="co">#&gt; 3         erh     2    epirhithral</span></span>
-<span><span class="co">#&gt; 4         hrh     3   hyporhithral</span></span>
-<span><span class="co">#&gt; 5         hyc     1     hypocrenal</span></span>
-<span><span class="co">#&gt; 6         lit     5       littoral</span></span></code></pre></div>
+<span><span class="co">#&gt;     traitvalue</span></span>
+<span><span class="co">#&gt; 1   epipotamal</span></span>
+<span><span class="co">#&gt; 2   epipotamal</span></span>
+<span><span class="co">#&gt; 3  epirhithral</span></span>
+<span><span class="co">#&gt; 4 hyporhithral</span></span>
+<span><span class="co">#&gt; 5   hypocrenal</span></span>
+<span><span class="co">#&gt; 6     littoral</span></span></code></pre></div>
 <p><strong>2.3: More than one species in a dataframe</strong></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -211,20 +232,20 @@ ensure they are harmonized to trait searches.</p></li>
 <span>                           ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stream zonation preference"</span>, <span class="st">"feeding type"</span><span class="op">)</span>,</span>
 <span>                           cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspp_df</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        organismgroup                         species    parameter description</span></span>
-<span><span class="co">#&gt; 1 Macroinvertebrates            Dreissena polymorpha feeding type         aff</span></span>
-<span><span class="co">#&gt; 2 Macroinvertebrates     Margaritifera margaritifera feeding type         aff</span></span>
-<span><span class="co">#&gt; 3 Macroinvertebrates              Musculium lacustre feeding type         aff</span></span>
-<span><span class="co">#&gt; 4 Macroinvertebrates Dreissena rostriformis bugensis feeding type         aff</span></span>
-<span><span class="co">#&gt; 5 Macroinvertebrates              Corbicula fluminea feeding type         aff</span></span>
-<span><span class="co">#&gt; 6 Macroinvertebrates           Congeria leucophaeata feeding type         aff</span></span>
-<span><span class="co">#&gt;   value        parametervalue</span></span>
-<span><span class="co">#&gt; 1    10 active filter feeders</span></span>
-<span><span class="co">#&gt; 2    10 active filter feeders</span></span>
-<span><span class="co">#&gt; 3    10 active filter feeders</span></span>
-<span><span class="co">#&gt; 4    10 active filter feeders</span></span>
-<span><span class="co">#&gt; 5    10 active filter feeders</span></span>
-<span><span class="co">#&gt; 6    10 active filter feeders</span></span></code></pre></div>
+<span><span class="co">#&gt;        organismgroup                         species    parameter</span></span>
+<span><span class="co">#&gt; 1 Macroinvertebrates            Dreissena polymorpha feeding type</span></span>
+<span><span class="co">#&gt; 2 Macroinvertebrates     Margaritifera margaritifera feeding type</span></span>
+<span><span class="co">#&gt; 3 Macroinvertebrates              Musculium lacustre feeding type</span></span>
+<span><span class="co">#&gt; 4 Macroinvertebrates Dreissena rostriformis bugensis feeding type</span></span>
+<span><span class="co">#&gt; 5 Macroinvertebrates              Corbicula fluminea feeding type</span></span>
+<span><span class="co">#&gt; 6 Macroinvertebrates           Congeria leucophaeata feeding type</span></span>
+<span><span class="co">#&gt;              traitvalue</span></span>
+<span><span class="co">#&gt; 1 active filter feeders</span></span>
+<span><span class="co">#&gt; 2 active filter feeders</span></span>
+<span><span class="co">#&gt; 3 active filter feeders</span></span>
+<span><span class="co">#&gt; 4 active filter feeders</span></span>
+<span><span class="co">#&gt; 5 active filter feeders</span></span>
+<span><span class="co">#&gt; 6 active filter feeders</span></span></code></pre></div>
 <p><strong>2.4: Data visualization for macroinvertebrates</strong></p>
 <p>If the species considered are more than 1, then visualization can be
 to determine the frequency of each trait. This is an optional function
@@ -270,20 +291,13 @@ for post data searches.</p>
 <span>                      ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'substrate preference'</span><span class="op">)</span>,</span>
 <span>                      cachefolder <span class="op">=</span> <span class="st">'cache'</span>, na.rm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pbdata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organismgroup                   species            parameter</span></span>
-<span><span class="co">#&gt; 1   Phytobentho      Gongrosira debaryana substrate preference</span></span>
-<span><span class="co">#&gt; 2   Phytobentho      Gongrosira debaryana substrate preference</span></span>
-<span><span class="co">#&gt; 3   Phytobentho    Gongrosira fluminensis substrate preference</span></span>
-<span><span class="co">#&gt; 4   Phytobentho Sphaerobotrys fluviatilis substrate preference</span></span>
-<span><span class="co">#&gt; 5   Phytobentho     Stigeoclonium farctum substrate preference</span></span>
-<span><span class="co">#&gt; 6   Phytobentho       Stigeoclonium tenue substrate preference</span></span>
-<span><span class="co">#&gt;            description  value parametervalue</span></span>
-<span><span class="co">#&gt; 1 substrate preference (EPPH)           &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2 substrate preference   EPLI      epilithic</span></span>
-<span><span class="co">#&gt; 3 substrate preference   EPLI      epilithic</span></span>
-<span><span class="co">#&gt; 4 substrate preference   EPLI      epilithic</span></span>
-<span><span class="co">#&gt; 5 substrate preference   EPLI      epilithic</span></span>
-<span><span class="co">#&gt; 6 substrate preference   EPLI      epilithic</span></span></code></pre></div>
+<span><span class="co">#&gt;   organismgroup                   species            parameter traitvalue</span></span>
+<span><span class="co">#&gt; 1   Phytobentho      Gongrosira debaryana substrate preference       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2   Phytobentho      Gongrosira debaryana substrate preference  epilithic</span></span>
+<span><span class="co">#&gt; 3   Phytobentho    Gongrosira fluminensis substrate preference  epilithic</span></span>
+<span><span class="co">#&gt; 4   Phytobentho Sphaerobotrys fluviatilis substrate preference  epilithic</span></span>
+<span><span class="co">#&gt; 5   Phytobentho     Stigeoclonium farctum substrate preference  epilithic</span></span>
+<span><span class="co">#&gt; 6   Phytobentho       Stigeoclonium tenue substrate preference  epilithic</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">mipbdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mi<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Congeria kusceri"</span>,</span>
@@ -311,13 +325,13 @@ for post data searches.</p>
 <span><span class="co">#&gt; 4 Macroinvertebrates            Dreissena polymorpha stream zonation preference</span></span>
 <span><span class="co">#&gt; 5 Macroinvertebrates Dreissena rostriformis bugensis stream zonation preference</span></span>
 <span><span class="co">#&gt; 6 Macroinvertebrates Dreissena rostriformis bugensis stream zonation preference</span></span>
-<span><span class="co">#&gt;   description value parametervalue</span></span>
-<span><span class="co">#&gt; 1         epo     2     epipotamal</span></span>
-<span><span class="co">#&gt; 2         epo     2     epipotamal</span></span>
-<span><span class="co">#&gt; 3         hpo     6    hypopotamal</span></span>
-<span><span class="co">#&gt; 4         lit     4       littoral</span></span>
-<span><span class="co">#&gt; 5         lit     4       littoral</span></span>
-<span><span class="co">#&gt; 6         mpo     4    metapotamal</span></span></code></pre></div>
+<span><span class="co">#&gt;    traitvalue</span></span>
+<span><span class="co">#&gt; 1  epipotamal</span></span>
+<span><span class="co">#&gt; 2  epipotamal</span></span>
+<span><span class="co">#&gt; 3 hypopotamal</span></span>
+<span><span class="co">#&gt; 4    littoral</span></span>
+<span><span class="co">#&gt; 5    littoral</span></span>
+<span><span class="co">#&gt; 6 metapotamal</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="phytoplankton">5. Phytoplankton<a class="anchor" aria-label="anchor" href="#phytoplankton"></a>
@@ -334,20 +348,13 @@ for post data searches.</p>
 <span>                    cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ppdata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organismgroup                 species       parameter    description value</span></span>
-<span><span class="co">#&gt; 1 Phytoplankton   Aphanothece clathrata       life form      life form     P</span></span>
-<span><span class="co">#&gt; 2 Phytoplankton   Aphanothece clathrata       life form      life form     P</span></span>
-<span><span class="co">#&gt; 3 Phytoplankton Aphanothece minutissima       life form      life form     P</span></span>
-<span><span class="co">#&gt; 4 Phytoplankton Aphanothece minutissima       life form      life form     P</span></span>
-<span><span class="co">#&gt; 5 Phytoplankton Aphanothece minutissima stenoecy factor     river - CH     1</span></span>
-<span><span class="co">#&gt; 6 Phytoplankton Aphanothece minutissima stenoecy factor river - Danube     1</span></span>
-<span><span class="co">#&gt;            parametervalue</span></span>
-<span><span class="co">#&gt; 1                planktic</span></span>
-<span><span class="co">#&gt; 2                planktic</span></span>
-<span><span class="co">#&gt; 3                planktic</span></span>
-<span><span class="co">#&gt; 4                planktic</span></span>
-<span><span class="co">#&gt; 5 Central Highland rivers</span></span>
-<span><span class="co">#&gt; 6     Danube Basin rivers</span></span></code></pre></div>
+<span><span class="co">#&gt;   organismgroup                 species       parameter              traitvalue</span></span>
+<span><span class="co">#&gt; 1 Phytoplankton   Aphanothece clathrata       life form                planktic</span></span>
+<span><span class="co">#&gt; 2 Phytoplankton   Aphanothece clathrata       life form                planktic</span></span>
+<span><span class="co">#&gt; 3 Phytoplankton Aphanothece minutissima       life form                planktic</span></span>
+<span><span class="co">#&gt; 4 Phytoplankton Aphanothece minutissima       life form                planktic</span></span>
+<span><span class="co">#&gt; 5 Phytoplankton Aphanothece minutissima stenoecy factor Central Highland rivers</span></span>
+<span><span class="co">#&gt; 6 Phytoplankton Aphanothece minutissima stenoecy factor     Danube Basin rivers</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
