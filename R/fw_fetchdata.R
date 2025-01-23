@@ -1,225 +1,327 @@
-#' @title Arranging and user friendly selection of traits at different taxonomic levels.
+
+#' @title Extracting the traits from the downloaded data.
 #'
-#' @inheritParams fw_split
-#' @param spcol \code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
+#' @inheritParams fw_searchdata
+#' @inheritParams clean_names
+#' @param data \code{vector}. The list or vector with species names for which ecological references needs to be extracted from the
+#'         database.
+#' @param taxonomic_column \code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
 #'        The column should have complete species name and not genus and species provided separately.
-#' @param groupcol \code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
-#'      the \code{groupcol} is required to iterate over the taxonomic groups separately.
-#' @param wide \code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
-#'      taxonomic groups.
-#' @param na.rm \code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
-#'        Default \code{TRUE}.
+#' @param organismgroup_column \code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
+#'      the \code{organismgroup_column} is required to iterate over the taxonomic groups separately.
+#'
+#' @param details \code{logical}. For print the output summary including the parameters used, successful and unsuccessful data retrieval.
+
+#'
+#' @importFrom methods is
+#' @importFrom R.cache addMemoization
 #'
 #'
-#' @importFrom stats reshape
-#'
-#' @return \code{dataframe} A dataframe species traits at a selected taxonomic level.
+#' @return \code{dataframe} A dataframe species traits for all orders.
 #'
 #' @export
-#'
-#' @author {
-#' Anthony Basooma \email{anthony.basooma@boku.ac.at}
-#' }
 #'
 #' @examples
 #'
 #' \dontrun{
 #'
+#'dfextract <- fw_fetchdata(data = "Abramis brama", organismgroup = 'fi', inform = TRUE,
+#'                             ecoparams = 'migration', cachefolder = 'cache' )
 #'
-#' #download fish catchment region data
-#'
-#'
-#' fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
-#'                              ecoparams = 'migration',
-#'                              cachefolder = 'cache')#the species spelling is checked
 #' }
 #'
-#' @seealso \code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_split}}
 
-fw_fetchdata <- function(data, organismgroup,
-                         spcol = NULL,
-                         groupcol = NULL,
-                         ecoparams = NULL,
-                         apikey = NULL,
-                         seed = 1135,
-                         secure = TRUE,
-                         cachefolder = NULL,
-                         inform = FALSE,
-                         wide = FALSE,
-                         na.rm = TRUE,
-                         warn = FALSE,
-                         errorness = 27,
-                         pct = 80
-){
+fw_fetchdata <- function(data,
+                     organismgroup,
+                     ecoparams = NULL,
+                     taxalevel = 'species',
+                     taxonomic_column = NULL,
+                     organismgroup_column = NULL,
+                     apikey  = NULL,
+                     seed = 1134,
+                     secure = TRUE,
+                     percenterror = 80,
+                     errorness = 20,
+                     warn = FALSE,
+                     inform = FALSE,
+                     cachefolder = 'cache',
+                     details = FALSE ) {
+
+  match.arg(taxalevel, choices = c("taxagroup",'family', 'genus', 'species'))
 
   if(is(data, "data.frame")){
 
-    if(is.null(spcol)){
+    if(is(data, 'sf')) xdata <- as.data.frame(data) else xdata <- data
+
+    if(is.null(taxonomic_column)){
+
       stop("If ", deparse(substitute(data)), " is a dataframe, column with species names must be provided.")
 
     }else{
       #one organism group in the data
 
-      if(is.null(groupcol) && length(organismgroup)==1){
+      if(length(organismgroup)==1){
 
-        if(spcol%in%colnames(data)==FALSE) stop(deparse(substitute(spcol)), " not in the dataset ", deparse(substitute(data))," provided.")
+        if(taxonomic_column%in%colnames(data)==FALSE) stop(deparse(substitute(taxonomic_column)), " not in the dataset ", deparse(substitute(data))," provided.")
 
         #create a species list
-        specieslist <- unlist(data[, spcol])
+        taxa_searched_list <- unlist(xdata[, taxonomic_column])
 
       }else{
         #more than one taxa group in the dataset
-        if(groupcol%in%colnames(data)==FALSE) stop(deparse(substitute(groupcol)), " not in the dataset ", deparse(substitute(data))," provided.")
+        if(organismgroup_column%in%colnames(data)==FALSE) stop(deparse(substitute(organismgroup_column)), " not in the dataset ", deparse(substitute(data))," provided.")
 
-        taxagroup_split <- split(data, f=data[, groupcol])
+        taxagroup_split <- split(xdata, f = xdata[, organismgroup_column])
 
-        specieslist <- sapply(taxagroup_split, function(x) x[,spcol], simplify = FALSE)
+        taxa_searched_list <- sapply(taxagroup_split, function(x) x[,taxonomic_column], simplify = FALSE)
       }
 
     }
 
-  }else if(is(data, 'vector') || is('data', 'atomic')){
+  }else if(is(data, 'vector') || is(data, 'atomic')){
 
-    specieslist <- data
+    taxa_searched_list <- data
 
   }else if(is(data, 'list')){
 
-    specieslist <- unlist(data)
+    taxa_searched_list <- unlist(data)
+
   }else{
     stop("Data format for species not allowed.")
   }
 
-  #get species as they exist in the taxon names of the Freshwaterecology.info
+  #search for data
+  datalists <- fw_searchdata(organismgroup = organismgroup,
+                             ecoparams = ecoparams,
+                             taxa_searched  = taxa_searched_list,
+                             apikey =   apikey,
+                             secure = secure,
+                             seed = seed,
+                             warn = warn,
+                             inform = inform,
+                             taxalevel = taxalevel,
+                             cachefolder = cachefolder)
 
-  extracteddata <- fw_extract(data = specieslist,
-                              ecoparams = ecoparams,
-                              organismgroup = organismgroup,
-                              apikey  = apikey,
-                              seed = seed,
-                              secure = secure,
-                              warn = warn,
-                              errorness = errorness,
-                              pct = pct,
-                              inform = inform,
-                              cachefolder = cachefolder)
+  #check if the taxa names are okay data retrieval
 
-  if(nrow(extracteddata)<1) stop("No data found for the species entered. Confirm right group of taxa has been selected.")
+  dnames_check <- sapply(names(datalists), function(xout){
 
-  traitwords <- unique(unlist(extracteddata$parameter))
+    if(is(data, 'list') | is(data, 'data.frame')){
 
-  traitlist <- sapply(traitwords, function(twords){ #t-words are the trait words looped
+      if(length(organismgroup)==1 & is.null(organismgroup_column)) spn <- taxa_searched_list else spn <- taxa_searched_list[[xout]]
 
-    ftraits <- extracteddata[extracteddata[, "parameter"] %in% twords, ]
+    }else{
+      spn <- taxa_searched_list
+    }
 
-    #rearrange the traits
-    dflist0 <- split(ftraits,seq(nrow(ftraits))) #equal to species names
+    spcheck <- clean_names(sp = spn, grouplists = datalists[[xout]],
+                           taxalevel = taxalevel,
+                           full = TRUE,
+                           warn = warn)
 
-    #if some traits do exist for a particular species, remove from the list
+    specieschecked <- spcheck$clean[!is.na(spcheck$clean)]
 
-    dflists <- dflist0[sapply(dflist0, function(x) nrow(x))>=1]
+    if(length(specieschecked)>=1){
 
-    if(length(dflists)>=1) dflists else  stop("The species does not enough traits for extraction", call. = FALSE)
+      spout <- list(spl = specieschecked, spdf = spcheck)
+      #spout <- species checked
 
-    specieslist <- sapply(dflists, function(x){
+    }else{
 
-      taxagroup = x$taxagroup
+      #warning at organism group level
 
-      species <- x$species
+      if(isTRUE(warn))warning(tcheck(xout), ' will be removed since no data is found for the indicated taxonomic names.', call. = FALSE)
 
-      parameter <- x$parameter
+      #get taxa list and cleaning output
 
-      descvalue  <-  strsplit(x$description,split="_ ",fixed=TRUE)
+      spout <- list(spl = NULL, spdf = spcheck)
+    }
+  }, simplify = FALSE)
 
-      #if a species has more than on trait value for the same trait, it will be
-      #split bse the standard database trait values are split
-      if(grepl('_', x$value)==TRUE) traitvalue <-  strsplit(x$value,split="_ ",fixed=TRUE) else  traitvalue <-  strsplit(x$value,split=", ",fixed=TRUE)
+  #extract cleaned and uncleaned data
 
+  xtabout <- sapply(names(dnames_check), function(pp){
 
-      traits <- mapply(FUN = function(taxagroup, sp, par, desc, value) data.frame(organismgroup = taxagroup,
-                                                                                  species = species, parameter = parameter,
-                                                                                  description = desc, value = value),
-                       taxagroup = taxagroup, sp = species, par = parameter,  desc = descvalue , value = traitvalue, SIMPLIFY = FALSE)
+    xt <- dnames_check[[pp]][[2]]
 
-      spfinal <- Reduce(rbind, traits)
+    xt$group <- pp
 
-    }, simplify = F)
+    xt
 
-    #create a dataframe for all species considered
+  }, USE.NAMES = TRUE, simplify = FALSE)
 
-    spfinal <- do.call(rbind, specieslist)
+  xtabspp <- Reduce(rbind, xtabout)
 
-  }, simplify = F, USE.NAMES = FALSE)
+  #get taxa list
 
-  traitdf_long <- do.call(rbind, traitlist)
+  spout <- sapply(names(dnames_check), function(bb){dnames_check[[bb]][[1]]}, USE.NAMES = TRUE, simplify = FALSE)
 
-  # initialize the row names
-  rownames(traitdf_long) <- NULL
+  #Allowed names for each group
 
+  taxanames_in <- spout[!sapply(spout,is.null)]
 
-  #remove traits with no data
+  if(length(taxanames_in)<=0) stop("The taxonomic names provided is/are not found in the database at ", taxalevel ," level, so no ecological parameters to be parsed. ", call. = FALSE)
 
-  if(isTRUE(na.rm)) traitdf <- traitdf_long[!traitdf_long$value=="nodata",] else traitdf <-traitdf_long
+  #check if the lists returned data
 
-  #add the traits and description to make it wide
+  dataout <- datalists[names(taxanames_in)]
 
-  traitdf$tf <- traitdf$parameter== traitdf$description
+  #loop through groups with data
+  grouplp <- lapply(names(dataout), function(xff){
 
-  traitdf$value2 <- ifelse(traitdf$tf==TRUE,  traitdf$value, traitdf$description)
+    taxalist <- taxanames_in[[xff]]
 
-  #handle for catchment region
+    gdata <- dataout[[xff]]
 
-  traitdf$link = paste0(traitdf$parameter, traitdf$value2)
+    #loop through each traits but navigating the different taxa levels: wow
+    ecolp <- lapply(gdata, function(xgg){
 
-  traitdf <- traitdf[, !names(traitdf) %in% c("tf", "value2")]
+      tlevels <- switch (taxalevel, species = 'spp', taxagroup = 'TaxaGroup', family = 'Family', genus = 'Genus' )
 
-  # #get the standard database names
-  dbstandard <- fw_dbguide()
+      if(tlevels=='spp') xgg["spp"] <- paste0(xgg$Genus,' ', xgg$Species)
 
-  dbstandard$link <- paste0(dbstandard$parameters_cleaned, dbstandard$parameterabbrevation)
+      #check if a particular traits returns no data and skip it
 
-  dbstandard <- dbstandard[, c("link", "traitvalue")]
+      xtraitdata <- xgg[xgg[, tlevels] %in% taxalist, ]
 
-  if(isTRUE(na.rm) || as.logical(na.rm)) all_x <- FALSE else all_x <- TRUE
+      if(nrow(xtraitdata)>=1) xtraitdata else return(NULL)
 
-  sanitized <- merge(traitdf, dbstandard, by='link', all.x = all_x)
+      ecopar <- fw_parse(data = xtraitdata, org = xff)
+    })
+    dout <- Reduce(rbind, ecolp)
+  })
 
-  if("catchment region" %in%ecoparams==TRUE) sanitized$traitvalue <- ifelse(sanitized$parameter=='catchment region'&sanitized$value=='n', 'native',
-                                                                                ifelse(sanitized$parameter=='catchment region'&sanitized$value=='a', 'alien',
-                                                                                       sanitized$traitvalue))
+  #all groups
 
-  sanitized <- sanitized[, !names(sanitized) %in% c('link')]
+  dfout <- Reduce(rbind, grouplp)
 
-  if(isTRUE(wide)){
+  res <- list(ecodata = dfout, taxasearched = xtabspp, type =  'fetch')
 
-    sanitized$tf <- sanitized$parameter==sanitized$description
-
-    sanitized['traitdesc'] <- ifelse(sanitized$tf == FALSE,
-                                     paste(sanitized$parameter,'_',sanitized$description ),
-                                     paste(sanitized$parameter,'_',sanitized$value ))
-
-    dfsel <- sanitized[, c("organismgroup", 'species', 'traitvalue', "traitdesc")]
-
-    spfinal <- reshape(dfsel, timevar = 'traitdesc', idvar = c('organismgroup', 'species') ,
-                       direction = 'wide', sep = "_")
-
-    #remove the traitvalue created by reshape function
-
-    colnames(spfinal) <- sapply(colnames(spfinal), function(x) sub('traitvalue_', '', x ))
-
-  }else{
-    spfinal <- sanitized[, !names(sanitized) %in% c('value')]
-
-    spfinal$description <- ifelse(sanitized$parameter=='catchment region', sanitized$description, NA )
-
-    spfinal <- Filter(function(x)!all(is.na(x)), spfinal)
+  if(isTRUE(details)){
+    cat(" ======================================",'\n',
+        '        DATA OUTPUT SUMMARY','\n',
+        "======================================",'\n',
+        'Number of Organism Groups Considered :',       length(organismgroup),'\n',
+        'Number of Organism Groups Considered :',      if(length(organismgroup)==1) organismgroup else paste(names(data), collapse = ','),'\n',
+        'Succesful organism Groups            :',   length(names(taxanames_in)),'\n',
+        'Failed organism Groups               :',   length(names(spout[sapply(spout,is.null)])),'\n',
+        'Taxa level used                      :',   taxalevel, '\n',
+        'Failed at taxa level                 :',   NA,'\n',
+        'Number of parameters                 :',   length(unlist(ecoparams)),'\n',
+        'Error rate for wrong names           :',   errorness,'\n',
+        'Caching folder                       :',   cachefolder, '\n',
+        "======================================", '\n')
   }
-  attr(spfinal, 'fetch') <- "dataout"
-
-  attr(spfinal, 'format') <- wide
-
-  attr(spfinal, 'speciescol') <- spcol
-
-  return( spfinal)
+  cat("********Please cite this website as:***********", "\n", fw_paramlist(cachefolder = cachefolder)$citation, "\n")
+ invisible(res)
 }
 
 
+#' @noRd
+#'
+fw_parsevalues <- function(data, org){
+
+  dbdata <- fw_dbguide(organismgroup = org)
+
+  data[data=="NULL"] <- NA
+
+  splitdata <-  split(data, seq(nrow(data)))
+
+  lll <- lapply(seq_along(splitdata), function(xx){
+
+    ecoparm <- splitdata[[xx]]$ecologicalParameterList[[1]]
+
+    lll2 <- lapply(ecoparm, function(ww){
+
+      traitslist <- ww[[3]]
+
+      parnames <- ww[[2]]
+
+      pext      <-     sapply(traitslist, function(x) x[[1]]) # extract some parameter names e.g for migration..
+
+      catext    <-     sapply(traitslist, function(x) x[[2]]) #extract category names
+
+      pextclean <-     pext[which(catext != "0" & !is.null(catext) & nzchar(catext))] # maintain those with values, no 0, NA and empty strings
+
+      pcatclean <-     catext[which(catext != "0" & !is.null(catext) & nzchar(catext))]
+
+      if(length(pcatclean)==1 && grepl("[\\s\\(\\) \" \" ]", pcatclean) && parnames=='substrate preference'){
+
+        p1 <- unlist(strsplit(pcatclean, split = ",| "))
+
+        p2 <- p1[nzchar(p1)]
+
+        pcatclean <- gsub("[\\s\\(\\) \" \" ]", "", p2)
+      }else{
+        pcatclean
+      }
+
+      pcatlp <- mapply(pextclean, pcatclean, FUN = function(iparam, icate){
+
+        #handle parameter
+        paramvalue <- clean_traits(parnames)
+
+        if( is.null(icate)==TRUE ) {
+
+          cvalue <- NA
+
+          clevel <- NA
+
+        }else{
+
+          if(clean_traits(iparam) == paramvalue) {
+
+            cvalue <- dbdata$category_name[which(dbdata$parameters_cleaned== paramvalue & dbdata$category_abbrevation==icate)]
+
+            if(length(cvalue)<=0) cvalue <- icate
+
+            clevel <- NA
+          }else{
+            cvalue <- dbdata$category_name[which(dbdata$parameters_cleaned== paramvalue & dbdata$category_abbrevation==iparam)]
+
+            if(length(cvalue)<=0) cvalue <- iparam
+
+            clevel <- icate
+          }
+        }
+
+        # #Add classification
+        classificationType <- unique(dbdata$classificationSystem[which(dbdata$parameters_cleaned== paramvalue)])
+
+        #Add data type
+
+        DataType <- unique(dbdata$DataType[which(dbdata$parameters_cleaned== paramvalue)])
+
+        #explanation of category names
+        explanation <- unique(dbdata$category_explanation[which(dbdata$parameters_cleaned== paramvalue &
+                                                                  dbdata$category_name == cvalue )])
+        if(length(explanation)<=0 | is.na(cvalue)) explanation <- NA
+
+        dataout <- data.frame(ID_FWE         = as.character(unlist(splitdata[[xx]][,"ID_FWE"])),
+                              OrganismGroup        = org,
+                              TaxaGroup            = unlist(splitdata[[xx]][,"TaxaGroup"]),
+                              Family               = unlist(splitdata[[xx]][,"Family"]),
+                              Genus                = unlist(splitdata[[xx]][,"Genus"]),
+                              Species              = unlist(splitdata[[xx]][,"Species"]),
+                              Taxonname            = unlist(splitdata[[xx]][,"Taxonname"]),
+                              Author               = unlist(splitdata[[xx]][,"Author"]),
+                              Parameter            = paramvalue,
+                              CategoryName         = cvalue,
+                              CategoryLevels       = clevel,
+                              DataType             = DataType,
+                              ClassificationType   = classificationType,
+                              CategoryExplanation  = explanation
+        )
+
+
+      }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+
+      vvx <- do.call(rbind, pcatlp)
+
+    })
+    vvw <- do.call(rbind, lll2)
+  })
+  vvz <- do.call(rbind, lll)
+}
+
+fw_parse <- addMemoization(fw_parsevalues)

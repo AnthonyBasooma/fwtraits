@@ -3,8 +3,9 @@
 #'
 #' @param organismgroup \code{string or vector}. Taxa group names to aid the users in filtering the standard
 #'      table for species traits and their explanations.
-#' @param traits \code{string or vector}. Traits that can be filtered from the databases, given the organism group
-#'      indicated in \code{organismgroup} parameter.
+#' @param cachefolder \code{string}. The root path were the cached data will be saved on the user PC.
+#'      If the path is not provided, the cached information will be saved in the current
+#'      working directly.
 #'
 #' @return \code{dataframe} A dataset with taxonomic groups, traits and their explanations.
 #' @export
@@ -13,74 +14,114 @@
 #'
 #' \dontrun{
 #'
-#' dbase <- fw_dbguide()
+#' dbase <- fw_dbguide(cachefolder = 'cache')
 #'
 #' }
 #'
-fw_dbguide <- function(organismgroup = NULL, traits = NULL){
+fw_dbguide <- function(organismgroup = NULL,cachefolder = 'cache'){
 
-  paramlist <- fw_paramlist()
+  paramlist <- fw_paramlist(cachefolder = cachefolder)
 
   ecolist <- paramlist$ecologicalParameterList
 
-  groupfiles <- sapply(names(ecolist), function(z){
+  if(!is.null(organismgroup)) {
 
-    taxanames <- tcheck(tx = z)
+    if(all(organismgroup%in%names(ecolist))==TRUE) ecolist <- ecolist[organismgroup] else stop('Use the stanadrd organism group abbreviations including pp, fi, mi,di, pp, mp')
+  }
 
-    zdata <- ecolist[[z]]
+  groupfiles <- sapply(names(ecolist), function(zz){
 
-    xgroup <- sapply(zdata, function(x1){x1[[8]]})
+    zdata <- ecolist[[zz]]
 
-    xclean <- xgroup[sapply(xgroup, length) > 0]
+    #extract the trait description
 
-    xnames <- sapply(zdata, function(x1){x1[[2]]})
+    categoryList <- sapply(zdata, function(x1)x1[['categoryList']])
 
-    len <- sapply(zdata, function(x1){length(x1[[8]])})
+    parameterNames <- sapply(zdata, function(x1){
 
-    xnamesclean <- xnames[which(len>0)]
+      len <- length(x1[['categoryList']])
 
-    extract <- function(y, traitname){
+      #lWR has no category list
+      if(len>0) name <- x1[['name']] else name <- 'length weight regression'
 
-      traitclean <- clean_traits(traitname)
+    })
 
-      traitunclean <- traitname
+    #extract classification system
 
-      name <- sapply(y, function(x) if(is.null(x[[1]])==TRUE) "No names" else x[[1]])
+    classificationNames <- sapply(zdata, function(x1){
 
-      abbr <- sapply(y, function(x) if(is.null(x[[2]])==TRUE) "No abbr" else x[[2]])
+      cls <- x1[['classificationSystem']]
 
-      expl <- sapply(y, function(x) if(is.null(x[[3]])==TRUE) "Not explained" else x[[3]])
+      if(!is.null(cls) && !cls=="") cls else cls <- NA
+    })
 
-      dfguide <- data.frame(organismgroup = taxanames, parameters_raw = traitunclean,
-                            parameters_cleaned = traitclean, traitvalue = name, parameterabbrevation = abbr,
-                            parameterexplanation = expl)
-    }
+    DataType <- sapply(zdata, function(x1){
 
-    groupdata <- mapply(extract, y = xclean, traitname = xnamesclean, SIMPLIFY = FALSE)
+      cls <- x1[['classificationSystem']]
 
-    groupfinal <- do.call(rbind, groupdata)
+      if(!is.null(cls) && !cls==""){
+
+        if(cls=='presence/absence assignment system' | cls=='single category assignment system'|
+           cls == "presence/absence " | cls=='modified presence/absence assignment system'){
+
+          datatype = 'Nominal'
+
+        } else if(cls=='category' | cls=='single category assignment system' |
+                  cls=="habitat preference parameters" | cls=="Life parameters"| cls=="score"){
+
+          datatype = 'Factor'
+
+        }else if(cls=="10 points" | cls == '10 point assignment system'){
+
+          datatype = 'Fuzzy'
+
+        }else if(cls=="metric value (0-6)" | cls=="metric value (1-3)" | cls == 'metric value (1-5)' |
+                 cls == "saprobic preference parameters" | cls == "trophic preference parameters" |
+                 cls == "pollution preference parameters"){
+
+          datatype = 'Ordered'
+
+        }
+      }else{
+        datatype = NA
+
+      }
+    })
+
+    mm <- mapply(categoryList, parameterNames, classificationNames, DataType,
+                 FUN = function(yx, px, cx, dx){
+
+      parameterclean <- clean_traits(px)
+
+      categoryNames <- sapply(yx, function(xx) if(is.null(xx[[1]])==TRUE | xx[[1]] =="") NA else xx[[1]])
+
+      categoryAbbreviation <- sapply(yx, function(x) if(is.null(x[[2]])==TRUE| x[[2]] =="") NA else x[[2]])
+
+      categoryExplanation <- sapply(yx, function(x) if(is.null(x[[3]])==TRUE | x[[3]] =="") NA else x[[3]])
+
+      if(length(categoryExplanation)==0) categoryExplanation <- NA
+      if(length(categoryAbbreviation)==0) categoryAbbreviation <- NA
+      if(length(categoryNames)==0) categoryNames <- NA
+
+      dfguide <- data.frame(organismgroup         = zz,
+                            parameters_raw        = px,
+                            parameters_cleaned    = parameterclean,
+                            category_name         = categoryNames,
+                            category_abbrevation  = categoryAbbreviation,
+                            category_explanation  = categoryExplanation,
+                            classificationSystem  = cx,
+                            DataType              = dx
+                            )
+
+
+    }, SIMPLIFY = FALSE)
+
+    groupfinal <- do.call(rbind, mm)
 
   }, simplify = FALSE)
 
   dfinal <- Reduce(rbind, groupfiles)
 
-  if(!is.null(organismgroup)){
-
-    standardabbr <- c('pp', 'fi', 'mi','di', 'pb', 'mp')
-
-    if(any(organismgroup %in% standardabbr)==TRUE){
-
-      xgroups <- unlist(sapply(organismgroup, function(x) tcheck(x),  USE.NAMES = FALSE))
-
-    }else{
-      stop('Use the stanadrd organism group abbreviations including ', standardabbr)
-    }
-
-    taxafinal <- dfinal[dfinal$organismgroup %in% xgroups, ]
-
-  }else{
-    taxafinal <- dfinal
-  }
-
-  return(taxafinal)
+  return(dfinal)
 }
+

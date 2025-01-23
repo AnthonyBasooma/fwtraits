@@ -26,23 +26,23 @@ fw_setapikey <- function(){
 }
 
 
-#' @noRd
-
+#'For loading the API key from the environment.
+#' @export
 fw_keyload <- function() {
 
   # check if the API Key is saved already and possibly not the case
 
-  key_loaded <- Sys.getenv("API_KEY")
+  key_loaded <- Sys.getenv(x = "API_KEY")
 
-  if(key_loaded=="") stop('The API key has not been well set in the .Renviron file. Run fw_setapikey() and follow the instruction carefully.')
+  if(key_loaded=="") stop('The API key has not been well set in the .Renviron file. Run fw_setapikey() and follow the instruction carefully.', call. = FALSE)
 
-  if(grepl("[A-Za-z0-9]", key_loaded) !=TRUE) stop("The key provided save in .Renviron is wrong. Please repeat saving and run again.")
+  if(grepl("[A-Za-z0-9]", key_loaded) !=TRUE) stop("The key provided save in .Renviron is wrong. Please repeat saving and run again.", call. = FALSE)
 
   if (nchar(key_loaded) != 36) stop("Please check the API Key provided it exceeds 36 characters.")
 
   cat(
     " ========================================================================", "\n",
-    "Congratulations!!! Ready to interact with Freshwaterecology.info database", "\n",
+    "Congratulations!!! Ready to interact with www.freshwaterecology.info database", "\n",
     "=========================================================================", "\n"
   )
   return(key_loaded)

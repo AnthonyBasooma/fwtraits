@@ -67,7 +67,7 @@
 "invertbackbone"
 
 
-#' @title Taxonommic data for the phytobentho species in frehwaterecology.info database.
+#' @title Taxonommic data for the phytobentho species in freshwaterecology.info database.
 #'
 #' @description A \code{tibble}
 #'
@@ -76,7 +76,7 @@
 #' @details
 #' fhfhdld fnfmf...
 #'
-#' @usage data(pbenthobackbone)
+#' @usage data(pbenthodata)
 #'
 #' @keywords Phytobentho data
 #'
@@ -87,9 +87,9 @@
 #'
 #' \dontrun{
 #'
-#' data("pbenthobackbone")
+#' data("pbenthodata")
 #'
-#' pbenthobackbone
+#' pbenthodata
 #' }
 #'
 #'
@@ -99,5 +99,5 @@
 #' standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences.
 #' Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007.
 #'
-"pbenthobackbone"
+"pbenthodata"
 

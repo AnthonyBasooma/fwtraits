@@ -35,7 +35,7 @@ getfimppp <- function(x, token, organismgroup, url, allClasses = NULL, inform = 
 
   if(!is.null(finalData)){
 
-    if(isTRUE(inform)) message(tcheck(organismgroup), ' data was downloaded already')
+    if(isTRUE(inform)) message(tcheck(organismgroup), ' data was already downloaded.')
 
     return(finalData)
 
@@ -119,7 +119,7 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 
   if(!is.null(finalData)){
 
-    if(isTRUE(inform)) message(tcheck(organismgroup), ' data was downloaded already')
+    if(isTRUE(inform)) message(tcheck(organismgroup), ' data was already downloaded.')
 
     return(finalData)
 
@@ -209,14 +209,22 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #'         \item{\code{di}: Diatoms}
 #'         \item{\code{pb}: Phytobenthos without diatoms}
 #'           }
-#' @param ecoparams \code{vector}. Selected traits that should be downloaded for particular organismgroup group. Check \code{\link{fw_dbguide}} for the allowed
+#' @param ecoparams \code{vector}. Selected traits that should be downloaded for particular organism group. Check \code{\link{fw_dbguide}} for the allowed
 #'      traits in the database.
-#' @param refdata \code{string} An internal placeholder to accommodate the standard taxonomic names for
+#' @param taxalevel \code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
+#'        genus, and taxa group level.
+#' @param taxa_searched \code{string} An internal placeholder to accommodate the standard taxonomic names for
 #'        invertebrates and phytobenthos from the database.
 #' @param inform \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
 #' @param cachefolder \code{string}. The root path were the cached data will be saved on the user PC.
 #'      If the path is not provided, the cached information will be saved in the current
 #'      working directly.
+#' @details
+#'
+#' For macroinvertebrates, since there is alot of data which take a lot of time to download and yet slowing the process, the \code{taxa_searched}
+#'  parameter should be provided to only search for the particular traits, family and orders or taxa group where the species falls. Also, the
+#'  phytobenthos requires to provide the taxa_searched to enable search for a particular taxa group.
+#'  For other organism group, the parameter should not provided because will not be used in the data search.
 #'
 #' @inheritParams checktrait
 #' @inheritParams fw_token
@@ -237,14 +245,15 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #' dfsearch <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', cachefolder = 'cache')
 #' }
 
-fw_searchdata <- function(organismgroup, refdata = NULL,
+fw_searchdata <- function(organismgroup, taxa_searched = NULL,
                           ecoparams = NULL,
                           apikey = NULL,
                           warn = TRUE,
                           seed = 1135,
                           secure = TRUE,
                           inform = FALSE,
-                          cachefolder = NULL) {
+                          taxalevel = NULL,
+                          cachefolder = 'cache') {
 
   sapply (organismgroup, function(xx) match.arg(xx, choices = c('fi','mi', 'pp', 'di','pb', 'mp')))
 
@@ -262,7 +271,7 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
   cache.root = getCacheRootPath()
 
   # get database map
-  getparam_list <- fw_paramlist()
+  getparam_list <- fw_paramlist(cachefolder = cachefolder)
 
   # extract parameters
   ecolist <- getparam_list$ecologicalParameterList # requires only fi, mi, pb, pp, pd, di
@@ -287,44 +296,50 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
 
     gettaxa <- ecolist[[gg]][which(stdf%in%ctraits ==TRUE)]
 
-    stdd <- sapply(gettaxa, function(x) x[[1]])
-
     # get the base url for the organism group data tables
 
     qurl <- "https://www.freshwaterecology.info/fweapi2/v1/query"
 
     if(gg == 'mi' | gg=='pb'){
 
-      #get the references list
+      #get the species search list for macroinvertebrates and phytobenthos
 
-      if(is(refdata, 'list')) refs <- refdata[[gg]] else refs <- refdata
+      if(is(taxa_searched, 'list')) searched_spp <- taxa_searched[[gg]] else searched_spp <- taxa_searched
 
       #Load reference dataset for either macroinvertebrates or benthos
 
       #clean species names
 
       if(gg =='mi'){
+
         data("invertbackbone", envir = environment())
 
         invdata <- get("invertbackbone", envir  = environment())
 
         #clean taxa names before searching
+        tlevels <- switch (taxalevel, species ='Taxon', family='Family', taxagroup = 'Taxagroup', genus ='Genus')
 
-        taxaclean <- clean_names(sp = refs, prechecks = TRUE, standardnames = invdata)
+        if(tlevels=='Genus') invdata[,'Genus'] <- sub(" .*", "", invdata$Taxon)
 
-        speciestaxa <- unique(invdata$Taxagroup[which(unlist(invdata$Taxon)%in%taxaclean ==TRUE)])
+        taxaclean <- clean_names(sp = searched_spp, prechecks = TRUE, standard_dataset = invdata, taxalevel = taxalevel)
 
+        speciestaxa <- unique(invdata$Taxagroup[which(unlist(invdata[,tlevels])%in%taxaclean ==TRUE)])
       }else{
-        data("pbenthobackbone", envir = environment())
+        data("pbenthodata", envir = environment())
 
-        bendata <- get("pbenthobackbone", envir  = environment())
+        bendata <- get("pbenthodata", envir  = environment())
 
         #clean taxa names before searching
 
-        taxaclean <- clean_names(sp = refs, prechecks = TRUE, standardnames = bendata)
+        tlevels <- switch (taxalevel, species ='Taxon', genus ='Genus', taxagroup = 'Taxagroup')#phytobenthos dont have taxa groups
 
-        speciestaxa <- unique(bendata$Class[which(unlist(bendata$Taxon)%in%taxaclean ==TRUE)])
+        if(is.null(tlevels))stop("If Phytobenthos are considered, then only taxagroup, genus and species taxalevels should be allowed.", call. = FALSE)
 
+        if(tlevels=='Genus') bendata[,'Genus'] <- sub(" .*", "", bendata$Taxon)
+
+        taxaclean <- clean_names(sp = searched_spp, prechecks = TRUE, standard_dataset = bendata, taxalevel = taxalevel)
+
+        speciestaxa <- unique(bendata$Taxagroup[which(unlist(bendata[,tlevels])%in%taxaclean ==TRUE)])
       }
 
       standardtaxa <- sapply(gettaxa, function(x) strsplit(x[["availableFor"]],split = ", ", fixed = TRUE)[[1]])
@@ -386,5 +401,5 @@ fw_searchdata <- function(organismgroup, refdata = NULL,
 
   },simplify = FALSE)
 
-  return(organismdata)
+   return(organismdata)
 }

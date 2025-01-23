@@ -5,21 +5,23 @@
 #'      should check for the species name provided to avoid not being being detected in the database.
 #' @param grouplists \code{list}. List of data downloaded in the \code{\link{fw_searchdata}} function. If species considered in \code{sp}
 #'      parameter are fishes, then the fishes lists should be provided otherwise the species names will be rejected.
-#' @param pct \code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
-#'        The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{pct}
+#' @param percenterror \code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
+#'        The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{percenterror}
 #'        ranges from 0 to 100 but the default is 80 to ensure that wrong names are not selected at low similarity percentage cutoff.
-#' @param errorness \code{numeric} Similar to \code{pct}, \code{errorness} parameter uses the distance differences between the user-provided
+#' @param errorness \code{numeric} Similar to \code{percenterror}, \code{errorness} parameter uses the distance differences between the user-provided
 #'        names and all the taxa group species standard names. The lower the percentage error, the higher the similarity in the species
 #'        names provided. Default is 20 and beyond 30, a warning is showed to avoid wrong species replace the user provided name, which leads
 #'        to extracting wrong traits.
-#' @param group \code{string} The taxa group names should be indicated to separate the macro-invertebrates workflow from others. The accepted
-#'      group names include macroinvertebrates, fishes, macrophytes, phytoplankton, diatoms, and phytobenthos.
 #' @param full \code{logical} \code{TRUE} if a dataframe with both cleaned and uncleaned species are required. If \code{FALSE} then the
 #'       a species list will be produced after cleaning. Default \code{FALSE}.
-#' @param prechecks,standardnames \code{logical}. If \code{TRUE} the standard prechecks will be done on both the invertebrates
+#' @param taxalevel \code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
+#'        genus, and taxa group level.
+#' @param prechecks,standard_dataset \code{logical}. If \code{TRUE} the standard prechecks will be done on both the invertebrates
 #'        and bentho species names before search for ecological parameters from the database. The
 #'        standard names is provided with the dataset to reduce on the time in identifying the
 #'        standard tyxonomic names for the macroinvertebrates in the database.
+#'        @param taxalevel \code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
+#'        genus, and taxa group level.
 #' @param warn To alert user on the species names cleaning errors and warnings.
 #'
 #' @importFrom utils adist
@@ -27,37 +29,29 @@
 #' @return \code{vector or string} clean species name that is also found in the database.
 #'
 #'
-clean_names <- function(sp, grouplists = NULL, prechecks = FALSE, standardnames = NULL, pct = 80, errorness = 30,
-                        group = NULL, full = FALSE,
-                        warn= FALSE) {
+clean_names <- function(sp,
+                        grouplists,
+                        prechecks = FALSE,
+                        standard_dataset = NULL,
+                        percenterror = 80,
+                        errorness = 30,
+                        full = FALSE,
+                        warn= FALSE,
+                        taxalevel) {
 
   if(isTRUE(prechecks)){
 
-    #caters for the prechecks in fw_maps
-    if(is(standardnames, 'data.frame')) stlist <- unlist(standardnames[,"Taxon"]) else stlist <- standardnames
+    tlevels <- switch (taxalevel, species ='Taxon', family='Family', taxagroup = 'Taxagroup', genus ='Genus')
 
+    stlist <- unlist(unique(standard_dataset[,tlevels]))
   } else{
-    #get the standard lists
-    if(is.null(group)) stop("Provide the organism group")
+    if(taxalevel=='species'){
 
-    #compiles all species from all the list of the group extracted
-    if(group=='Macroinvertebrates'){
-
-      #macro invertebrates is downloaded and arranged differently since the groups cannot retrieved in one file.
-      if(is(grouplists, 'list')){
-
-        stlistcheck <- unlist(unique(Reduce(c, sapply(grouplists, function(yy){sapply(yy, function(zz){paste0(zz$Genus," ", zz$Species)})}))))
-
-        #some return list of dataframe not list of list of dataframes
-        if(length(stlistcheck)<=1) stlist <- unlist(unique(sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))) else stlist <- stlistcheck
-
-      }else{
-        stlist <- unlist(unique(sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species))))
-
-      }
-
+      stlist <-  unlist(unique(Reduce(c, sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))))
     }else{
-      stlist <- unlist(unique(Reduce(c, sapply(grouplists, function(xx) paste0(xx$Genus," ", xx$Species)))))
+      tlevels <- switch(taxalevel, genus ='Genus', taxagroup = 'TaxaGroup', family ='Family')
+
+      stlist = unlist(unique(Reduce(c, sapply(grouplists, function(xx) xx[, tlevels]))))
 
     }
   }
@@ -92,49 +86,51 @@ clean_names <- function(sp, grouplists = NULL, prechecks = FALSE, standardnames 
 
     }else{
       #reduce the species to get only the species name
-      if(length(spclean)>2){
+      if(taxalevel=='species'){
 
-        spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:3], collapse = ' ')
+        wc <- length(unlist(strsplit(spclean," ")))
+
+        if(wc>2) taxaclean <- paste0(unlist(strsplit(spclean, " "))[1:3], collapse = ' ') else taxaclean <- paste0(unlist(strsplit(spclean, " "))[1:2], collapse = ' ')
 
       }else{
-        spclean2 <- paste0(unlist(strsplit(spclean, " "))[1:2], collapse = ' ')
-
+        taxaclean <- spclean
       }
-      inOut2 <- spclean2%in%stlist
+      #second attempt to look for right name: time consuming: provide a better name
+
+      inOut2 <- taxaclean%in%stlist
 
       if(inOut2==TRUE){
 
-        spch <- spclean2
+        spch <- taxaclean
 
       }else{
         #check if there is a similar name
+        dst <- adist(taxaclean, stlist, ignore.case = TRUE)
 
-        dst <- adist(spclean2, stlist)
+        distdiff <- (min(dst)/nchar(taxaclean))*100
 
-
-        errorsp <- (min(dst)/nchar(spclean2))*100
-
-        if(isTRUE(warn))if(errorsp>30) warning("The returned species name ", stlist[which.min(dst)], " has a high percentage error compared to ", spclean2, " and wrong traits may be returned.", call. = FALSE)
-
-        #errorness of the name
-        if(errorsp < errorness){
+        if(distdiff<= 0 | distdiff >30 ){
+          if(isTRUE(warn))  warning('No matching taxonomic names will be returned from the database for the searched taxa: ', taxaclean, " at the ", taxalevel, " level.", call. = FALSE)
+          spch <- NA
+        }else if(distdiff <= errorness){
 
           spsel <- stlist[which.min(dst)]
 
-          #check %length of the species replacing
-          ncpct <- (nchar(spsel)/nchar(spclean2))*100
+          if(length(spsel)>=1) {
 
-          if( ncpct > pct) {
+            taxacorrectnesspct <- (nchar(spsel)/nchar(taxaclean))*100
 
-            spch <- spsel
+            if(taxacorrectnesspct > percenterror) {
 
-          }
-          else {
-            if(isTRUE(warn))warning("No matching species name found for ", spclean2, " in the ", group, "  and will be removed", call. = FALSE)
-            spch = NA
+              spch <- spsel
+
+            }else {
+              if(isTRUE(warn))warning("No matching taxa name found for ", taxaclean, " and will be removed", call. = FALSE)
+              spch = NA
+            }
           }
         }else{
-          if(isTRUE(warn))warning("No matching species name found for ", spclean2, " in the ", group, " and will be removed", call. = FALSE)
+          if(isTRUE(warn))warning("No matching taxa name found for ", taxaclean, " and will be removed", call. = FALSE)
           spch = NA
         }
       }
@@ -147,6 +143,7 @@ clean_names <- function(sp, grouplists = NULL, prechecks = FALSE, standardnames 
   }else{
     finalout <- spcleandata[!is.na(spcleandata)]
   }
+
   return(finalout)
 }
 
@@ -181,13 +178,13 @@ clean_traits <- function(x){
 
       tclean <- paste(lstrings[1:3], collapse = ' ')
 
-      } else if(length(lstrings)<3 && length(lstrings)==2){
+    } else if(length(lstrings)<3 && length(lstrings)==2){
 
-        tclean <- paste(lstrings[1:2], collapse = ' ')
+      tclean <- paste(lstrings[1:2], collapse = ' ')
 
-      }else{
-        tclean <- lstrings
-      }
+    }else{
+      tclean <- lstrings
+    }
 
     return(tclean)
 
@@ -233,7 +230,7 @@ checktrait<- function(x, std, mindist = 0.3, error = 0.8, grp = NULL, warn= TRUE
     }else{
       fwd <- NA
       if(isTRUE(warn)) warning("The trait ", wd, " is wrongly spelt and not in ", grp, " traits and is likely to be -", wrd, "- but check fw_dbguide() for appropiate trait name",
-              call. = FALSE)
+                               call. = FALSE)
     }
 
     fwdlst <- fwd[!is.na(fwd)]

@@ -62,13 +62,11 @@ fw_token <- function(apikey = NULL, seed= NULL, cachefolder = NULL, secure = TRU
 
   if(!is.null(token)){
 
-    #if(isTRUE(inform)) message('The token is being loaded from memory.')
-
     return(token)
 
   }else{
 
-    if (!curl::has_internet()) stop("No internet connection detected. Connect to access database.")
+    if (curl::has_internet()==FALSE) stop("No internet connection detected. Connect to access database.")
 
     if(is.null(seed)) stop('Please set seed to properly cache the data while interacting with the platform.')
 

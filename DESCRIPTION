@@ -17,7 +17,6 @@ Imports:
     httr2,
     jsonlite,
     methods,
-    stats,
     utils,
     rstudioapi,
     R.cache
