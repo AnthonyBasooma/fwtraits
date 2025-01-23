@@ -6,14 +6,15 @@
 \usage{
 fw_searchdata(
   organismgroup,
-  refdata = NULL,
+  taxa_searched = NULL,
   ecoparams = NULL,
   apikey = NULL,
   warn = TRUE,
   seed = 1135,
   secure = TRUE,
   inform = FALSE,
-  cachefolder = NULL
+  taxalevel = NULL,
+  cachefolder = "cache"
 )
 }
 \arguments{
@@ -30,10 +31,10 @@ phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed su
 \item{\code{pb}: Phytobenthos without diatoms}
 }}
 
-\item{refdata}{\code{string} An internal placeholder to accommodate the standard taxonomic names for
+\item{taxa_searched}{\code{string} An internal placeholder to accommodate the standard taxonomic names for
 invertebrates and phytobenthos from the database.}
 
-\item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organismgroup group. Check \code{\link{fw_dbguide}} for the allowed
+\item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organism group. Check \code{\link{fw_dbguide}} for the allowed
 traits in the database.}
 
 \item{apikey}{\code{string}. The API key which is automatically loaded using the loadapikey() internal function.}
@@ -53,6 +54,9 @@ by other users.}
 
 \item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
 
+\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
+genus, and taxa group level.}
+
 \item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
 If the path is not provided, the cached information will be saved in the current
 working directly.}
@@ -65,6 +69,12 @@ The function provides a seamless access and download of species ecological param
 or indicators from the Freshwaterecology.info database. The function allows multiple inclusion
 of organism groups, which include macroinvertebrates, fishes, phytoplankton, phytobenthos,
 macrophytes, and diatoms.
+}
+\details{
+For macroinvertebrates, since there is alot of data which take a lot of time to download and yet slowing the process, the \code{taxa_searched}
+parameter should be provided to only search for the particular traits, family and orders or taxa group where the species falls. Also, the
+phytobenthos requires to provide the taxa_searched to enable search for a particular taxa group.
+For other organism group, the parameter should not provided because will not be used in the data search.
 }
 \examples{
 

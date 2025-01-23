@@ -86,17 +86,35 @@ href='https://github.com/AnthonyBasooma/fwtraits/issues pages'> isuues page</a>
 #'
 #' @author Anthony Basooma
 #'
-fw_paramlist <- function() {
+fw_paramlist <- function(cachefolder = NULL) {
 
   # base url with parameter list
 
-  paramurl <- "https://www.freshwaterecology.info/fweapi2/v1/getecoparamlist"
+  cachedir <- fw_path(cachefolder)
 
-  paramlist <- request(base_url = paramurl) |>
-    req_perform() |>
-    resp_body_json()
+  setCacheRootPath(path= cachedir)
 
-  return(paramlist)
+  cache.root = getCacheRootPath()
+
+  key <- list()
+
+  mainparlist <- loadCache(key)
+
+  if(!is.null(mainparlist)){
+
+    return(mainparlist)
+
+  }else{
+    paramurl <- "https://www.freshwaterecology.info/fweapi2/v1/getecoparamlist"
+
+    mainparlist <- request(base_url = paramurl) |>
+      req_perform() |>
+      resp_body_json()
+
+    saveCache(mainparlist, key=key, comment="token code generated")
+
+    mainparlist;
+  }
 }
 
 #' @noRd
@@ -114,7 +132,7 @@ fw_classes <- function(paramlist) {
 
 #' @noRd
 #'
-fw_path <- function(dir = NULL){
+fw_path <- function(dir = 'cache'){
 
   wd <- getwd()
 
@@ -138,6 +156,24 @@ fw_path <- function(dir = NULL){
     }
   }
   return(path)
+}
+
+
+#' Check for packages to install and reposnd to use
+#'
+#' @param pkgs list of packages to install
+#'
+#' @return error message for packages to install
+#'
+check_packages <- function(pkgs){
+
+  pkginstall <- sapply(pkgs, requireNamespace, quietly = TRUE)
+
+  pkgout <- pkgs[which(pkginstall==FALSE)]
+
+  if(length(pkgout)>=1)stop('Please install ', length(pkgout), ' packages: ', paste(pkgout, collapse = ', '), ' to continue.', call. = FALSE)
+
+  invisible(pkgs)
 }
 
 

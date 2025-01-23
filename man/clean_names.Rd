@@ -6,14 +6,14 @@
 \usage{
 clean_names(
   sp,
-  grouplists = NULL,
+  grouplists,
   prechecks = FALSE,
-  standardnames = NULL,
-  pct = 80,
+  standard_dataset = NULL,
+  percenterror = 80,
   errorness = 30,
-  group = NULL,
   full = FALSE,
-  warn = FALSE
+  warn = FALSE,
+  taxalevel
 )
 }
 \arguments{
@@ -23,27 +23,29 @@ should check for the species name provided to avoid not being being detected in 
 \item{grouplists}{\code{list}. List of data downloaded in the \code{\link{fw_searchdata}} function. If species considered in \code{sp}
 parameter are fishes, then the fishes lists should be provided otherwise the species names will be rejected.}
 
-\item{prechecks, standardnames}{\code{logical}. If \code{TRUE} the standard prechecks will be done on both the invertebrates
+\item{prechecks, standard_dataset}{\code{logical}. If \code{TRUE} the standard prechecks will be done on both the invertebrates
 and bentho species names before search for ecological parameters from the database. The
 standard names is provided with the dataset to reduce on the time in identifying the
-standard tyxonomic names for the macroinvertebrates in the database.}
+standard tyxonomic names for the macroinvertebrates in the database.
+@param taxalevel \code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
+genus, and taxa group level.}
 
-\item{pct}{\code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
-The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{pct}
+\item{percenterror}{\code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
+The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{percenterror}
 ranges from 0 to 100 but the default is 80 to ensure that wrong names are not selected at low similarity percentage cutoff.}
 
-\item{errorness}{\code{numeric} Similar to \code{pct}, \code{errorness} parameter uses the distance differences between the user-provided
+\item{errorness}{\code{numeric} Similar to \code{percenterror}, \code{errorness} parameter uses the distance differences between the user-provided
 names and all the taxa group species standard names. The lower the percentage error, the higher the similarity in the species
 names provided. Default is 20 and beyond 30, a warning is showed to avoid wrong species replace the user provided name, which leads
 to extracting wrong traits.}
-
-\item{group}{\code{string} The taxa group names should be indicated to separate the macro-invertebrates workflow from others. The accepted
-group names include macroinvertebrates, fishes, macrophytes, phytoplankton, diatoms, and phytobenthos.}
 
 \item{full}{\code{logical} \code{TRUE} if a dataframe with both cleaned and uncleaned species are required. If \code{FALSE} then the
 a species list will be produced after cleaning. Default \code{FALSE}.}
 
 \item{warn}{To alert user on the species names cleaning errors and warnings.}
+
+\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
+genus, and taxa group level.}
 }
 \value{
 \code{vector or string} clean species name that is also found in the database.

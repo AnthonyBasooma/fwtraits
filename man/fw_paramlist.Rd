@@ -4,7 +4,7 @@
 \alias{fw_paramlist}
 \title{Function to retrieve all the traits in the database.}
 \usage{
-fw_paramlist()
+fw_paramlist(cachefolder = NULL)
 }
 \value{
 \code{list} List of traits for all the taxa groups and orders in the database.

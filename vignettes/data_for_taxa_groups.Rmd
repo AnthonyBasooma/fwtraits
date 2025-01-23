@@ -35,15 +35,48 @@ Please follow the [secure_the_api_key](https://anthonybasooma.github.io/fwtraits
 
 **Data output columns and meaning**
 
-* **`organismgroup`**: is the high taxonomic group nomenclature, which includes five groups, namely macroinvertebrates, fish, phytoplankton, phtyobenthos (diatoms) and macrophtes.
-
-* **`species`**: are the species names searched from the database as provided by the user.
-
-* **`parameter`**: is the ecological parameter or species trait or indicator based on the frehwaterecology.info database.
-
-* **`description`**: this column is displayed if the catchment region for fish is querried. The description will provide the description of the basin were the species is native or alien.
-
-* **`traitvalue`**: is the different parameter value for each species. if a species has more than one trait value, they will all be displayed separately. For example, if a species is a long/medium distance migratory species, it will appear twice in the dataset.
++------------------------------+-------------------------------------------------------------------------------------------------+
+| Function                     | Explanation                                                                                     |
++:=============================+:================================================================================================+
+|`ID_FWE`                      |Indicates the record ID number in the www.freshwaterecology.info database.                       |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`OrganismGroup`               |The highest taxonomic group nomenclature, which includes five groups, namely\                    |
+|                              |macroinvertebrates, fish, phytoplankton, phtyobenthos (diatoms) and macrophtes                   |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`TaxaGroup`                   |The taxonomic classification of a species. Its a class for phytobenthos but\                     |
+|                              |sometimes order, family.Not recommended for querying data.                                       |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`Family`                      |Family of particular species or taxonomic group. **Recommended for data search**\                |
+|                              |search since taxa families are taxonomic classification.                                         |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`Genus`                       | The taxonomic genera for a particular taxon.  **Recommended for data search**                   |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`Species`                     |The specific epithet for a particular species. Combining both the genera \                       |
+|                              |forms the taxonomic scientific name. **Recommended for data search** but the\                    |
+|                              |but its disadvantageous if many are required and are from the same genus or family\              |
+|                              |genus or family                                                                                  |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`Taxonname`                   | Complete taxonomic with the naming authorities. *Not used in data search*\                      |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`Author`                      | The taxonomic authority of a particular of taxon.\                                              |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`Parameter`                   |The ecological parameter being searched from the database. The *raw* and *tidyr*\                |
+|                              | names can be obtained using the fw_dbguide() function.                                          |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`CategoryName`                | The particular ecological trait of taxon or species.                                            |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`CategoryLevels`              | Some ecological parameters such stream ecological preference of r macroinvertebrates \          |
+|                              | catchment region for fish, provide more information. for example, for catchment                 |
+|                              | region, beside knowing where the basin is located, its indicated whether the .                  |
+|                              | specie sis invasive or invasive in particular basin                                             |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`DataType`                    |The type, whether fuzzy, factor, categorical or numerical. However, the\                         |
+|                              |  author reclassify the data in the subsequent analysis                                          |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`ClassificationType`          | The data classification creitera based on Schmidt-Kloiber & Herring et al., 2012\               |
++------------------------------+-------------------------------------------------------------------------------------------------+
+|`CategoryExplanaiton`         | Describe the different category meaning ,                                                       |
++------------------------------+-------------------------------------------------------------------------------------------------+
 
 
 ### 1. Fishes
@@ -54,10 +87,9 @@ Please follow the [secure_the_api_key](https://anthonybasooma.github.io/fwtraits
 
 migration <- fw_fetchdata(data = "Abramis brama",
                           organismgroup = 'fi',
-                          ecoparams = 'catchment region',
-                          cachefolder = 'cache')
+                          ecoparams = 'migration')
 
-head(migration)
+head(migration$ecodata)
 ```
 
 
@@ -68,20 +100,20 @@ head(migration)
 data("speciesdata") 
 
 traitsout <- fw_fetchdata(data = speciesdata, 
-                           organismgroup = 'fi',
-                           spcol = 'scientificName', 
-                           ecoparams = c('migration', 'threat austria',
-                                         'oxygen tolerence', 'migration fibs'),
-                           cachefolder  = 'cache')
+                          organismgroup = 'fi',
+                          taxonomic_column = 'scientificName', 
+                          ecoparams = c('migration', 'threat austria',
+                                        'oxygen tolerence', 'migration fibs'),
+                          taxalevel = 'species')
 
-head(traitsout)
+head(traitsout$ecodata)
 
 ```
 
 **1.3 Visualizing fish traits**
-
+  
 ```{r Viszualize outputs for fish, fig.width = 8, fig.height= 6, fig.align='center'}
- 
+
 fw_visualize(output = traitsout)
 
 ```
@@ -90,37 +122,35 @@ fw_visualize(output = traitsout)
 ### 2. Macroinvertebrates
 
 **2.1: Single species**
-
+  
 ```{r Macroinvertebrates traits retrieval for one species}
 
 mmdata_traits <- fw_fetchdata(data =  "Margaritifera margaritifera",
-                                        organismgroup = 'mi',
-                                        ecoparams = c('stream zonation preference'),
-                                        inform = TRUE,
-                                        cachefolder = 'cache')
+                              organismgroup = 'mi',
+                              ecoparams = c('stream zonation preference'),
+                              inform = TRUE)
 ```
 
 **2.2: More than one species in a vector/list**
-
+  
 ```{r Species names in alist or vector for macroinvertebrates}
 
 speciesvec <- c("Margaritifera margaritifera",
-                 "Pseudunio auricularius",
-                 "Musculium lacustre",
-                 "Musculium transversum",
-                 "Parastenocaris germanica")
+                "Pseudunio auricularius",
+                "Musculium lacustre",
+                "Musculium transversum",
+                "Parastenocaris germanica")
 
 multspp <- fw_fetchdata(data =  speciesvec,
                         organismgroup = 'mi',
                         ecoparams = c('stream zonation preference'),
-                        inform = TRUE,
-                        cachefolder = 'cache')
-head(multspp)
+                        inform = TRUE)
+head(multspp$ecodata)
 
 ```
 
 **2.3: More than one species in a dataframe**
-
+  
 ```{r Species names in a dataframe not list or vector}
 
 macrodf <- data.frame(organismgroup = rep('mi', 13),
@@ -140,17 +170,17 @@ macrodf <- data.frame(organismgroup = rep('mi', 13),
 
 multspp_df <- fw_fetchdata(data =  macrodf,
                            organismgroup = 'mi',
-                           spcol = 'species',
+                           taxonomic_column = 'species',
                            ecoparams = c("stream zonation preference", "feeding type"),
-                           cachefolder = 'cache')
-head(multspp_df)
+                           inform = TRUE)
+head(multspp_df$ecodata)
 
 ```
 
 
 **2.4: Data visualization for macroinvertebrates**
-
-If the species considered are more than 1, then visualization can be to determine the frequency of each trait. This is an optional function for post data searches.
+  
+  If the species considered are more than 1, then visualization can be to determine the frequency of each trait. This is an optional function for post data searches.
 
 ```{r Viszualize outputs for macroinvertebrates, fig.width = 6, fig.height= 5, fig.align='center'}
 
@@ -165,14 +195,13 @@ fw_visualize(output = multspp_df)
 ```{r Species names in list or vector for macrophytes}
 
 mpp <- fw_fetchdata(data = c("Amblystegium fluviatile",
-                               "Amblystegium humile",
-                               "Amblystegium riparium",
-                               "Amblystegium serpens",
-                               "Amblystegium tenax",
-                               "Amblystegium varium"),
-                          organismgroup = 'mp',
-                          ecoparams = c('zone - systema'),
-                          cachefolder = 'cache')
+                             "Amblystegium humile",
+                             "Amblystegium riparium",
+                             "Amblystegium serpens",
+                             "Amblystegium tenax",
+                             "Amblystegium varium"),
+                    organismgroup = 'mp',
+                    ecoparams = c('zone - systema'))
 
 ```
 
@@ -181,40 +210,38 @@ mpp <- fw_fetchdata(data = c("Amblystegium fluviatile",
 ```{r Species names in a list or vector for phytobenthos}
 
 pbdata <- fw_fetchdata(data = c("Gongrosira debaryana",
-                             "Gongrosira fluminensis",
-                             "Hydrodictyon reticulatum",
-                             "Sphaerobotrys fluviatilis",
-                             "Stigeoclonium farctum",
-                             "Stigeoclonium tenue",
-                             "Tetraspora gelatinosa",
-                             "Thorea hispida"),
-                      organismgroup = 'pb',
-                      ecoparams = c('substrate preference'),
-                      cachefolder = 'cache', na.rm = FALSE)
-head(pbdata)
+                                "Gongrosira fluminensis",
+                                "Hydrodictyon reticulatum",
+                                "Sphaerobotrys fluviatilis",
+                                "Stigeoclonium farctum",
+                                "Stigeoclonium tenue",
+                                "Tetraspora gelatinosa",
+                                "Thorea hispida"),
+                       organismgroup = 'pb',
+                       ecoparams = c('substrate preference'))
+head(pbdata$ecodata)
 
 ```
 
 ```{r Species names in a list for phytobenthos and macroinvertebrates}
 
 mipbdata <- fw_fetchdata(data = list(mi=c("Congeria kusceri",
-                            "Congeria leucophaeata",
-                            "Dreissena polymorpha",
-                            "Dreissena rostriformis bugensis"),
-                            pb= c("Gongrosira debaryana",
-                                   "Gongrosira fluminensis",
-                                   "Hydrodictyon reticulatum",
-                                   "Sphaerobotrys fluviatilis",
-                                   "Stigeoclonium farctum",
-                                   "Stigeoclonium tenue",
-                                   "Tetraspora gelatinosa",
-                                   "Thorea hispida")),
-                   organismgroup = c('mi','pb'),
-                   ecoparams = list(mi = c('stream zonation preference'),
-                                    pb = c('substrate preference')),
-                   cachefolder = 'cache')
+                                          "Congeria leucophaeata",
+                                          "Dreissena polymorpha",
+                                          "Dreissena rostriformis bugensis"),
+                                     pb= c("Gongrosira debaryana",
+                                           "Gongrosira fluminensis",
+                                           "Hydrodictyon reticulatum",
+                                           "Sphaerobotrys fluviatilis",
+                                           "Stigeoclonium farctum",
+                                           "Stigeoclonium tenue",
+                                           "Tetraspora gelatinosa",
+                                           "Thorea hispida")),
+                         organismgroup = c('mi','pb'),
+                         ecoparams = list(mi = c('stream zonation preference'),
+                                          pb = c('substrate preference')), details = TRUE)
 
-head(mipbdata)
+head(mipbdata$ecodata)
 
 ```
 
@@ -223,13 +250,13 @@ head(mipbdata)
 ```{r Species names in list or vector for phytoplankton}
 
 ppdata <- fw_fetchdata(data = c("Anathece clathrata",
-                             "Anathece minutissima",
-                             "Anthophysa vegetans",
-                             "Apocalathium aciculiferum",
-                             "Adlafia minuscula var. muralis"),
-                    organismgroup = 'pp',
-                    ecoparams = c('stenoecy factor', 'life form'),
-                    cachefolder = 'cache')
+                                "Anathece minutissima",
+                                "Anthophysa vegetans",
+                                "Apocalathium aciculiferum",
+                                "Adlafia minuscula var. muralis"),
+                       organismgroup = 'pp',
+                       ecoparams = c('stenoecy factor', 'life form'),
+                       cachefolder = 'cache')
 
 head(ppdata)
 
@@ -239,6 +266,7 @@ head(ppdata)
 ## step3. References
 
 * Schmidt-Kloiber, A., & Hering, D. (2015). www.freshwaterecology.info - An online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007
+
 
 
 

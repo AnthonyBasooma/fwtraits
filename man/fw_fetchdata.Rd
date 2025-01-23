@@ -2,24 +2,24 @@
 % Please edit documentation in R/fw_fetchdata.R
 \name{fw_fetchdata}
 \alias{fw_fetchdata}
-\title{Arranging and user friendly selection of traits at different taxonomic levels.}
+\title{Extracting the traits from the downloaded data.}
 \usage{
 fw_fetchdata(
   data,
   organismgroup,
-  spcol = NULL,
-  groupcol = NULL,
   ecoparams = NULL,
+  taxalevel = "species",
+  taxonomic_column = NULL,
+  organismgroup_column = NULL,
   apikey = NULL,
-  seed = 1135,
+  seed = 1134,
   secure = TRUE,
-  cachefolder = NULL,
-  inform = FALSE,
-  wide = FALSE,
-  na.rm = TRUE,
+  percenterror = 80,
+  errorness = 20,
   warn = FALSE,
-  errorness = 27,
-  pct = 80
+  inform = FALSE,
+  cachefolder = "cache",
+  details = FALSE
 )
 }
 \arguments{
@@ -39,14 +39,17 @@ phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed su
 \item{\code{pb}: Phytobenthos without diatoms}
 }}
 
-\item{spcol}{\code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
+\item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organism group. Check \code{\link{fw_dbguide}} for the allowed
+traits in the database.}
+
+\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
+genus, and taxa group level.}
+
+\item{taxonomic_column}{\code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
 The column should have complete species name and not genus and species provided separately.}
 
-\item{groupcol}{\code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
-the \code{groupcol} is required to iterate over the taxonomic groups separately.}
-
-\item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organismgroup group. Check \code{\link{fw_dbguide}} for the allowed
-traits in the database.}
+\item{organismgroup_column}{\code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
+the \code{organismgroup_column} is required to iterate over the taxonomic groups separately.}
 
 \item{apikey}{\code{string}. The API key which is automatically loaded using the loadapikey() internal function.}
 
@@ -61,54 +64,38 @@ If \code{FALSE}, then the key will be entered directly in the API_KEY directly i
 fw_token() function. This method is insecure, since the key can be obtained from the codes
 by other users.}
 
-\item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
-If the path is not provided, the cached information will be saved in the current
-working directly.}
+\item{percenterror}{\code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
+The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{percenterror}
+ranges from 0 to 100 but the default is 80 to ensure that wrong names are not selected at low similarity percentage cutoff.}
 
-\item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
-
-\item{wide}{\code{logical}. If \code{TRUE}, then the output is spread to a wider or spread format for each unique species and
-taxonomic groups.}
-
-\item{na.rm}{\code{logical} If \code{TRUE}, then the traits with no data will be removed from the output dataset.
-Default \code{TRUE}.}
-
-\item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
-
-\item{errorness}{\code{numeric} Similar to \code{pct}, \code{errorness} parameter uses the distance differences between the user-provided
+\item{errorness}{\code{numeric} Similar to \code{percenterror}, \code{errorness} parameter uses the distance differences between the user-provided
 names and all the taxa group species standard names. The lower the percentage error, the higher the similarity in the species
 names provided. Default is 20 and beyond 30, a warning is showed to avoid wrong species replace the user provided name, which leads
 to extracting wrong traits.}
 
-\item{pct}{\code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
-The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{pct}
-ranges from 0 to 100 but the default is 80 to ensure that wrong names are not selected at low similarity percentage cutoff.}
+\item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
+
+\item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
+
+\item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
+If the path is not provided, the cached information will be saved in the current
+working directly.}
+
+\item{details}{\code{logical}. For print the output summary including the parameters used, successful and unsuccessful data retrieval.}
 }
 \value{
-\code{dataframe} A dataframe species traits at a selected taxonomic level.
+\code{dataframe} A dataframe species traits for all orders.
 }
 \description{
-Arranging and user friendly selection of traits at different taxonomic levels.
+Extracting the traits from the downloaded data.
 }
 \examples{
 
 \dontrun{
 
-
-#download fish catchment region data
-
-
-fishdata <- fw_fetchdata(data = 'Abramis brmaam', organismgroup = 'fi',
-                             ecoparams = 'migration',
-                             cachefolder = 'cache')#the species spelling is checked
-}
+dfextract <- fw_fetchdata(data = "Abramis brama", organismgroup = 'fi', inform = TRUE,
+                            ecoparams = 'migration', cachefolder = 'cache' )
 
 }
-\seealso{
-\code{\link{fw_token}}, \code{\link{fw_searchdata}}, \code{\link{fw_split}}
-}
-\author{
-{
-Anthony Basooma \email{anthony.basooma@boku.ac.at}
-}
+
 }

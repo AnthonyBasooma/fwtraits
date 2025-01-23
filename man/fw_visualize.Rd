@@ -9,8 +9,9 @@ fw_visualize(
   scales = "free",
   ncol = 2,
   params = NULL,
-  group = NULL,
-  color = "purple"
+  organism_group = NULL,
+  color = "purple",
+  na.rm = TRUE
 )
 }
 \arguments{
@@ -22,9 +23,11 @@ fw_visualize(
 
 \item{params}{species ecological parameters selected if there are more than one.}
 
-\item{group}{Particular organism group to filter out to allow visualization.}
+\item{organism_group}{Particular organism group to filter out to allow visualization.}
 
 \item{color}{\code{string} Change the color for the bar graphs being plotted.}
+
+\item{na.rm}{\code{logical} To remove NA in the category names or species traits.}
 }
 \value{
 ggplot2 display

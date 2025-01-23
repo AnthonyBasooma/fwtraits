@@ -3,8 +3,6 @@
 
 searchdata <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', cachefolder = 'cache')
 
-splitdata <- fw_split(data = "Abrais brama", organismgroup = 'fi',
-                      ecoparams = 'migration', cachefolder = 'cache')#specie name will be checked
 #fish
 fetchdata <- fw_fetchdata(data = "Abramis brama", organismgroup = 'fi',
                       ecoparams = 'migration', cachefolder = 'cache')
@@ -32,23 +30,17 @@ test_that(desc = 'List is generated species with migration types',
           code = {expect_type(searchdata, 'list')
             })
 
-test_that(desc = 'Dataframe with a particular species ',
-          code = {
-            expect_s3_class (splitdata, 'data.frame')
-
-            expect_equal(nrow(splitdata), 1)
-            })
 
 test_that(desc = 'Dataframe with sanitized species data ',
           code = {
-            expect_s3_class (fetchdata, 'data.frame')
+            expect_s3_class (fetchdata$ecodata, 'data.frame')
 
-            expect_equal(nrow(fetchdata), 1)
+            expect_equal(nrow(fetchdata$ecodata), 1)
 
-            expect_contains(colnames(fetchdata), 'traitvalue') #sanitized column
+            expect_contains(colnames(fetchdata$ecodata), 'CategoryName') #sanitized column
           })
 test_that(desc = 'dataframe of species traits',
           code = {
             expect_s3_class(fw_dbguide(), 'data.frame')
-            expect_equal(length(colnames(fw_dbguide())), 6)
+            expect_equal(length(colnames(fw_dbguide())), 8)
           })

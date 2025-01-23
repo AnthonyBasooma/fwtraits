@@ -40,10 +40,12 @@ library(fwtraits)
 ```{r}
 
 
-fishdata <- fw_fetchdata(data = 'Abramis brmaam', 
+migration <- fw_fetchdata(data = 'Abramis brmaam', 
                          organismgroup = 'fi',
                          ecoparams = 'migration',
                          cachefolder = 'cache')#the species spelling is checked
+
+#or use the fw_keyload() function: which retruns a congratulation message
 
 ```
 

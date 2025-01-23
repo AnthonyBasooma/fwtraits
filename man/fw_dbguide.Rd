@@ -4,14 +4,15 @@
 \alias{fw_dbguide}
 \title{Standard table with taxonomic groups and their traits explanations.}
 \usage{
-fw_dbguide(organismgroup = NULL, traits = NULL)
+fw_dbguide(organismgroup = NULL, cachefolder = "cache")
 }
 \arguments{
 \item{organismgroup}{\code{string or vector}. Taxa group names to aid the users in filtering the standard
 table for species traits and their explanations.}
 
-\item{traits}{\code{string or vector}. Traits that can be filtered from the databases, given the organism group
-indicated in \code{organismgroup} parameter.}
+\item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
+If the path is not provided, the cached information will be saved in the current
+working directly.}
 }
 \value{
 \code{dataframe} A dataset with taxonomic groups, traits and their explanations.
@@ -23,7 +24,7 @@ Standard table with taxonomic groups and their traits explanations.
 
 \dontrun{
 
-dbase <- fw_dbguide()
+dbase <- fw_dbguide(cachefolder = 'cache')
 
 }
 
