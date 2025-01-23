@@ -45,14 +45,14 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">clean_names</span><span class="op">(</span></span>
 <span>  <span class="va">sp</span>,</span>
-<span>  grouplists <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">grouplists</span>,</span>
 <span>  prechecks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  standardnames <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pct <span class="op">=</span> <span class="fl">80</span>,</span>
+<span>  standard_dataset <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  percenterror <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>  errorness <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  full <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  warn <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">taxalevel</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -70,29 +70,26 @@ should check for the species name provided to avoid not being being detected in 
 parameter are fishes, then the fishes lists should be provided otherwise the species names will be rejected.</p></dd>
 
 
-<dt id="arg-prechecks-standardnames">prechecks, standardnames<a class="anchor" aria-label="anchor" href="#arg-prechecks-standardnames"></a></dt>
+<dt id="arg-prechecks-standard-dataset">prechecks, standard_dataset<a class="anchor" aria-label="anchor" href="#arg-prechecks-standard-dataset"></a></dt>
 <dd><p><code>logical</code>. If <code>TRUE</code> the standard prechecks will be done on both the invertebrates
 and bentho species names before search for ecological parameters from the database. The
 standard names is provided with the dataset to reduce on the time in identifying the
-standard tyxonomic names for the macroinvertebrates in the database.</p></dd>
+standard tyxonomic names for the macroinvertebrates in the database.
+@param taxalevel <code>string</code> Allowed taxonomic levels at which data can retrieved. Default is <code>'species'</code> but data can also be downloaded at family level,
+genus, and taxa group level.</p></dd>
 
 
-<dt id="arg-pct">pct<a class="anchor" aria-label="anchor" href="#arg-pct"></a></dt>
+<dt id="arg-percenterror">percenterror<a class="anchor" aria-label="anchor" href="#arg-percenterror"></a></dt>
 <dd><p><code>numeric</code>. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
-The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. <code>pct</code>
+The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. <code>percenterror</code>
 ranges from 0 to 100 but the default is 80 to ensure that wrong names are not selected at low similarity percentage cutoff.</p></dd>
 
 
 <dt id="arg-errorness">errorness<a class="anchor" aria-label="anchor" href="#arg-errorness"></a></dt>
-<dd><p><code>numeric</code> Similar to <code>pct</code>, <code>errorness</code> parameter uses the distance differences between the user-provided
+<dd><p><code>numeric</code> Similar to <code>percenterror</code>, <code>errorness</code> parameter uses the distance differences between the user-provided
 names and all the taxa group species standard names. The lower the percentage error, the higher the similarity in the species
 names provided. Default is 20 and beyond 30, a warning is showed to avoid wrong species replace the user provided name, which leads
 to extracting wrong traits.</p></dd>
-
-
-<dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
-<dd><p><code>string</code> The taxa group names should be indicated to separate the macro-invertebrates workflow from others. The accepted
-group names include macroinvertebrates, fishes, macrophytes, phytoplankton, diatoms, and phytobenthos.</p></dd>
 
 
 <dt id="arg-full">full<a class="anchor" aria-label="anchor" href="#arg-full"></a></dt>
@@ -102,6 +99,11 @@ a species list will be produced after cleaning. Default <code>FALSE</code>.</p><
 
 <dt id="arg-warn">warn<a class="anchor" aria-label="anchor" href="#arg-warn"></a></dt>
 <dd><p>To alert user on the species names cleaning errors and warnings.</p></dd>
+
+
+<dt id="arg-taxalevel">taxalevel<a class="anchor" aria-label="anchor" href="#arg-taxalevel"></a></dt>
+<dd><p><code>string</code> Allowed taxonomic levels at which data can retrieved. Default is <code>'species'</code> but data can also be downloaded at family level,
+genus, and taxa group level.</p></dd>
 
 </dl></div>
     <div class="section level2">

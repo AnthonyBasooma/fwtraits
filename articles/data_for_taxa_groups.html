@@ -97,26 +97,105 @@ extraction or errors. Checks are conducted on the species names to
 ensure they are harmonized to trait searches.</p></li>
 </ul>
 <p><strong>Data output columns and meaning</strong></p>
-<ul>
-<li><p><strong><code>organismgroup</code></strong>: is the high
-taxonomic group nomenclature, which includes five groups, namely
+<table class="table">
+<colgroup>
+<col width="24%">
+<col width="75%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Function</th>
+<th align="left">Explanation</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>ID_FWE</code></td>
+<td align="left">Indicates the record ID number in the
+www.freshwaterecology.info database.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>OrganismGroup</code></td>
+<td align="left">The highest taxonomic group nomenclature, which
+includes five groups, namely<br>
 macroinvertebrates, fish, phytoplankton, phtyobenthos (diatoms) and
-macrophtes.</p></li>
-<li><p><strong><code>species</code></strong>: are the species names
-searched from the database as provided by the user.</p></li>
-<li><p><strong><code>parameter</code></strong>: is the ecological
-parameter or species trait or indicator based on the
-frehwaterecology.info database.</p></li>
-<li><p><strong><code>description</code></strong>: this column is
-displayed if the catchment region for fish is querried. The description
-will provide the description of the basin were the species is native or
-alien.</p></li>
-<li><p><strong><code>traitvalue</code></strong>: is the different
-parameter value for each species. if a species has more than one trait
-value, they will all be displayed separately. For example, if a species
-is a long/medium distance migratory species, it will appear twice in the
-dataset.</p></li>
-</ul>
+macrophtes</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>TaxaGroup</code></td>
+<td align="left">The taxonomic classification of a species. Its a class
+for phytobenthos but<br>
+sometimes order, family.Not recommended for querying data.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>Family</code></td>
+<td align="left">Family of particular species or taxonomic group.
+<strong>Recommended for data search</strong><br>
+search since taxa families are taxonomic classification.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>Genus</code></td>
+<td align="left">The taxonomic genera for a particular taxon.
+<strong>Recommended for data search</strong>
+</td>
+</tr>
+<tr class="even">
+<td align="left"><code>Species</code></td>
+<td align="left">The specific epithet for a particular species.
+Combining both the genera<br>
+forms the taxonomic scientific name. <strong>Recommended for data
+search</strong> but the<br>
+but its disadvantageous if many are required and are from the same genus
+or family<br>
+genus or family</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>Taxonname</code></td>
+<td align="left">Complete taxonomic with the naming authorities. <em>Not
+used in data search</em><br>
+</td>
+</tr>
+<tr class="even">
+<td align="left"><code>Author</code></td>
+<td align="left">The taxonomic authority of a particular of taxon.<br>
+</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>Parameter</code></td>
+<td align="left">The ecological parameter being searched from the
+database. The <em>raw</em> and <em>tidyr</em><br>
+names can be obtained using the fw_dbguide() function.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>CategoryName</code></td>
+<td align="left">The particular ecological trait of taxon or
+species.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>CategoryLevels</code></td>
+<td align="left">Some ecological parameters such stream ecological
+preference of r macroinvertebrates<br>
+catchment region for fish, provide more information. for example, for
+catchment region, beside knowing where the basin is located, its
+indicated whether the . specie sis invasive or invasive in particular
+basin</td>
+</tr>
+<tr class="even">
+<td align="left"><code>DataType</code></td>
+<td align="left">The type, whether fuzzy, factor, categorical or
+numerical. However, the<br>
+author reclassify the data in the subsequent analysis</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>ClassificationType</code></td>
+<td align="left">The data classification creitera based on
+Schmidt-Kloiber &amp; Herring et al., 2012<br>
+</td>
+</tr>
+<tr class="even">
+<td align="left"><code>CategoryExplanaiton</code></td>
+<td align="left">Describe the different category meaning ,</td>
+</tr>
+</tbody>
+</table>
 <div class="section level3">
 <h3 id="fishes">1. Fishes<a class="anchor" aria-label="anchor" href="#fishes"></a>
 </h3>
@@ -125,20 +204,22 @@ dataset.</p></li>
 <code class="sourceCode R"><span></span>
 <span><span class="va">migration</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Abramis brama"</span>,</span>
 <span>                          organismgroup <span class="op">=</span> <span class="st">'fi'</span>,</span>
-<span>                          ecoparams <span class="op">=</span> <span class="st">'catchment region'</span>,</span>
-<span>                          cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
+<span>                          ecoparams <span class="op">=</span> <span class="st">'migration'</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  ======================================================================== </span></span>
-<span><span class="co">#&gt;  Congratulations!!! Ready to interact with Freshwaterecology.info database </span></span>
-<span><span class="co">#&gt;  =========================================================================</span></span>
+<span><span class="co">#&gt;  Congratulations!!! Ready to interact with www.freshwaterecology.info database </span></span>
+<span><span class="co">#&gt;  ========================================================================= </span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">migration</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organismgroup       species        parameter description traitvalue</span></span>
-<span><span class="co">#&gt; 1          Fish Abramis brama catchment region        AnCo     native</span></span>
-<span><span class="co">#&gt; 2          Fish Abramis brama catchment region        BaSe     native</span></span>
-<span><span class="co">#&gt; 3          Fish Abramis brama catchment region        BlSe     native</span></span>
-<span><span class="co">#&gt; 4          Fish Abramis brama catchment region        BrCh     native</span></span>
-<span><span class="co">#&gt; 5          Fish Abramis brama catchment region        Danu     native</span></span>
-<span><span class="co">#&gt; 6          Fish Abramis brama catchment region        EC13     native</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">migration</span><span class="op">$</span><span class="va">ecodata</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   ID_FWE OrganismGroup     TaxaGroup     Family   Genus Species</span></span>
+<span><span class="co">#&gt; 1    210            fi Cypriniformes Cyprinidae Abramis   brama</span></span>
+<span><span class="co">#&gt;                        Taxonname           Author Parameter  CategoryName</span></span>
+<span><span class="co">#&gt; 1 Abramis brama (Linnaeus, 1758) (Linnaeus, 1758) migration potamodromous</span></span>
+<span><span class="co">#&gt;   CategoryLevels DataType ClassificationType</span></span>
+<span><span class="co">#&gt; 1             NA     &lt;NA&gt;               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;                                                CategoryExplanation</span></span>
+<span><span class="co">#&gt; 1 migratory fish species; whole life cycle is spent in freshwaters</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#species data archived in fwtraits</span></span>
@@ -146,23 +227,46 @@ dataset.</p></li>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"speciesdata"</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">traitsout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">speciesdata</span>, </span>
-<span>                           organismgroup <span class="op">=</span> <span class="st">'fi'</span>,</span>
-<span>                           spcol <span class="op">=</span> <span class="st">'scientificName'</span>, </span>
-<span>                           ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'migration'</span>, <span class="st">'threat austria'</span>,</span>
-<span>                                         <span class="st">'oxygen tolerence'</span>, <span class="st">'migration fibs'</span><span class="op">)</span>,</span>
-<span>                           cachefolder  <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
+<span>                          organismgroup <span class="op">=</span> <span class="st">'fi'</span>,</span>
+<span>                          taxonomic_column <span class="op">=</span> <span class="st">'scientificName'</span>, </span>
+<span>                          ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'migration'</span>, <span class="st">'threat austria'</span>,</span>
+<span>                                        <span class="st">'oxygen tolerence'</span>, <span class="st">'migration fibs'</span><span class="op">)</span>,</span>
+<span>                          taxalevel <span class="op">=</span> <span class="st">'species'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">traitsout</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organismgroup                species      parameter traitvalue</span></span>
-<span><span class="co">#&gt; 1          Fish      Anguilla anguilla migration fibs       long</span></span>
-<span><span class="co">#&gt; 2          Fish            Salmo salar migration fibs       long</span></span>
-<span><span class="co">#&gt; 3          Fish          Barbus barbus migration fibs     medium</span></span>
-<span><span class="co">#&gt; 4          Fish       Lampetra planeri migration fibs     medium</span></span>
-<span><span class="co">#&gt; 5          Fish Gasterosteus aculeatus migration fibs     medium</span></span>
-<span><span class="co">#&gt; 6          Fish      Alburnus alburnus migration fibs      short</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">traitsout</span><span class="op">$</span><span class="va">ecodata</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   ID_FWE OrganismGroup       TaxaGroup        Family     Genus   Species</span></span>
+<span><span class="co">#&gt; 1    210            fi   Cypriniformes    Cyprinidae   Abramis     brama</span></span>
+<span><span class="co">#&gt; 2    216            fi   Cypriniformes    Cyprinidae  Alburnus  alburnus</span></span>
+<span><span class="co">#&gt; 3    222            fi  Anguilliformes   Anguillidae  Anguilla  anguilla</span></span>
+<span><span class="co">#&gt; 4    226            fi   Cypriniformes Nemacheilidae Barbatula barbatula</span></span>
+<span><span class="co">#&gt; 5    227            fi   Cypriniformes    Cyprinidae    Barbus    barbus</span></span>
+<span><span class="co">#&gt; 6    239            fi Scorpaeniformes      Cottidae    Cottus     gobio</span></span>
+<span><span class="co">#&gt;                              Taxonname           Author Parameter  CategoryName</span></span>
+<span><span class="co">#&gt; 1       Abramis brama (Linnaeus, 1758) (Linnaeus, 1758) migration potamodromous</span></span>
+<span><span class="co">#&gt; 2   Alburnus alburnus (Linnaeus, 1758) (Linnaeus, 1758) migration potamodromous</span></span>
+<span><span class="co">#&gt; 3   Anguilla anguilla (Linnaeus, 1758) (Linnaeus, 1758) migration    diadromous</span></span>
+<span><span class="co">#&gt; 4 Barbatula barbatula (Linnaeus, 1758) (Linnaeus, 1758) migration potamodromous</span></span>
+<span><span class="co">#&gt; 5       Barbus barbus (Linnaeus, 1758) (Linnaeus, 1758) migration potamodromous</span></span>
+<span><span class="co">#&gt; 6          Cottus gobio Linnaeus, 1758   Linnaeus, 1758 migration  no migration</span></span>
+<span><span class="co">#&gt;   CategoryLevels DataType ClassificationType</span></span>
+<span><span class="co">#&gt; 1           &lt;NA&gt;     &lt;NA&gt;               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2           &lt;NA&gt;     &lt;NA&gt;               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3           &lt;NA&gt;     &lt;NA&gt;               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4           &lt;NA&gt;     &lt;NA&gt;               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5           &lt;NA&gt;     &lt;NA&gt;               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6           &lt;NA&gt;     &lt;NA&gt;               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;                                                                 CategoryExplanation</span></span>
+<span><span class="co">#&gt; 1                  migratory fish species; whole life cycle is spent in freshwaters</span></span>
+<span><span class="co">#&gt; 2                  migratory fish species; whole life cycle is spent in freshwaters</span></span>
+<span><span class="co">#&gt; 3 migratory fish species; parts of the life cycle are spent in fresh and salt water</span></span>
+<span><span class="co">#&gt; 4                  migratory fish species; whole life cycle is spent in freshwaters</span></span>
+<span><span class="co">#&gt; 5                  migratory fish species; whole life cycle is spent in freshwaters</span></span>
+<span><span class="co">#&gt; 6                                               species with no migration movements</span></span></code></pre></div>
 <p><strong>1.3 Visualizing fish traits</strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span> </span>
+<code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/fw_visualize.html">fw_visualize</a></span><span class="op">(</span>output <span class="op">=</span> <span class="va">traitsout</span><span class="op">)</span></span></code></pre></div>
 <p><img src="data_for_taxa_groups_files/figure-html/Viszualize%20outputs%20for%20fish-1.png" width="768" style="display: block; margin: auto;"></p>
 </div>
@@ -173,41 +277,57 @@ dataset.</p></li>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">mmdata_traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span>  <span class="st">"Margaritifera margaritifera"</span>,</span>
-<span>                                        organismgroup <span class="op">=</span> <span class="st">'mi'</span>,</span>
-<span>                                        ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stream zonation preference'</span><span class="op">)</span>,</span>
-<span>                                        inform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                                        cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Macroinvertebrates for parameter -1- data is downloading. Be patient..</span></span></code></pre></div>
+<span>                              organismgroup <span class="op">=</span> <span class="st">'mi'</span>,</span>
+<span>                              ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stream zonation preference'</span><span class="op">)</span>,</span>
+<span>                              inform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Macroinvertebrates for parameter -stream zonation preference- data is downloading. Be patient..</span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span></code></pre></div>
 <p><strong>2.2: More than one species in a vector/list</strong></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">speciesvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Margaritifera margaritifera"</span>,</span>
-<span>                 <span class="st">"Pseudunio auricularius"</span>,</span>
-<span>                 <span class="st">"Musculium lacustre"</span>,</span>
-<span>                 <span class="st">"Musculium transversum"</span>,</span>
-<span>                 <span class="st">"Parastenocaris germanica"</span><span class="op">)</span></span>
+<span>                <span class="st">"Pseudunio auricularius"</span>,</span>
+<span>                <span class="st">"Musculium lacustre"</span>,</span>
+<span>                <span class="st">"Musculium transversum"</span>,</span>
+<span>                <span class="st">"Parastenocaris germanica"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">multspp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span>  <span class="va">speciesvec</span>,</span>
 <span>                        organismgroup <span class="op">=</span> <span class="st">'mi'</span>,</span>
 <span>                        ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stream zonation preference'</span><span class="op">)</span>,</span>
-<span>                        inform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                        cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Macroinvertebrates data was downloaded already</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspp</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        organismgroup                     species                  parameter</span></span>
-<span><span class="co">#&gt; 1 Macroinvertebrates          Musculium lacustre stream zonation preference</span></span>
-<span><span class="co">#&gt; 2 Macroinvertebrates       Musculium transversum stream zonation preference</span></span>
-<span><span class="co">#&gt; 3 Macroinvertebrates Margaritifera margaritifera stream zonation preference</span></span>
-<span><span class="co">#&gt; 4 Macroinvertebrates Margaritifera margaritifera stream zonation preference</span></span>
-<span><span class="co">#&gt; 5 Macroinvertebrates          Musculium lacustre stream zonation preference</span></span>
-<span><span class="co">#&gt; 6 Macroinvertebrates          Musculium lacustre stream zonation preference</span></span>
-<span><span class="co">#&gt;     traitvalue</span></span>
-<span><span class="co">#&gt; 1   epipotamal</span></span>
-<span><span class="co">#&gt; 2   epipotamal</span></span>
-<span><span class="co">#&gt; 3  epirhithral</span></span>
-<span><span class="co">#&gt; 4 hyporhithral</span></span>
-<span><span class="co">#&gt; 5   hypocrenal</span></span>
-<span><span class="co">#&gt; 6     littoral</span></span></code></pre></div>
+<span>                        inform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Macroinvertebrates data was already downloaded.</span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspp</span><span class="op">$</span><span class="va">ecodata</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   ID_FWE OrganismGroup TaxaGroup           Family         Genus       Species</span></span>
+<span><span class="co">#&gt; 1   5943            mi  Bivalvia MARGARITIFERIDAE Margaritifera margaritifera</span></span>
+<span><span class="co">#&gt; 2   5943            mi  Bivalvia MARGARITIFERIDAE Margaritifera margaritifera</span></span>
+<span><span class="co">#&gt; 3   5943            mi  Bivalvia MARGARITIFERIDAE Margaritifera margaritifera</span></span>
+<span><span class="co">#&gt; 4   6653            mi  Bivalvia MARGARITIFERIDAE     Pseudunio  auricularius</span></span>
+<span><span class="co">#&gt; 5   6653            mi  Bivalvia MARGARITIFERIDAE     Pseudunio  auricularius</span></span>
+<span><span class="co">#&gt; 6   6653            mi  Bivalvia MARGARITIFERIDAE     Pseudunio  auricularius</span></span>
+<span><span class="co">#&gt;                                      Taxonname           Author</span></span>
+<span><span class="co">#&gt; 1 Margaritifera margaritifera (LINNAEUS, 1758) (LINNAEUS, 1758)</span></span>
+<span><span class="co">#&gt; 2 Margaritifera margaritifera (LINNAEUS, 1758) (LINNAEUS, 1758)</span></span>
+<span><span class="co">#&gt; 3 Margaritifera margaritifera (LINNAEUS, 1758) (LINNAEUS, 1758)</span></span>
+<span><span class="co">#&gt; 4      Pseudunio auricularius (SPENGLER, 1793) (SPENGLER, 1793)</span></span>
+<span><span class="co">#&gt; 5      Pseudunio auricularius (SPENGLER, 1793) (SPENGLER, 1793)</span></span>
+<span><span class="co">#&gt; 6      Pseudunio auricularius (SPENGLER, 1793) (SPENGLER, 1793)</span></span>
+<span><span class="co">#&gt;                    Parameter CategoryName CategoryLevels DataType</span></span>
+<span><span class="co">#&gt; 1 stream zonation preference  epirhithral              2    Fuzzy</span></span>
+<span><span class="co">#&gt; 2 stream zonation preference metarhithral              5    Fuzzy</span></span>
+<span><span class="co">#&gt; 3 stream zonation preference hyporhithral              3    Fuzzy</span></span>
+<span><span class="co">#&gt; 4 stream zonation preference         &lt;NA&gt;           &lt;NA&gt;    Fuzzy</span></span>
+<span><span class="co">#&gt; 5 stream zonation preference         &lt;NA&gt;           &lt;NA&gt;    Fuzzy</span></span>
+<span><span class="co">#&gt; 6 stream zonation preference         &lt;NA&gt;           &lt;NA&gt;    Fuzzy</span></span>
+<span><span class="co">#&gt;           ClassificationType CategoryExplanation</span></span>
+<span><span class="co">#&gt; 1 10 point assignment system  upper-trout region</span></span>
+<span><span class="co">#&gt; 2 10 point assignment system  lower-trout region</span></span>
+<span><span class="co">#&gt; 3 10 point assignment system     grayling region</span></span>
+<span><span class="co">#&gt; 4 10 point assignment system                &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5 10 point assignment system                &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6 10 point assignment system                &lt;NA&gt;</span></span></code></pre></div>
 <p><strong>2.3: More than one species in a dataframe</strong></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -228,24 +348,49 @@ dataset.</p></li>
 <span></span>
 <span><span class="va">multspp_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span>  <span class="va">macrodf</span>,</span>
 <span>                           organismgroup <span class="op">=</span> <span class="st">'mi'</span>,</span>
-<span>                           spcol <span class="op">=</span> <span class="st">'species'</span>,</span>
+<span>                           taxonomic_column <span class="op">=</span> <span class="st">'species'</span>,</span>
 <span>                           ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stream zonation preference"</span>, <span class="st">"feeding type"</span><span class="op">)</span>,</span>
-<span>                           cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspp_df</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        organismgroup                         species    parameter</span></span>
-<span><span class="co">#&gt; 1 Macroinvertebrates            Dreissena polymorpha feeding type</span></span>
-<span><span class="co">#&gt; 2 Macroinvertebrates     Margaritifera margaritifera feeding type</span></span>
-<span><span class="co">#&gt; 3 Macroinvertebrates              Musculium lacustre feeding type</span></span>
-<span><span class="co">#&gt; 4 Macroinvertebrates Dreissena rostriformis bugensis feeding type</span></span>
-<span><span class="co">#&gt; 5 Macroinvertebrates              Corbicula fluminea feeding type</span></span>
-<span><span class="co">#&gt; 6 Macroinvertebrates           Congeria leucophaeata feeding type</span></span>
-<span><span class="co">#&gt;              traitvalue</span></span>
-<span><span class="co">#&gt; 1 active filter feeders</span></span>
-<span><span class="co">#&gt; 2 active filter feeders</span></span>
-<span><span class="co">#&gt; 3 active filter feeders</span></span>
-<span><span class="co">#&gt; 4 active filter feeders</span></span>
-<span><span class="co">#&gt; 5 active filter feeders</span></span>
-<span><span class="co">#&gt; 6 active filter feeders</span></span></code></pre></div>
+<span>                           inform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Macroinvertebrates for parameter -stream zonation preference- data is downloading. Be patient..</span></span>
+<span><span class="co">#&gt; Macroinvertebrates for parameter -feeding type- data is downloading. Be patient..</span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspp_df</span><span class="op">$</span><span class="va">ecodata</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   ID_FWE OrganismGroup TaxaGroup           Family         Genus       Species</span></span>
+<span><span class="co">#&gt; 1   4999            mi  Bivalvia     DREISSENIDAE     Dreissena    polymorpha</span></span>
+<span><span class="co">#&gt; 2   4999            mi  Bivalvia     DREISSENIDAE     Dreissena    polymorpha</span></span>
+<span><span class="co">#&gt; 3   4999            mi  Bivalvia     DREISSENIDAE     Dreissena    polymorpha</span></span>
+<span><span class="co">#&gt; 4   5943            mi  Bivalvia MARGARITIFERIDAE Margaritifera margaritifera</span></span>
+<span><span class="co">#&gt; 5   5943            mi  Bivalvia MARGARITIFERIDAE Margaritifera margaritifera</span></span>
+<span><span class="co">#&gt; 6   5943            mi  Bivalvia MARGARITIFERIDAE Margaritifera margaritifera</span></span>
+<span><span class="co">#&gt;                                      Taxonname           Author</span></span>
+<span><span class="co">#&gt; 1          Dreissena polymorpha (PALLAS, 1771)   (PALLAS, 1771)</span></span>
+<span><span class="co">#&gt; 2          Dreissena polymorpha (PALLAS, 1771)   (PALLAS, 1771)</span></span>
+<span><span class="co">#&gt; 3          Dreissena polymorpha (PALLAS, 1771)   (PALLAS, 1771)</span></span>
+<span><span class="co">#&gt; 4 Margaritifera margaritifera (LINNAEUS, 1758) (LINNAEUS, 1758)</span></span>
+<span><span class="co">#&gt; 5 Margaritifera margaritifera (LINNAEUS, 1758) (LINNAEUS, 1758)</span></span>
+<span><span class="co">#&gt; 6 Margaritifera margaritifera (LINNAEUS, 1758) (LINNAEUS, 1758)</span></span>
+<span><span class="co">#&gt;                    Parameter CategoryName CategoryLevels DataType</span></span>
+<span><span class="co">#&gt; 1 stream zonation preference   epipotamal              2    Fuzzy</span></span>
+<span><span class="co">#&gt; 2 stream zonation preference  metapotamal              4    Fuzzy</span></span>
+<span><span class="co">#&gt; 3 stream zonation preference     littoral              4    Fuzzy</span></span>
+<span><span class="co">#&gt; 4 stream zonation preference  epirhithral              2    Fuzzy</span></span>
+<span><span class="co">#&gt; 5 stream zonation preference metarhithral              5    Fuzzy</span></span>
+<span><span class="co">#&gt; 6 stream zonation preference hyporhithral              3    Fuzzy</span></span>
+<span><span class="co">#&gt;           ClassificationType</span></span>
+<span><span class="co">#&gt; 1 10 point assignment system</span></span>
+<span><span class="co">#&gt; 2 10 point assignment system</span></span>
+<span><span class="co">#&gt; 3 10 point assignment system</span></span>
+<span><span class="co">#&gt; 4 10 point assignment system</span></span>
+<span><span class="co">#&gt; 5 10 point assignment system</span></span>
+<span><span class="co">#&gt; 6 10 point assignment system</span></span>
+<span><span class="co">#&gt;                                    CategoryExplanation</span></span>
+<span><span class="co">#&gt; 1                                        barbel region</span></span>
+<span><span class="co">#&gt; 2                                         bream region</span></span>
+<span><span class="co">#&gt; 3 lake and stream shorelines, lentic sites, ponds etc.</span></span>
+<span><span class="co">#&gt; 4                                   upper-trout region</span></span>
+<span><span class="co">#&gt; 5                                   lower-trout region</span></span>
+<span><span class="co">#&gt; 6                                      grayling region</span></span></code></pre></div>
 <p><strong>2.4: Data visualization for macroinvertebrates</strong></p>
 <p>If the species considered are more than 1, then visualization can be
 to determine the frequency of each trait. This is an optional function
@@ -265,14 +410,15 @@ for post data searches.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">mpp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Amblystegium fluviatile"</span>,</span>
-<span>                               <span class="st">"Amblystegium humile"</span>,</span>
-<span>                               <span class="st">"Amblystegium riparium"</span>,</span>
-<span>                               <span class="st">"Amblystegium serpens"</span>,</span>
-<span>                               <span class="st">"Amblystegium tenax"</span>,</span>
-<span>                               <span class="st">"Amblystegium varium"</span><span class="op">)</span>,</span>
-<span>                          organismgroup <span class="op">=</span> <span class="st">'mp'</span>,</span>
-<span>                          ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'zone - systema'</span><span class="op">)</span>,</span>
-<span>                          cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span></code></pre></div>
+<span>                             <span class="st">"Amblystegium humile"</span>,</span>
+<span>                             <span class="st">"Amblystegium riparium"</span>,</span>
+<span>                             <span class="st">"Amblystegium serpens"</span>,</span>
+<span>                             <span class="st">"Amblystegium tenax"</span>,</span>
+<span>                             <span class="st">"Amblystegium varium"</span><span class="op">)</span>,</span>
+<span>                    organismgroup <span class="op">=</span> <span class="st">'mp'</span>,</span>
+<span>                    ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'zone - systema'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="phytobenthos">4. Phytobenthos<a class="anchor" aria-label="anchor" href="#phytobenthos"></a>
@@ -280,58 +426,108 @@ for post data searches.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">pbdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gongrosira debaryana"</span>,</span>
-<span>                             <span class="st">"Gongrosira fluminensis"</span>,</span>
-<span>                             <span class="st">"Hydrodictyon reticulatum"</span>,</span>
-<span>                             <span class="st">"Sphaerobotrys fluviatilis"</span>,</span>
-<span>                             <span class="st">"Stigeoclonium farctum"</span>,</span>
-<span>                             <span class="st">"Stigeoclonium tenue"</span>,</span>
-<span>                             <span class="st">"Tetraspora gelatinosa"</span>,</span>
-<span>                             <span class="st">"Thorea hispida"</span><span class="op">)</span>,</span>
-<span>                      organismgroup <span class="op">=</span> <span class="st">'pb'</span>,</span>
-<span>                      ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'substrate preference'</span><span class="op">)</span>,</span>
-<span>                      cachefolder <span class="op">=</span> <span class="st">'cache'</span>, na.rm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pbdata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organismgroup                   species            parameter traitvalue</span></span>
-<span><span class="co">#&gt; 1   Phytobentho      Gongrosira debaryana substrate preference       &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2   Phytobentho      Gongrosira debaryana substrate preference  epilithic</span></span>
-<span><span class="co">#&gt; 3   Phytobentho    Gongrosira fluminensis substrate preference  epilithic</span></span>
-<span><span class="co">#&gt; 4   Phytobentho Sphaerobotrys fluviatilis substrate preference  epilithic</span></span>
-<span><span class="co">#&gt; 5   Phytobentho     Stigeoclonium farctum substrate preference  epilithic</span></span>
-<span><span class="co">#&gt; 6   Phytobentho       Stigeoclonium tenue substrate preference  epilithic</span></span></code></pre></div>
+<span>                                <span class="st">"Gongrosira fluminensis"</span>,</span>
+<span>                                <span class="st">"Hydrodictyon reticulatum"</span>,</span>
+<span>                                <span class="st">"Sphaerobotrys fluviatilis"</span>,</span>
+<span>                                <span class="st">"Stigeoclonium farctum"</span>,</span>
+<span>                                <span class="st">"Stigeoclonium tenue"</span>,</span>
+<span>                                <span class="st">"Tetraspora gelatinosa"</span>,</span>
+<span>                                <span class="st">"Thorea hispida"</span><span class="op">)</span>,</span>
+<span>                       organismgroup <span class="op">=</span> <span class="st">'pb'</span>,</span>
+<span>                       ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'substrate preference'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pbdata</span><span class="op">$</span><span class="va">ecodata</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   ID_FWE OrganismGroup     TaxaGroup          Family         Genus     Species</span></span>
+<span><span class="co">#&gt; 1   9503            pb Chlorophyceae Chaetophoraceae    Gongrosira   debaryana</span></span>
+<span><span class="co">#&gt; 2   9503            pb Chlorophyceae Chaetophoraceae    Gongrosira   debaryana</span></span>
+<span><span class="co">#&gt; 3   9504            pb Chlorophyceae Chaetophoraceae    Gongrosira fluminensis</span></span>
+<span><span class="co">#&gt; 4   9517            pb Chlorophyceae Hydrodictyaceae  Hydrodictyon reticulatum</span></span>
+<span><span class="co">#&gt; 5   9576            pb Chlorophyceae   Chlorophyceae Sphaerobotrys fluviatilis</span></span>
+<span><span class="co">#&gt; 6   9584            pb Chlorophyceae Chaetophoraceae Stigeoclonium     farctum</span></span>
+<span><span class="co">#&gt;                   Taxonname            Author            Parameter CategoryName</span></span>
+<span><span class="co">#&gt; 1      Gongrosira debaryana      Rabenhorst 0 substrate preference    epilithic</span></span>
+<span><span class="co">#&gt; 2      Gongrosira debaryana      Rabenhorst 0 substrate preference    epiphytic</span></span>
+<span><span class="co">#&gt; 3    Gongrosira fluminensis     F.E.Fritsch 0 substrate preference    epilithic</span></span>
+<span><span class="co">#&gt; 4  Hydrodictyon reticulatum (Linnaeus) Bory 0 substrate preference         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5 Sphaerobotrys fluviatilis         Butcher 0 substrate preference    epilithic</span></span>
+<span><span class="co">#&gt; 6     Stigeoclonium farctum        Berthold 0 substrate preference    epilithic</span></span>
+<span><span class="co">#&gt;   CategoryLevels DataType ClassificationType CategoryExplanation</span></span>
+<span><span class="co">#&gt; 1             NA       NA                 NA            on stone</span></span>
+<span><span class="co">#&gt; 2             NA       NA                 NA           on plants</span></span>
+<span><span class="co">#&gt; 3             NA       NA                 NA            on stone</span></span>
+<span><span class="co">#&gt; 4             NA       NA                 NA                &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5             NA       NA                 NA            on stone</span></span>
+<span><span class="co">#&gt; 6             NA       NA                 NA            on stone</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">mipbdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mi<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Congeria kusceri"</span>,</span>
-<span>                            <span class="st">"Congeria leucophaeata"</span>,</span>
-<span>                            <span class="st">"Dreissena polymorpha"</span>,</span>
-<span>                            <span class="st">"Dreissena rostriformis bugensis"</span><span class="op">)</span>,</span>
-<span>                            pb<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gongrosira debaryana"</span>,</span>
-<span>                                   <span class="st">"Gongrosira fluminensis"</span>,</span>
-<span>                                   <span class="st">"Hydrodictyon reticulatum"</span>,</span>
-<span>                                   <span class="st">"Sphaerobotrys fluviatilis"</span>,</span>
-<span>                                   <span class="st">"Stigeoclonium farctum"</span>,</span>
-<span>                                   <span class="st">"Stigeoclonium tenue"</span>,</span>
-<span>                                   <span class="st">"Tetraspora gelatinosa"</span>,</span>
-<span>                                   <span class="st">"Thorea hispida"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                   organismgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'mi'</span>,<span class="st">'pb'</span><span class="op">)</span>,</span>
-<span>                   ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mi <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stream zonation preference'</span><span class="op">)</span>,</span>
-<span>                                    pb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'substrate preference'</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                   cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
+<span>                                          <span class="st">"Congeria leucophaeata"</span>,</span>
+<span>                                          <span class="st">"Dreissena polymorpha"</span>,</span>
+<span>                                          <span class="st">"Dreissena rostriformis bugensis"</span><span class="op">)</span>,</span>
+<span>                                     pb<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gongrosira debaryana"</span>,</span>
+<span>                                           <span class="st">"Gongrosira fluminensis"</span>,</span>
+<span>                                           <span class="st">"Hydrodictyon reticulatum"</span>,</span>
+<span>                                           <span class="st">"Sphaerobotrys fluviatilis"</span>,</span>
+<span>                                           <span class="st">"Stigeoclonium farctum"</span>,</span>
+<span>                                           <span class="st">"Stigeoclonium tenue"</span>,</span>
+<span>                                           <span class="st">"Tetraspora gelatinosa"</span>,</span>
+<span>                                           <span class="st">"Thorea hispida"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                         organismgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'mi'</span>,<span class="st">'pb'</span><span class="op">)</span>,</span>
+<span>                         ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mi <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stream zonation preference'</span><span class="op">)</span>,</span>
+<span>                                          pb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'substrate preference'</span><span class="op">)</span><span class="op">)</span>, details <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  ====================================== </span></span>
+<span><span class="co">#&gt;          DATA OUTPUT SUMMARY </span></span>
+<span><span class="co">#&gt;  ====================================== </span></span>
+<span><span class="co">#&gt;  Number of Organism Groups Considered : 2 </span></span>
+<span><span class="co">#&gt;  Number of Organism Groups Considered : mi,pb </span></span>
+<span><span class="co">#&gt;  Succesful organism Groups            : 2 </span></span>
+<span><span class="co">#&gt;  Failed organism Groups               : 0 </span></span>
+<span><span class="co">#&gt;  Taxa level used                      : species </span></span>
+<span><span class="co">#&gt;  Failed at taxa level                 : NA </span></span>
+<span><span class="co">#&gt;  Number of parameters                 : 2 </span></span>
+<span><span class="co">#&gt;  Error rate for wrong names           : 20 </span></span>
+<span><span class="co">#&gt;  Caching folder                       : cache </span></span>
+<span><span class="co">#&gt;  ====================================== </span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mipbdata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        organismgroup                         species                  parameter</span></span>
-<span><span class="co">#&gt; 1 Macroinvertebrates            Dreissena polymorpha stream zonation preference</span></span>
-<span><span class="co">#&gt; 2 Macroinvertebrates Dreissena rostriformis bugensis stream zonation preference</span></span>
-<span><span class="co">#&gt; 3 Macroinvertebrates           Congeria leucophaeata stream zonation preference</span></span>
-<span><span class="co">#&gt; 4 Macroinvertebrates            Dreissena polymorpha stream zonation preference</span></span>
-<span><span class="co">#&gt; 5 Macroinvertebrates Dreissena rostriformis bugensis stream zonation preference</span></span>
-<span><span class="co">#&gt; 6 Macroinvertebrates Dreissena rostriformis bugensis stream zonation preference</span></span>
-<span><span class="co">#&gt;    traitvalue</span></span>
-<span><span class="co">#&gt; 1  epipotamal</span></span>
-<span><span class="co">#&gt; 2  epipotamal</span></span>
-<span><span class="co">#&gt; 3 hypopotamal</span></span>
-<span><span class="co">#&gt; 4    littoral</span></span>
-<span><span class="co">#&gt; 5    littoral</span></span>
-<span><span class="co">#&gt; 6 metapotamal</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mipbdata</span><span class="op">$</span><span class="va">ecodata</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   ID_FWE OrganismGroup TaxaGroup       Family     Genus      Species</span></span>
+<span><span class="co">#&gt; 1   4999            mi  Bivalvia DREISSENIDAE Dreissena   polymorpha</span></span>
+<span><span class="co">#&gt; 2   4999            mi  Bivalvia DREISSENIDAE Dreissena   polymorpha</span></span>
+<span><span class="co">#&gt; 3   4999            mi  Bivalvia DREISSENIDAE Dreissena   polymorpha</span></span>
+<span><span class="co">#&gt; 4  11585            mi  Bivalvia DREISSENIDAE  Congeria leucophaeata</span></span>
+<span><span class="co">#&gt; 5  11585            mi  Bivalvia DREISSENIDAE  Congeria leucophaeata</span></span>
+<span><span class="co">#&gt; 6  21963            mi  Bivalvia DREISSENIDAE  Congeria      kusceri</span></span>
+<span><span class="co">#&gt;                              Taxonname         Author</span></span>
+<span><span class="co">#&gt; 1  Dreissena polymorpha (PALLAS, 1771) (PALLAS, 1771)</span></span>
+<span><span class="co">#&gt; 2  Dreissena polymorpha (PALLAS, 1771) (PALLAS, 1771)</span></span>
+<span><span class="co">#&gt; 3  Dreissena polymorpha (PALLAS, 1771) (PALLAS, 1771)</span></span>
+<span><span class="co">#&gt; 4 Congeria leucophaeata (CONRAD, 1831) (CONRAD, 1831)</span></span>
+<span><span class="co">#&gt; 5 Congeria leucophaeata (CONRAD, 1831) (CONRAD, 1831)</span></span>
+<span><span class="co">#&gt; 6          Congeria kusceri BOLE, 1962     BOLE, 1962</span></span>
+<span><span class="co">#&gt;                    Parameter CategoryName CategoryLevels DataType</span></span>
+<span><span class="co">#&gt; 1 stream zonation preference   epipotamal              2    Fuzzy</span></span>
+<span><span class="co">#&gt; 2 stream zonation preference  metapotamal              4    Fuzzy</span></span>
+<span><span class="co">#&gt; 3 stream zonation preference     littoral              4    Fuzzy</span></span>
+<span><span class="co">#&gt; 4 stream zonation preference  metapotamal              4    Fuzzy</span></span>
+<span><span class="co">#&gt; 5 stream zonation preference  hypopotamal              6    Fuzzy</span></span>
+<span><span class="co">#&gt; 6 stream zonation preference         &lt;NA&gt;           &lt;NA&gt;    Fuzzy</span></span>
+<span><span class="co">#&gt;           ClassificationType</span></span>
+<span><span class="co">#&gt; 1 10 point assignment system</span></span>
+<span><span class="co">#&gt; 2 10 point assignment system</span></span>
+<span><span class="co">#&gt; 3 10 point assignment system</span></span>
+<span><span class="co">#&gt; 4 10 point assignment system</span></span>
+<span><span class="co">#&gt; 5 10 point assignment system</span></span>
+<span><span class="co">#&gt; 6 10 point assignment system</span></span>
+<span><span class="co">#&gt;                                    CategoryExplanation</span></span>
+<span><span class="co">#&gt; 1                                        barbel region</span></span>
+<span><span class="co">#&gt; 2                                         bream region</span></span>
+<span><span class="co">#&gt; 3 lake and stream shorelines, lentic sites, ponds etc.</span></span>
+<span><span class="co">#&gt; 4                                         bream region</span></span>
+<span><span class="co">#&gt; 5                                brackish water region</span></span>
+<span><span class="co">#&gt; 6                                                 &lt;NA&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="phytoplankton">5. Phytoplankton<a class="anchor" aria-label="anchor" href="#phytoplankton"></a>
@@ -339,22 +535,114 @@ for post data searches.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">ppdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Anathece clathrata"</span>,</span>
-<span>                             <span class="st">"Anathece minutissima"</span>,</span>
-<span>                             <span class="st">"Anthophysa vegetans"</span>,</span>
-<span>                             <span class="st">"Apocalathium aciculiferum"</span>,</span>
-<span>                             <span class="st">"Adlafia minuscula var. muralis"</span><span class="op">)</span>,</span>
-<span>                    organismgroup <span class="op">=</span> <span class="st">'pp'</span>,</span>
-<span>                    ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stenoecy factor'</span>, <span class="st">'life form'</span><span class="op">)</span>,</span>
-<span>                    cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
+<span>                                <span class="st">"Anathece minutissima"</span>,</span>
+<span>                                <span class="st">"Anthophysa vegetans"</span>,</span>
+<span>                                <span class="st">"Apocalathium aciculiferum"</span>,</span>
+<span>                                <span class="st">"Adlafia minuscula var. muralis"</span><span class="op">)</span>,</span>
+<span>                       organismgroup <span class="op">=</span> <span class="st">'pp'</span>,</span>
+<span>                       ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stenoecy factor'</span>, <span class="st">'life form'</span><span class="op">)</span>,</span>
+<span>                       cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ********Please cite this website as:*********** </span></span>
+<span><span class="co">#&gt;  Schmidt-Kloiber, A. &amp; Hering D. (2015): www.freshwaterecology.info - an online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators. https://doi.org/10.1016/j.ecolind.2015.02.007</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ppdata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organismgroup                 species       parameter              traitvalue</span></span>
-<span><span class="co">#&gt; 1 Phytoplankton   Aphanothece clathrata       life form                planktic</span></span>
-<span><span class="co">#&gt; 2 Phytoplankton   Aphanothece clathrata       life form                planktic</span></span>
-<span><span class="co">#&gt; 3 Phytoplankton Aphanothece minutissima       life form                planktic</span></span>
-<span><span class="co">#&gt; 4 Phytoplankton Aphanothece minutissima       life form                planktic</span></span>
-<span><span class="co">#&gt; 5 Phytoplankton Aphanothece minutissima stenoecy factor Central Highland rivers</span></span>
-<span><span class="co">#&gt; 6 Phytoplankton Aphanothece minutissima stenoecy factor     Danube Basin rivers</span></span></code></pre></div>
+<span><span class="co">#&gt; $ecodata</span></span>
+<span><span class="co">#&gt;    ID_FWE OrganismGroup    TaxaGroup Family       Genus     Species</span></span>
+<span><span class="co">#&gt; 1   10842            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 2   10844            pp Cyanophyceae        Aphanothece minutissima</span></span>
+<span><span class="co">#&gt; 3   11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 4   10842            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 5   10842            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 6   10844            pp Cyanophyceae        Aphanothece minutissima</span></span>
+<span><span class="co">#&gt; 7   10844            pp Cyanophyceae        Aphanothece minutissima</span></span>
+<span><span class="co">#&gt; 8   11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 9   11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 10  11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 11  11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 12  11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 13  11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 14  11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 15  11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt; 16  11993            pp Cyanophyceae        Aphanothece   clathrata</span></span>
+<span><span class="co">#&gt;                            Taxonname</span></span>
+<span><span class="co">#&gt; 1              Aphanothece clathrata</span></span>
+<span><span class="co">#&gt; 2            Aphanothece minutissima</span></span>
+<span><span class="co">#&gt; 3  Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 4              Aphanothece clathrata</span></span>
+<span><span class="co">#&gt; 5              Aphanothece clathrata</span></span>
+<span><span class="co">#&gt; 6            Aphanothece minutissima</span></span>
+<span><span class="co">#&gt; 7            Aphanothece minutissima</span></span>
+<span><span class="co">#&gt; 8  Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 9  Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 10 Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 11 Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 12 Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 13 Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 14 Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 15 Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt; 16 Aphanothece clathrata  var. rosea</span></span>
+<span><span class="co">#&gt;                                              Author       Parameter</span></span>
+<span><span class="co">#&gt; 1                                     W. &amp; G.S.West       life form</span></span>
+<span><span class="co">#&gt; 2  (W. West) Komárková-Legnerová &amp; G. Cronberg 1994       life form</span></span>
+<span><span class="co">#&gt; 3                                           Skuja 0       life form</span></span>
+<span><span class="co">#&gt; 4                                     W. &amp; G.S.West stenoecy factor</span></span>
+<span><span class="co">#&gt; 5                                     W. &amp; G.S.West stenoecy factor</span></span>
+<span><span class="co">#&gt; 6  (W. West) Komárková-Legnerová &amp; G. Cronberg 1994 stenoecy factor</span></span>
+<span><span class="co">#&gt; 7  (W. West) Komárková-Legnerová &amp; G. Cronberg 1994 stenoecy factor</span></span>
+<span><span class="co">#&gt; 8                                           Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt; 9                                           Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt; 10                                          Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt; 11                                          Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt; 12                                          Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt; 13                                          Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt; 14                                          Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt; 15                                          Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt; 16                                          Skuja 0 stenoecy factor</span></span>
+<span><span class="co">#&gt;                     CategoryName CategoryLevels DataType ClassificationType</span></span>
+<span><span class="co">#&gt; 1                       planktic           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 2                       planktic           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 3                           &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 4  Lowland stratified HMWB &amp; AWB              2       NA                 NA</span></span>
+<span><span class="co">#&gt; 5                   pa.lake – LL              1       NA                 NA</span></span>
+<span><span class="co">#&gt; 6            Danube Basin rivers              1       NA                 NA</span></span>
+<span><span class="co">#&gt; 7        Central Highland rivers              1       NA                 NA</span></span>
+<span><span class="co">#&gt; 8                           &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 9                           &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 10                          &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 11                          &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 12                          &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 13                          &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 14                          &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 15                          &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt; 16                          &lt;NA&gt;           &lt;NA&gt;       NA                 NA</span></span>
+<span><span class="co">#&gt;                                                                     CategoryExplanation</span></span>
+<span><span class="co">#&gt; 1                                                               planktic living species</span></span>
+<span><span class="co">#&gt; 2                                                               planktic living species</span></span>
+<span><span class="co">#&gt; 3                                                                                  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4  stratified Heavily Modified Water Bodies and Artificial Water Bodies of the Lowlands</span></span>
+<span><span class="co">#&gt; 5                                                                                  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6                                                                Danube and tributaries</span></span>
+<span><span class="co">#&gt; 7                                           rivers and streams in the Central Highlands</span></span>
+<span><span class="co">#&gt; 8                                                                                  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 9                                                                                  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 10                                                                                 &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 11                                                                                 &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 12                                                                                 &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 13                                                                                 &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 14                                                                                 &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 15                                                                                 &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 16                                                                                 &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $taxasearched</span></span>
+<span><span class="co">#&gt;                              raw                   clean group</span></span>
+<span><span class="co">#&gt; 1             Anathece clathrata   Aphanothece clathrata    pp</span></span>
+<span><span class="co">#&gt; 2           Anathece minutissima Aphanothece minutissima    pp</span></span>
+<span><span class="co">#&gt; 3            Anthophysa vegetans                    &lt;NA&gt;    pp</span></span>
+<span><span class="co">#&gt; 4      Apocalathium aciculiferum                    &lt;NA&gt;    pp</span></span>
+<span><span class="co">#&gt; 5 Adlafia minuscula var. muralis                    &lt;NA&gt;    pp</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $type</span></span>
+<span><span class="co">#&gt; [1] "fetch"</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

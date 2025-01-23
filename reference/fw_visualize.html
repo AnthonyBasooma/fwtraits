@@ -48,8 +48,9 @@
 <span>  scales <span class="op">=</span> <span class="st">"free"</span>,</span>
 <span>  ncol <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  params <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  color <span class="op">=</span> <span class="st">"purple"</span></span>
+<span>  organism_group <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  color <span class="op">=</span> <span class="st">"purple"</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -73,12 +74,16 @@
 <dd><p>species ecological parameters selected if there are more than one.</p></dd>
 
 
-<dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
+<dt id="arg-organism-group">organism_group<a class="anchor" aria-label="anchor" href="#arg-organism-group"></a></dt>
 <dd><p>Particular organism group to filter out to allow visualization.</p></dd>
 
 
 <dt id="arg-color">color<a class="anchor" aria-label="anchor" href="#arg-color"></a></dt>
 <dd><p><code>string</code> Change the color for the bar graphs being plotted.</p></dd>
+
+
+<dt id="arg-na-rm">na.rm<a class="anchor" aria-label="anchor" href="#arg-na-rm"></a></dt>
+<dd><p><code>logical</code> To remove NA in the category names or species traits.</p></dd>
 
 </dl></div>
     <div class="section level2">
