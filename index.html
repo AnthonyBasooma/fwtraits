@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Extract Species Ecological Ranges From Freshwaterecology.info • fwtraits</title>
+<title>Extract Species Ecological Parameters From www.freshwaterecology.info • fwtraits</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Extract Species Ecological Ranges From Freshwaterecology.info">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Extract Species Ecological Parameters From www.freshwaterecology.info">
 <meta name="description" content="To extract species ecological ranges from the Freshwaterecology.info.">
 <meta property="og:description" content="To extract species ecological ranges from the Freshwaterecology.info.">
 </head>
@@ -80,14 +80,12 @@
 <li>
 <code><a href="reference/fw_searchdata.html">fw_searchdata()</a></code> To allow get data from the database. However, this is mostly an internal function since the data is not already parsed to enable usability.</li>
 <li>
-<code>fw_split()</code> extracts the downloaded data before its tokenised for proper usage.</li>
-<li>
-<code><a href="reference/fw_fetchdata.html">fw_fetchdata()</a></code> is the main function that provides all the parameters for data access. The function is wrapped around <code><a href="reference/fw_searchdata.html">fw_searchdata()</a></code> and <code>fw_split()</code> function to allow the user to easily get and manipulate the data during package usage.</li>
+<code><a href="reference/fw_fetchdata.html">fw_fetchdata()</a></code> is the main function that provides all the parameters for data access. The function is wrapped around <code><a href="reference/fw_searchdata.html">fw_searchdata()</a></code> function to allow the user to easily get and manipulate the data during package usage.</li>
 </ul>
 <p><strong>Other utility functions</strong></p>
 <ul>
 <li>
-<code>fw_check_names()</code> to check spellings species taxonomic names to allow the user obtain the species traits.</li>
+<code>check_names()</code> to check spellings species taxonomic names to allow the user obtain the species traits.</li>
 <li>
 <code>fw_checktraits()</code>harmonize species traits to allow effective between user inputs and database information.</li>
 <li>
@@ -126,6 +124,9 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Anthony Basooma <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-8994-9989" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Florian Borgwardt <br><small class="roles"> Contributor, funder </small> <a href="https://orcid.org/0000-0002-8974-7834" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Thomas Hein <br><small class="roles"> Contributor, funder, thesis advisor </small> <a href="https://orcid.org/0000-0002-7767-4607" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Astrid Schmidt-Kloiber <br><small class="roles"> Contributor, funder, data contributor </small> <a href="https://orcid.org/0000-0001-8839-5913" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
@@ -142,7 +143,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Anthony Basooma.</p>
+  <p>Developed by Anthony Basooma, Florian Borgwardt, Thomas Hein, Astrid Schmidt-Kloiber.</p>
 </div>
 
 <div class="pkgdown-footer-right">
