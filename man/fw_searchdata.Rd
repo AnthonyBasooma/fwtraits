@@ -24,7 +24,7 @@ macroinvertebrates, phytoplankton,
 phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed such as \code{'pp', 'di'}.
 \itemize{
 \item{\code{pp}: Pytoplankton.}
-\item{\code{mp}: Macrophtytes}
+\item{\code{mp}: Macrophytes}
 \item{\code{mi}: Macroinvertebrates}
 \item{\code{fi}: Fishes}
 \item{\code{di}: Diatoms}
@@ -54,8 +54,8 @@ by other users.}
 
 \item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
 
-\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
-genus, and taxa group level.}
+\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at \code{family},
+\code{genus}, and \code{taxagroup} level.}
 
 \item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
 If the path is not provided, the cached information will be saved in the current

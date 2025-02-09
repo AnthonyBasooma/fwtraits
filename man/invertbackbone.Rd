@@ -5,7 +5,7 @@
 \alias{invertbackbone}
 \title{Taxonomic data for species in the freshwaterecology.info database}
 \format{
-A \code{tibble} 23333333333 rows and 2 columns.
+A \code{tibble} 10421 rows and 3 columns.
 }
 \usage{
 data(invertbackbone)
@@ -14,7 +14,7 @@ data(invertbackbone)
 A \code{tibble}
 }
 \details{
-fgdhdhdjd nfjdkedkdld
+Standard taxonomic backbone for macroinvertebrates from www.freshwaterecology.info
 }
 \examples{
 
@@ -25,14 +25,10 @@ invertbackbone
 }
 
 
-
-
 }
 \references{
 Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info - An online tool that unifies,
 standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences.
 Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007.
 }
-\keyword{European}
-\keyword{dataset}
-\keyword{wide}
+\keyword{Macroinvertebrates}

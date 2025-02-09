@@ -40,13 +40,13 @@
 #' @docType data
 #'
 #' @details
-#' fgdhdhdjd nfjdkedkdld
+#' Standard taxonomic backbone for macroinvertebrates from www.freshwaterecology.info
 #'
 #' @usage data(invertbackbone)
 #'
-#' @keywords European wide dataset
+#' @keywords  Macroinvertebrates
 #'
-#' @format A \code{tibble} 23333333333 rows and 2 columns.
+#' @format A \code{tibble} 10421 rows and 3 columns.
 #'
 #'
 #' @examples
@@ -58,8 +58,6 @@
 #' }
 #'
 #'
-#'
-#'
 #' @references Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info - An online tool that unifies,
 #' standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences.
 #' Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007.
@@ -67,7 +65,7 @@
 "invertbackbone"
 
 
-#' @title Taxonommic data for the phytobentho species in freshwaterecology.info database.
+#' @title Taxonomic data for the phytobentho species in www.freshwaterecology.info database.
 #'
 #' @description A \code{tibble}
 #'

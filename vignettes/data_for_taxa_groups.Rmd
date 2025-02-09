@@ -41,22 +41,22 @@ Please follow the [secure_the_api_key](https://anthonybasooma.github.io/fwtraits
 |`ID_FWE`                      |Indicates the record ID number in the www.freshwaterecology.info database.                       |
 +------------------------------+-------------------------------------------------------------------------------------------------+
 |`OrganismGroup`               |The highest taxonomic group nomenclature, which includes five groups, namely\                    |
-|                              |macroinvertebrates, fish, phytoplankton, phtyobenthos (diatoms) and macrophtes                   |
+|                              |macroinvertebrates, fish, phytoplankton, phtyobenthos (diatoms) and macrophtes.                  |
 +------------------------------+-------------------------------------------------------------------------------------------------+
 |`TaxaGroup`                   |The taxonomic classification of a species. Its a class for phytobenthos but\                     |
 |                              |sometimes order, family.Not recommended for querying data.                                       |
 +------------------------------+-------------------------------------------------------------------------------------------------+
-|`Family`                      |Family of particular species or taxonomic group. **Recommended for data search**\                |
+|`Family`                      |Family of particular species or taxonomic group. **Recommended for data search.**\               |
 |                              |search since taxa families are taxonomic classification.                                         |
 +------------------------------+-------------------------------------------------------------------------------------------------+
-|`Genus`                       | The taxonomic genera for a particular taxon.  **Recommended for data search**                   |
+|`Genus`                       | The taxonomic genera for a particular taxon.  **Recommended for data search.**                  |
 +------------------------------+-------------------------------------------------------------------------------------------------+
 |`Species`                     |The specific epithet for a particular species. Combining both the genera \                       |
 |                              |forms the taxonomic scientific name. **Recommended for data search** but the\                    |
 |                              |but its disadvantageous if many are required and are from the same genus or family\              |
 |                              |genus or family                                                                                  |
 +------------------------------+-------------------------------------------------------------------------------------------------+
-|`Taxonname`                   | Complete taxonomic with the naming authorities. *Not used in data search*\                      |
+|`Taxonname`                   | Complete taxonomic but without the naming authorities. *Not used in data search*\               |
 +------------------------------+-------------------------------------------------------------------------------------------------+
 |`Author`                      | The taxonomic authority of a particular of taxon.\                                              |
 +------------------------------+-------------------------------------------------------------------------------------------------+
@@ -65,17 +65,17 @@ Please follow the [secure_the_api_key](https://anthonybasooma.github.io/fwtraits
 +------------------------------+-------------------------------------------------------------------------------------------------+
 |`CategoryName`                | The particular ecological trait of taxon or species.                                            |
 +------------------------------+-------------------------------------------------------------------------------------------------+
-|`CategoryLevels`              | Some ecological parameters such stream ecological preference of r macroinvertebrates \          |
-|                              | catchment region for fish, provide more information. for example, for catchment                 |
+|`CategoryLevels`              | Some ecological parameters such as stream ecological preference for macroinvertebrates,         |
+|                              | catchment region for fish, provide more information. For example, for catchment                 |
 |                              | region, beside knowing where the basin is located, its indicated whether the .                  |
-|                              | specie sis invasive or invasive in particular basin                                             |
+|                              | specie is native or invasive in particular basin.                                               |
 +------------------------------+-------------------------------------------------------------------------------------------------+
 |`DataType`                    |The type, whether fuzzy, factor, categorical or numerical. However, the\                         |
 |                              |  author reclassify the data in the subsequent analysis                                          |
 +------------------------------+-------------------------------------------------------------------------------------------------+
-|`ClassificationType`          | The data classification creitera based on Schmidt-Kloiber & Herring et al., 2012\               |
+|`ClassificationType`          | The data classification criteria based on Schmidt-Kloiber & Herring et al., 2012.               |
 +------------------------------+-------------------------------------------------------------------------------------------------+
-|`CategoryExplanaiton`         | Describe the different category meaning ,                                                       |
+|`CategoryExplanaiton`         | Describe the different category meaning.                                                        |
 +------------------------------+-------------------------------------------------------------------------------------------------+
 
 
@@ -249,23 +249,65 @@ head(mipbdata$ecodata)
 
 ```{r Species names in list or vector for phytoplankton}
 
-ppdata <- fw_fetchdata(data = c("Anathece clathrata",
-                                "Anathece minutissima",
-                                "Anthophysa vegetans",
-                                "Apocalathium aciculiferum",
-                                "Adlafia minuscula var. muralis"),
+ppdata <- fw_fetchdata(data = c("Navicula radiosa", 'Acanthoceras zachariasii',
+                                "Achnanthes brevipes",
+                                "Achnanthidium catenatum",
+                                "Actinocyclus normanii",
+                                "Achnanthidium subatomus"),
                        organismgroup = 'pp',
                        ecoparams = c('stenoecy factor', 'life form'),
-                       cachefolder = 'cache')
+                       cachefolder = 'cache',
+                       warn = TRUE,
+                       inform = TRUE)
 
-head(ppdata)
-
+head(ppdata$ecodata)
 
 ```
 
-## step3. References
+### Collating by family and genus taxa levels for different species
 
-* Schmidt-Kloiber, A., & Hering, D. (2015). www.freshwaterecology.info - An online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007
+**NOTE:**
+Based the on the FWE database, the phytoplantkon don't have families but rather taxa groups, genus, and species levels. Therefore, for data extraction the family level for phytoplankton is not possible.**Check the table for the definition of a Taxa Group.**
+
+```{r TaxaGroup and Genus taxa levels for phytoplankton}
+
+ppdata_genus <- fw_fetchdata(data = c("Navicula"),
+                       organismgroup = 'pp',
+                       ecoparams = c('stenoecy factor', 'life form'),
+                       cachefolder = 'cache',
+                       taxalevel = 'genus',
+                       inform = TRUE)
+
+#Only Navicula genus but but multiple species
+print(unique(ppdata_genus$ecodata$Genus)) 
+
+
+ppdata_taxagroup <- fw_fetchdata(data = c("Bacillariophyceae"),
+                       organismgroup = 'pp',
+                       ecoparams = c('stenoecy factor', 'life form'),
+                       cachefolder = 'cache',
+                       taxalevel = 'taxagroup',
+                       inform = TRUE)
+
+ #More than more 1 genus 
+print(unique(ppdata_taxagroup$ecodata$Genus)[1:5])
+
+```
+
+## Step3. References
+
+1. Schmidt-Kloiber, A., & Hering, D. (2015). www.freshwaterecology.info - An online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007
+
+2. Wickham H (2024). _httr2: Perform HTTP Requests and Process the Responses_. R package version 1.0.3,<https://CRAN.R-project.org/package=httr2>
+
+3. https://httr2.r-lib.org/articles/wrapping-apis.html
+
+
+
+
+
+
+
 
 
 

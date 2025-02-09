@@ -43,7 +43,8 @@ clean_names <- function(sp,
 
     tlevels <- switch (taxalevel, species ='Taxon', family='Family', taxagroup = 'Taxagroup', genus ='Genus')
 
-    stlist <- unlist(unique(standard_dataset[,tlevels]))
+    stlist <- unique(unlist(standard_dataset[,tlevels]))
+
   } else{
     if(taxalevel=='species'){
 
@@ -107,26 +108,68 @@ clean_names <- function(sp,
         #check if there is a similar name
         dst <- adist(taxaclean, stlist, ignore.case = TRUE)
 
-        distdiff <- (min(dst)/nchar(taxaclean))*100
+        mindist <- min(dst)
 
-        if(distdiff<= 0 | distdiff >30 ){
-          if(isTRUE(warn))  warning('No matching taxonomic names will be returned from the database for the searched taxa: ', taxaclean, " at the ", taxalevel, " level.", call. = FALSE)
-          spch <- NA
-        }else if(distdiff <= errorness){
+        #complete match but with cases ignored
+        if(mindist==0){
+          #get similar name indices
+          nind <- which(dst==0)
 
-          spsel <- stlist[which.min(dst)]
+          spch <- if(nind==1) stlist[nind] else stlist[nind[1]] #select only 1
 
-          if(length(spsel)>=1) {
+        }else if(mindist>0){
 
-            taxacorrectnesspct <- (nchar(spsel)/nchar(taxaclean))*100
+          distdiff <- (mindist/nchar(taxaclean))*100
 
-            if(taxacorrectnesspct > percenterror) {
+          if(distdiff >=30 ){
 
-              spch <- spsel
+            if(isTRUE(warn))  warning('No matching taxonomic names will be returned from the database for the searched taxa: ', taxaclean, " at the ", taxalevel, " level.", call. = FALSE)
+            spch <- NA
+          }else if(distdiff <= errorness){
 
-            }else {
-              if(isTRUE(warn))warning("No matching taxa name found for ", taxaclean, " and will be removed", call. = FALSE)
-              spch = NA
+            spsel <- stlist[which.min(dst)]
+
+            if(length(spsel)==1) {
+
+              taxacorrectnesspct <- (nchar(spsel)/nchar(taxaclean))*100
+
+              #check for intersections
+              spsel1 <- unlist(strsplit(spsel, ""))
+
+              taxasplit <- unlist(strsplit(taxaclean, ""))
+
+              intdist <- intersect(spsel1, taxasplit)
+
+              intdiff <- length(intdist)/nchar(taxaclean)
+
+              if(taxacorrectnesspct >= percenterror && intdiff >= 0.97) {
+
+                spch <- spsel
+
+              }else {
+                if(isTRUE(warn))warning("No matching taxa name found for ", taxaclean, " and will be removed", call. = FALSE)
+                spch = NA
+              }
+            }else if(length(spsel)>1){
+
+              taxacorrectnesspct <- (nchar(spsel[1])/nchar(taxaclean))*100 #just pick the first one
+
+              #check for intersections
+              spsel1 <- unlist(strsplit(spsel[1], ""))
+              taxasplit <- unlist(strsplit(taxaclean, ""))
+
+              intdist <- intersect(spsel1, taxasplit)
+
+              intdiff <- length(intdist)/nchar(taxaclean)
+
+              if(taxacorrectnesspct >= percenterror && intdiff >= 0.97) {
+
+                spch <- spsel[1]
+
+              }else {
+                if(isTRUE(warn))warning("No matching taxa name found for ", taxaclean, " and will be removed", call. = FALSE)
+                spch = NA
+              }
             }
           }
         }else{
@@ -149,7 +192,6 @@ clean_names <- function(sp,
 
 
 
-#' Title
 #'
 #' @noRd
 clean_traits <- function(x){

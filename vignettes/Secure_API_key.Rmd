@@ -40,12 +40,15 @@ library(fwtraits)
 ```{r}
 
 
-migration <- fw_fetchdata(data = 'Abramis brmaam', 
+migration <- fw_fetchdata(data = 'Abramis brama', 
                          organismgroup = 'fi',
                          ecoparams = 'migration',
-                         cachefolder = 'cache')#the species spelling is checked
+                         cachefolder = 'cache', 
+                         warn = TRUE,
+                         inform = TRUE,
+                         details = TRUE)#the species spelling is checked
 
-#or use the fw_keyload() function: which retruns a congratulation message
+#or use the fw_keyload() function: which returns a congratulation message
 
 ```
 

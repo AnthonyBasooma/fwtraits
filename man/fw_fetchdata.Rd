@@ -32,7 +32,7 @@ macroinvertebrates, phytoplankton,
 phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed such as \code{'pp', 'di'}.
 \itemize{
 \item{\code{pp}: Pytoplankton.}
-\item{\code{mp}: Macrophtytes}
+\item{\code{mp}: Macrophytes}
 \item{\code{mi}: Macroinvertebrates}
 \item{\code{fi}: Fishes}
 \item{\code{di}: Diatoms}
@@ -42,8 +42,8 @@ phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed su
 \item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organism group. Check \code{\link{fw_dbguide}} for the allowed
 traits in the database.}
 
-\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
-genus, and taxa group level.}
+\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at \code{family},
+\code{genus}, and \code{taxagroup} level.}
 
 \item{taxonomic_column}{\code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
 The column should have complete species name and not genus and species provided separately.}

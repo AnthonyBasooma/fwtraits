@@ -1,9 +1,14 @@
 Package: fwtraits
-Title: Extract Species Ecological Ranges From Freshwaterecology.info
+Title: Extract Species Ecological Parameters From www.freshwaterecology.info
 Version: 0.0.1
-Authors@R: 
-    person("Anthony", "Basooma", , "anthony.basooma@boku.ac.at", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-8994-9989"))
+Authors@R: c( 
+    person(given = "Anthony", family = "Basooma", email = "anthony.basooma@boku.ac.at", 
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0002-8994-9989")),
+    person("Florian", "Borgwardt", role = c("ctb","fnd"), comment = c(ORCID = "0000-0002-8974-7834")),
+    person("Thomas", "Hein", role = c("ctb", "fnd","ths"), comment = c(ORCID = "0000-0002-7767-4607")),
+    person("Astrid", "Schmidt-Kloiber", role = c("ctb", "fnd", "dtc"), comment = c(ORCID = "0000-0001-8839-5913"))
+           )
 Description: To extract species ecological ranges from the Freshwaterecology.info.
 License: GPL (>= 3)
 Encoding: UTF-8

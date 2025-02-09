@@ -203,7 +203,7 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #'      phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed such as \code{'pp', 'di'}.
 #' \itemize{
 #'         \item{\code{pp}: Pytoplankton.}
-#'         \item{\code{mp}: Macrophtytes}
+#'         \item{\code{mp}: Macrophytes}
 #'         \item{\code{mi}: Macroinvertebrates}
 #'         \item{\code{fi}: Fishes}
 #'         \item{\code{di}: Diatoms}
@@ -211,8 +211,8 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #'           }
 #' @param ecoparams \code{vector}. Selected traits that should be downloaded for particular organism group. Check \code{\link{fw_dbguide}} for the allowed
 #'      traits in the database.
-#' @param taxalevel \code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at family level,
-#'        genus, and taxa group level.
+#' @param taxalevel \code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at \code{family},
+#'        \code{genus}, and \code{taxagroup} level.
 #' @param taxa_searched \code{string} An internal placeholder to accommodate the standard taxonomic names for
 #'        invertebrates and phytobenthos from the database.
 #' @param inform \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
@@ -342,13 +342,14 @@ fw_searchdata <- function(organismgroup, taxa_searched = NULL,
         speciestaxa <- unique(bendata$Taxagroup[which(unlist(bendata[,tlevels])%in%taxaclean ==TRUE)])
       }
 
-      standardtaxa <- sapply(gettaxa, function(x) strsplit(x[["availableFor"]],split = ", ", fixed = TRUE)[[1]])
+      standardtaxa <- sapply(gettaxa, function(x) strsplit(x[["availableFor"]], split = ", ", fixed = TRUE)[[1]])
+
 
       #it return a vector of characters not a list, affects data search
 
       if(length(gettaxa)==1) standardtaxa <- list(c(standardtaxa))
 
-      standardcodes <- sapply(gettaxa, function(x) x[[1]])
+      standardcodes <- sapply(gettaxa, function(x) x[['code']])
 
       #retained taxa orders or groups from user provided data vs database for each trait
       retainorders <- sapply(standardtaxa, function(xx) intersect(xx, speciestaxa), simplify = FALSE)
@@ -358,6 +359,7 @@ fw_searchdata <- function(organismgroup, taxa_searched = NULL,
 
       #remove trait list with no taxa group
       taxawithdata <- retainorders[sapply(retainorders, length) > 0]
+
 
       if(gg=='mi'){
 
@@ -396,7 +398,6 @@ fw_searchdata <- function(organismgroup, taxa_searched = NULL,
                         url = qurl, allClasses = fw_classes(paramlist = ecolist[[gg]]),
                         inform = inform,
                         simplify = FALSE, USE.NAMES = TRUE)
-
     }
 
   },simplify = FALSE)

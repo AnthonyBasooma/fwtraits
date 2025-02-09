@@ -113,7 +113,7 @@ fw_fetchdata <- function(data,
     }else{
       spn <- taxa_searched_list
     }
-
+    #print(spn)
     spcheck <- clean_names(sp = spn, grouplists = datalists[[xout]],
                            taxalevel = taxalevel,
                            full = TRUE,
@@ -176,13 +176,16 @@ fw_fetchdata <- function(data,
     #loop through each traits but navigating the different taxa levels: wow
     ecolp <- lapply(gdata, function(xgg){
 
-      tlevels <- switch (taxalevel, species = 'spp', taxagroup = 'TaxaGroup', family = 'Family', genus = 'Genus' )
+      tlevels <- switch (taxalevel, species = 'Taxonname', taxagroup = 'TaxaGroup', family = 'Family', genus = 'Genus' )
 
-      if(tlevels=='spp') xgg["spp"] <- paste0(xgg$Genus,' ', xgg$Species)
+      #replace Taxonname with Taxonname without the author
+
+      xgg["Taxonname"] <- paste0(xgg$Genus,' ', xgg$Species)
 
       #check if a particular traits returns no data and skip it
 
       xtraitdata <- xgg[xgg[, tlevels] %in% taxalist, ]
+
 
       if(nrow(xtraitdata)>=1) xtraitdata else return(NULL)
 
@@ -201,8 +204,8 @@ fw_fetchdata <- function(data,
     cat(" ======================================",'\n',
         '        DATA OUTPUT SUMMARY','\n',
         "======================================",'\n',
-        'Number of Organism Groups Considered :',       length(organismgroup),'\n',
-        'Number of Organism Groups Considered :',      if(length(organismgroup)==1) organismgroup else paste(names(data), collapse = ','),'\n',
+        'Number of Organism Groups Considered :',   length(organismgroup),'\n',
+        'Number of Organism Groups Considered :',   if(length(organismgroup)==1) organismgroup else paste(names(data), collapse = ','),'\n',
         'Succesful organism Groups            :',   length(names(taxanames_in)),'\n',
         'Failed organism Groups               :',   length(names(spout[sapply(spout,is.null)])),'\n',
         'Taxa level used                      :',   taxalevel, '\n',
@@ -212,9 +215,10 @@ fw_fetchdata <- function(data,
         'Caching folder                       :',   cachefolder, '\n',
         "======================================", '\n')
   }
-  cat("********Please cite this website as:***********", "\n", fw_paramlist(cachefolder = cachefolder)$citation, "\n")
+
  invisible(res)
 }
+
 
 
 #' @noRd
@@ -233,27 +237,31 @@ fw_parsevalues <- function(data, org){
 
     lll2 <- lapply(ecoparm, function(ww){
 
-      traitslist <- ww[[3]]
+      traitslist <- ww[["categoryList"]]
 
-      parnames <- ww[[2]]
+      parnames <- ww[["parameterName"]]
 
-      pext      <-     sapply(traitslist, function(x) x[[1]]) # extract some parameter names e.g for migration..
+      pext      <-     sapply(traitslist, function(x) x[['categoryAbbr']]) # extract some parameter names e.g for migration..
 
-      catext    <-     sapply(traitslist, function(x) x[[2]]) #extract category names
+      catext    <-     sapply(traitslist, function(x) x[['categoryValue']]) #extract category names
 
       pextclean <-     pext[which(catext != "0" & !is.null(catext) & nzchar(catext))] # maintain those with values, no 0, NA and empty strings
 
-      pcatclean <-     catext[which(catext != "0" & !is.null(catext) & nzchar(catext))]
+      pcat <-     catext[which(catext != "0" & !is.null(catext) & nzchar(catext))]
 
-      if(length(pcatclean)==1 && grepl("[\\s\\(\\) \" \" ]", pcatclean) && parnames=='substrate preference'){
+      if(length(pcat)==1 && isTRUE(pcat == 'NULL')){
+        pcatclean <- NULL
 
-        p1 <- unlist(strsplit(pcatclean, split = ",| "))
+      }else if(length(pcat)==1 && grepl("[\\s\\(\\) \" \" ]", pcat) && parnames=='substrate preference' | parnames =='life form'){
+
+        p1 <- unlist(strsplit(pcat, split = ",| "))
 
         p2 <- p1[nzchar(p1)]
 
         pcatclean <- gsub("[\\s\\(\\) \" \" ]", "", p2)
+
       }else{
-        pcatclean
+        pcatclean <- pcat
       }
 
       pcatlp <- mapply(pextclean, pcatclean, FUN = function(iparam, icate){
@@ -261,7 +269,7 @@ fw_parsevalues <- function(data, org){
         #handle parameter
         paramvalue <- clean_traits(parnames)
 
-        if( is.null(icate)==TRUE ) {
+        if(is.null(icate)==TRUE) {
 
           cvalue <- NA
 

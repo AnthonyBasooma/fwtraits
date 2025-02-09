@@ -3,7 +3,7 @@
 \docType{data}
 \name{pbenthodata}
 \alias{pbenthodata}
-\title{Taxonommic data for the phytobentho species in freshwaterecology.info database.}
+\title{Taxonomic data for the phytobentho species in www.freshwaterecology.info database.}
 \format{
 A \code{tibble} 1857 rows and 2 columns.
 }

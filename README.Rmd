@@ -50,12 +50,11 @@ Before using the package, the user is strongly advised to run the **`fw_be4ustar
 
 * `fw_setapikey()` for securing API key in the user R environment.
 * `fw_searchdata()` To allow get data from the database. However, this is mostly an internal function since the data is not already parsed to enable usability.
-* `fw_split()` extracts the downloaded data before its tokenised for proper usage.
-* `fw_fetchdata()` is the main function that provides all the parameters for data access. The function is wrapped around `fw_searchdata()` and `fw_split()` function to allow the user to easily get and manipulate the data during package usage.
+* `fw_fetchdata()` is the main function that provides all the parameters for data access. The function is wrapped around `fw_searchdata()` function to allow the user to easily get and manipulate the data during package usage.
 
 **Other utility functions**
 
-* `fw_check_names()` to check spellings species taxonomic names to allow the user obtain the species traits.
+* `check_names()` to check spellings species taxonomic names to allow the user obtain the species traits.
 * `fw_checktraits()`harmonize species traits to allow effective between user inputs and database information.
 * `fw_visualize()`provides graphical display of the information obtained from the database.
 

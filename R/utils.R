@@ -176,5 +176,15 @@ check_packages <- function(pkgs){
   invisible(pkgs)
 }
 
+#' @title Get database citations
+#' @param cachefolder \code{string}. The root path were the cached data will be saved on the user PC.
+#'      If the path is not provided, the cached information will be saved in the current
+#'      working directly.
+#' @export
+#'
+fw_cite <- function(cachefolder = 'cache'){
+  cat("******Please cite this website as:********", "\n", fw_paramlist(cachefolder = cachefolder)$citation, "\n")
+
+}
 
 
