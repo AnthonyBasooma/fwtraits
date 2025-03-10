@@ -91,7 +91,7 @@ fw_token <- function(apikey = NULL, seed= NULL, cachefolder = NULL, secure = TRU
 
       token <- tokenout$access_token
 
-      saveCache(token, key=key, comment="token code generated")
+      saveCache(token, key=key, comment="token code generated", compress = TRUE)
 
       token;
     } else {

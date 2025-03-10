@@ -42,5 +42,5 @@ test_that(desc = 'Dataframe with sanitized species data ',
 test_that(desc = 'dataframe of species traits',
           code = {
             expect_s3_class(fw_dbguide(), 'data.frame')
-            expect_equal(length(colnames(fw_dbguide())), 8)
+            expect_equal(length(colnames(fw_dbguide())), 9)
           })

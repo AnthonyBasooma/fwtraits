@@ -94,7 +94,7 @@ getfimppp <- function(x, token, organismgroup, url, allClasses = NULL, inform = 
 
       finalData <- as.data.frame(do.call(rbind, fxdata$searchResult))
 
-      saveCache(finalData, key=fgkey, comment="fi, mp, pp downloaded.")
+      saveCache(finalData, key=fgkey, comment="fi, mp, pp downloaded.", compress = TRUE)
 
     finalData;
 
@@ -172,7 +172,7 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 
       finalData <- as.data.frame(do.call(rbind, ldata_out$searchResult))
 
-      saveCache(finalData, key = invertkey, comment = 'invertebrates data')
+    saveCache(finalData, key = invertkey, comment = 'invertebrates data', compress = TRUE)
 
       finalData;
 

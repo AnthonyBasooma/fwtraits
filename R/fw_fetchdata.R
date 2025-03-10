@@ -90,6 +90,10 @@ fw_fetchdata <- function(data,
     stop("Data format for species not allowed.")
   }
 
+  #get function to enable decaching
+
+  .funcall <- as.list(match.call())[-1]
+
   #search for data
   datalists <- fw_searchdata(organismgroup = organismgroup,
                              ecoparams = ecoparams,
@@ -189,7 +193,7 @@ fw_fetchdata <- function(data,
 
       if(nrow(xtraitdata)>=1) xtraitdata else return(NULL)
 
-      ecopar <- fw_parse(data = xtraitdata, org = xff)
+      ecopar <- fw_parsevalues(data = xtraitdata, org = xff, cachefolder = cachefolder)
     })
     dout <- Reduce(rbind, ecolp)
   })
@@ -198,7 +202,9 @@ fw_fetchdata <- function(data,
 
   dfout <- Reduce(rbind, grouplp)
 
-  res <- list(ecodata = dfout, taxasearched = xtabspp, type =  'fetch')
+  #get the function call for easy decaching
+
+  res <- list(ecodata = dfout, taxasearched = xtabspp, type =  'fetch', funcall_ = .funcall)
 
   if(isTRUE(details)){
     cat(" ======================================",'\n',
@@ -223,113 +229,134 @@ fw_fetchdata <- function(data,
 
 #' @noRd
 #'
-fw_parsevalues <- function(data, org){
+fw_parsevalues <- function(data, org, cachefolder){
 
-  dbdata <- fw_dbguide(organismgroup = org)
+  cachedir <- fw_path(cachefolder)
 
-  data[data=="NULL"] <- NA
+  setCacheRootPath(path= cachedir)
 
-  splitdata <-  split(data, seq(nrow(data)))
+  cache.root = getCacheRootPath()
 
-  lll <- lapply(seq_along(splitdata), function(xx){
+  keyout <- list(data, org, cachefolder)
 
-    ecoparm <- splitdata[[xx]]$ecologicalParameterList[[1]]
+  finalout <- loadCache(keyout)
 
-    lll2 <- lapply(ecoparm, function(ww){
+  if(!is.null(finalout)){
+    return(finalout)
 
-      traitslist <- ww[["categoryList"]]
+  }else{
+    dbdata <- fw_dbguide(organismgroup = org)
 
-      parnames <- ww[["parameterName"]]
+    data[data=="NULL"] <- NA
 
-      pext      <-     sapply(traitslist, function(x) x[['categoryAbbr']]) # extract some parameter names e.g for migration..
+    splitdata <-  split(data, seq(nrow(data)))
 
-      catext    <-     sapply(traitslist, function(x) x[['categoryValue']]) #extract category names
+    lll <- lapply(seq_along(splitdata), function(xx){
 
-      pextclean <-     pext[which(catext != "0" & !is.null(catext) & nzchar(catext))] # maintain those with values, no 0, NA and empty strings
+      ecoparm <- splitdata[[xx]]$ecologicalParameterList[[1]]
 
-      pcat <-     catext[which(catext != "0" & !is.null(catext) & nzchar(catext))]
+      lll2 <- lapply(ecoparm, function(ww){
 
-      if(length(pcat)==1 && isTRUE(pcat == 'NULL')){
-        pcatclean <- NULL
+        traitslist <- ww[["categoryList"]]
 
-      }else if(length(pcat)==1 && grepl("[\\s\\(\\) \" \" ]", pcat) && parnames=='substrate preference' | parnames =='life form'){
+        parnames <- ww[["parameterName"]]
 
-        p1 <- unlist(strsplit(pcat, split = ",| "))
+        pext      <-     sapply(traitslist, function(x) x[['categoryAbbr']]) # extract some parameter names e.g for migration..
 
-        p2 <- p1[nzchar(p1)]
+        catext    <-     sapply(traitslist, function(x) x[['categoryValue']]) #extract category names
 
-        pcatclean <- gsub("[\\s\\(\\) \" \" ]", "", p2)
+        pextclean <-     pext[which(catext != "0" & !is.null(catext) & nzchar(catext))] # maintain those with values, no 0, NA and empty strings
 
-      }else{
-        pcatclean <- pcat
-      }
+        pcat <-     catext[which(catext != "0" & !is.null(catext) & nzchar(catext))]
 
-      pcatlp <- mapply(pextclean, pcatclean, FUN = function(iparam, icate){
+        if(length(pcat)==1 && isTRUE(pcat == 'NULL')){
+          pcatclean <- NULL
 
-        #handle parameter
-        paramvalue <- clean_traits(parnames)
+        }else if(length(pcat)==1 && grepl("[\\s\\(\\) \" \" ]", pcat) && parnames=='substrate preference' | parnames =='life form'){
 
-        if(is.null(icate)==TRUE) {
+          p1 <- unlist(strsplit(pcat, split = ",| "))
 
-          cvalue <- NA
+          p2 <- p1[nzchar(p1)]
 
-          clevel <- NA
+          pcatclean <- gsub("[\\s\\(\\) \" \" ]", "", p2)
 
         }else{
-
-          if(clean_traits(iparam) == paramvalue) {
-
-            cvalue <- dbdata$category_name[which(dbdata$parameters_cleaned== paramvalue & dbdata$category_abbrevation==icate)]
-
-            if(length(cvalue)<=0) cvalue <- icate
-
-            clevel <- NA
-          }else{
-            cvalue <- dbdata$category_name[which(dbdata$parameters_cleaned== paramvalue & dbdata$category_abbrevation==iparam)]
-
-            if(length(cvalue)<=0) cvalue <- iparam
-
-            clevel <- icate
-          }
+          pcatclean <- pcat
         }
 
-        # #Add classification
-        classificationType <- unique(dbdata$classificationSystem[which(dbdata$parameters_cleaned== paramvalue)])
+        pcatlp <- mapply(pextclean, pcatclean, FUN = function(iparam, icate){
 
-        #Add data type
+          #handle parameter
+          paramvalue <- clean_traits(parnames)
 
-        DataType <- unique(dbdata$DataType[which(dbdata$parameters_cleaned== paramvalue)])
+          if(is.null(icate)==TRUE) {
 
-        #explanation of category names
-        explanation <- unique(dbdata$category_explanation[which(dbdata$parameters_cleaned== paramvalue &
-                                                                  dbdata$category_name == cvalue )])
-        if(length(explanation)<=0 | is.na(cvalue)) explanation <- NA
+            cvalue <- NA
 
-        dataout <- data.frame(ID_FWE         = as.character(unlist(splitdata[[xx]][,"ID_FWE"])),
-                              OrganismGroup        = org,
-                              TaxaGroup            = unlist(splitdata[[xx]][,"TaxaGroup"]),
-                              Family               = unlist(splitdata[[xx]][,"Family"]),
-                              Genus                = unlist(splitdata[[xx]][,"Genus"]),
-                              Species              = unlist(splitdata[[xx]][,"Species"]),
-                              Taxonname            = unlist(splitdata[[xx]][,"Taxonname"]),
-                              Author               = unlist(splitdata[[xx]][,"Author"]),
-                              Parameter            = paramvalue,
-                              CategoryName         = cvalue,
-                              CategoryLevels       = clevel,
-                              DataType             = DataType,
-                              ClassificationType   = classificationType,
-                              CategoryExplanation  = explanation
-        )
+            clevel <- NA
+
+          }else{
+
+            if(clean_traits(iparam) == paramvalue) {
+
+              cvalue <- dbdata$category_name[which(dbdata$parameters_cleaned== paramvalue & dbdata$category_abbrevation==icate)]
+
+              if(length(cvalue)<=0) cvalue <- icate
+
+              clevel <- NA
+            }else{
+              cvalue <- dbdata$category_name[which(dbdata$parameters_cleaned== paramvalue & dbdata$category_abbrevation==iparam)]
+
+              if(length(cvalue)<=0) cvalue <- iparam
+
+              clevel <- icate
+            }
+          }
+
+          # #Add classification
+          classificationType <- unique(dbdata$classificationSystem[which(dbdata$parameters_cleaned== paramvalue)])
+
+          #Add data type
+
+          DataType <- unique(dbdata$DataType[which(dbdata$parameters_cleaned== paramvalue)])
+
+          #explanation of category names
+          explanation <- unique(dbdata$category_explanation[which(dbdata$parameters_cleaned== paramvalue &
+                                                                    dbdata$category_name == cvalue )])
+          if(length(explanation)<=0 | is.na(cvalue)) explanation <- NA
+
+          # #Add assignment info
+          assigninfo <- unique(dbdata$AssignementInfo[which(dbdata$parameters_cleaned== paramvalue)])
+
+          dataout <- data.frame(ID_FWE         = as.character(unlist(splitdata[[xx]][,"ID_FWE"])),
+                                OrganismGroup        = org,
+                                TaxaGroup            = unlist(splitdata[[xx]][,"TaxaGroup"]),
+                                Family               = unlist(splitdata[[xx]][,"Family"]),
+                                Genus                = unlist(splitdata[[xx]][,"Genus"]),
+                                Species              = unlist(splitdata[[xx]][,"Species"]),
+                                Taxonname            = unlist(splitdata[[xx]][,"Taxonname"]),
+                                Author               = unlist(splitdata[[xx]][,"Author"]),
+                                Parameter            = paramvalue,
+                                CategoryName         = cvalue,
+                                CategoryAttributes   = clevel,
+                                CategoryExplanation  = explanation,
+                                DataType             = DataType,
+                                ClassificationType   = classificationType,
+                                AssignementInfo      = assigninfo
+          )
 
 
-      }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+        }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
 
-      vvx <- do.call(rbind, pcatlp)
+        vvx <- do.call(rbind, pcatlp)
 
+      })
+      vvw <- do.call(rbind, lll2)
     })
-    vvw <- do.call(rbind, lll2)
-  })
-  vvz <- do.call(rbind, lll)
-}
+    finalout <- do.call(rbind, lll)
 
-fw_parse <- addMemoization(fw_parsevalues)
+    saveCache(finalout, key= keyout, comment="cache parsed data", compress = TRUE)
+
+    finalout;
+  }
+}

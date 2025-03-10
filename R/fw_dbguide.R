@@ -35,61 +35,61 @@ fw_dbguide <- function(organismgroup = NULL,cachefolder = 'cache'){
 
     #extract the trait description
 
-    categoryList <- sapply(zdata, function(x1)x1[['categoryList']])
+    categoryList <- sapply(zdata, function(qq)qq[['categoryList']])
 
-    parameterNames <- sapply(zdata, function(x1){
+    parameterNames <- sapply(zdata, function(qq){
 
-      len <- length(x1[['categoryList']])
+      len <- length(qq[['categoryList']])
 
       #lWR has no category list
-      if(len>0) name <- x1[['name']] else name <- 'length weight regression'
-
+      if(len>0) name <- qq[['name']] else name <- 'length weight regression'
     })
 
     #extract classification system
 
-    classificationNames <- sapply(zdata, function(x1){
+    classificationNames <- sapply(zdata, function(ww){
 
-      cls <- x1[['classificationSystem']]
+      cls <- ww[['typeOfAssignment']]
 
-      if(!is.null(cls) && !cls=="") cls else cls <- NA
+      if(!is.null(cls) && !cls=="") cls <- cls else cls <- NA
+
     })
 
-    DataType <- sapply(zdata, function(x1){
+    DataType <- sapply(zdata, function(nn){
 
-      cls <- x1[['classificationSystem']]
+      cls <- nn[['typeOfAssignment']]
 
       if(!is.null(cls) && !cls==""){
 
         if(cls=='presence/absence assignment system' | cls=='single category assignment system'|
-           cls == "presence/absence " | cls=='modified presence/absence assignment system'){
+           cls == "presence/absence "){
 
           datatype = 'Nominal'
 
-        } else if(cls=='category' | cls=='single category assignment system' |
-                  cls=="habitat preference parameters" | cls=="Life parameters"| cls=="score"){
-
-          datatype = 'Factor'
-
-        }else if(cls=="10 points" | cls == '10 point assignment system'){
+        }else if(cls=="12 point assignment system" | cls == '10 point assignment system'){
 
           datatype = 'Fuzzy'
 
-        }else if(cls=="metric value (0-6)" | cls=="metric value (1-3)" | cls == 'metric value (1-5)' |
-                 cls == "saprobic preference parameters" | cls == "trophic preference parameters" |
-                 cls == "pollution preference parameters"){
+        }else if(cls == 'metric value' | cls=="affinity score assignment system"){
 
           datatype = 'Ordered'
 
         }
       }else{
         datatype = NA
-
       }
     })
 
-    mm <- mapply(categoryList, parameterNames, classificationNames, DataType,
-                 FUN = function(yx, px, cx, dx){
+    assinfodata <- sapply(zdata, function(aa){
+
+      aainfo <- aa[["additionalAssignmentInfo"]]
+
+      if(!is.null(aainfo) && !aainfo=="") aainfo else aainfo <- NA
+
+    })
+
+    mm <- mapply(categoryList, parameterNames, classificationNames, DataType, assinfodata,
+                 FUN = function(yx, px, cx, dx, aax){
 
       parameterclean <- clean_traits(px)
 
@@ -110,7 +110,8 @@ fw_dbguide <- function(organismgroup = NULL,cachefolder = 'cache'){
                             category_abbrevation  = categoryAbbreviation,
                             category_explanation  = categoryExplanation,
                             classificationSystem  = cx,
-                            DataType              = dx
+                            DataType              = dx,
+                            AssignementInfo       = aax
                             )
 
 

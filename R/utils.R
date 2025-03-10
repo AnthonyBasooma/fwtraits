@@ -111,7 +111,7 @@ fw_paramlist <- function(cachefolder = NULL) {
       req_perform() |>
       resp_body_json()
 
-    saveCache(mainparlist, key=key, comment="token code generated")
+    saveCache(mainparlist, key=key, comment="token code generated", compress = TRUE)
 
     mainparlist;
   }
@@ -121,7 +121,7 @@ fw_paramlist <- function(cachefolder = NULL) {
 #'
 fw_classes <- function(paramlist) {
 
-  taxagrouplists <- sapply(paramlist, function(x) strsplit(x[[7]], split = ", ", fixed = TRUE)[[1]])
+  taxagrouplists <- sapply(paramlist, function(x) strsplit(x[['availableFor']], split = ", ", fixed = TRUE)[[1]])
 
   txall <- unique(do.call(c, taxagrouplists))
 
