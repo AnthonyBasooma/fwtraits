@@ -36,7 +36,7 @@ clean_names <- function(sp,
                         percenterror = 80,
                         errorness = 30,
                         full = FALSE,
-                        warn= FALSE,
+                        warn,
                         taxalevel) {
 
   if(isTRUE(prechecks)){
@@ -125,6 +125,7 @@ clean_names <- function(sp,
 
             if(isTRUE(warn))  warning('No matching taxonomic names will be returned from the database for the searched taxa: ', taxaclean, " at the ", taxalevel, " level.", call. = FALSE)
             spch <- NA
+
           }else if(distdiff <= errorness){
 
             spsel <- stlist[which.min(dst)]
@@ -142,11 +143,12 @@ clean_names <- function(sp,
 
               intdiff <- length(intdist)/nchar(taxaclean)
 
-              if(taxacorrectnesspct >= percenterror && intdiff >= 0.97) {
+              if(taxacorrectnesspct >= percenterror && intdiff >= 0.95) {
 
                 spch <- spsel
 
               }else {
+
                 if(isTRUE(warn))warning("No matching taxa name found for ", taxaclean, " and will be removed", call. = FALSE)
                 spch = NA
               }
@@ -181,10 +183,14 @@ clean_names <- function(sp,
   }, simplify = TRUE, USE.NAMES = FALSE)
 
   if(isTRUE(full)){
+    if(!is.list(spcleandata)) spp <- spcleandata else spp <- NA
 
-    finalout <- data.frame(raw = spunique, clean = spcleandata)
+    finalout <- data.frame(raw = spunique, clean = spp)
   }else{
+
     finalout <- spcleandata[!is.na(spcleandata)]
+
+    if(length(finalout)==0)finalout <- NA else finalout
   }
 
   return(finalout)

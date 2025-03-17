@@ -164,7 +164,7 @@ fw_fetchdata <- function(data,
 
   taxanames_in <- spout[!sapply(spout,is.null)]
 
-  if(length(taxanames_in)<=0) stop("The taxonomic names provided is/are not found in the database at ", taxalevel ," level, so no ecological parameters to be parsed. ", call. = FALSE)
+  if(length(taxanames_in)<=0) stop("The taxonomic names not found in the database at ", taxalevel ," level", call. = FALSE)
 
   #check if the lists returned data
 

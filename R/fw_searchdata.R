@@ -321,7 +321,7 @@ fw_searchdata <- function(organismgroup, taxa_searched = NULL,
 
         if(tlevels=='Genus') invdata[,'Genus'] <- sub(" .*", "", invdata$Taxon)
 
-        taxaclean <- clean_names(sp = searched_spp, prechecks = TRUE, standard_dataset = invdata, taxalevel = taxalevel)
+        taxaclean <- clean_names(sp = searched_spp, prechecks = TRUE, standard_dataset = invdata, taxalevel = taxalevel, warn = warn)
 
         speciestaxa <- unique(invdata$Taxagroup[which(unlist(invdata[,tlevels])%in%taxaclean ==TRUE)])
       }else{
