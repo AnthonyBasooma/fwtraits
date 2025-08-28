@@ -52,28 +52,43 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="fwtraits">fwtraits<a class="anchor" aria-label="anchor" href="#fwtraits"></a>
-</h1></div>
+  <main id="main" class="col-md-9"><div class="section level3">
+<h3 id="fwtraits-for-retrieving-from-wwwfreshwaterecologyinfo-database">fwtraits for retrieving from www.freshwaterecology.info database<a class="anchor" aria-label="anchor" href="#fwtraits-for-retrieving-from-wwwfreshwaterecologyinfo-database"></a>
+</h3>
 <!-- badges: start -->
 
 <!-- badges: end -->
-<p><strong>Aim of the package</strong></p>
-<p><strong>fwtraits</strong> provides a seamless and robust access to the species ecological parameters, traits or indicators from the <strong>www.freshwaterecology.info database</strong> (Schmidt-Kloiber &amp; Hering 2015).</p>
+<p><img src="reference/figures/fwtraits.png" align="right" alt="logo" width="150" height="190"></p>
+</div>
+<div class="section level3">
+<h3 id="aim-of-the-package">Aim of the package<a class="anchor" aria-label="anchor" href="#aim-of-the-package"></a>
+</h3>
+<p><strong>fwtraits</strong> provides a seamless and robust access to the species ecological parameters, traits, or indicators from the <strong>www.freshwaterecology.info database</strong> (Schmidt-Kloiber &amp; Hering 2015). The database hosts an array of ecological parameters for different taxonomic groups, including fish, macroinvertebrates, phytoplankton, diatoms, and phytobenthos. Experts periodically review the data to ensure quality. The data is used in ecological studies, primarily for functional diversity or macroecological analyses.</p>
+<p><strong>NOTE</strong></p>
+<ul>
+<li>To seamlessly access the databases, an API has been developed by the database hosts. Therefore, to freely access the database, the user is required to sign up and make a request for the API key.</li>
+</ul>
 <p><strong>Package installation</strong></p>
-<p>The package is currently accessible of GitHub</p>
+<p>To access the package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"AnthonyBasooma/fwtraits"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Package usage</strong></p>
+</div>
+<div class="section level3">
+<h3 id="package-usage">Package usage<a class="anchor" aria-label="anchor" href="#package-usage"></a>
+</h3>
 <hr>
 <p>The database is arranged into organism groups including macroinvertebrates, fishes, phytoplankton, macrophytes, and phytobenthos most especially the diatoms (Figure 1). The package is a wrapper around the <a href="https://www.freshwaterecology.info/fweapi2docu.php" class="external-link">fweapi2</a> developed and maintained by the University of Natural Resources and Life Sciences (BOKU), Vienna, Austria.</p>
 <p>Before using the package, the user is strongly advised to run the <strong><code><a href="reference/fw_be4ustart.html">fw_be4ustart()</a></code></strong> to get the steps required to access and use the package in accessing the species ecological parameters, traits or indicators.</p>
-<!-- ![**Figure 1. Accessing the species traits or ecological parameters from the Freshwaterecology.info database (FW DB).**](man/figures/fwatraitsworkflow.png) -->
-<p><strong>Main functions</strong></p>
+<figure><img src="reference/figures/API_v2.png" alt="Figure 1. Accessing the species traits or ecological parameters from the Freshwaterecology.info database (FW DB)."><figcaption aria-hidden="true"><strong>Figure 1. Accessing the species traits or ecological parameters from the Freshwaterecology.info database (FW DB).</strong>
+</figcaption></figure>
+</div>
+<div class="section level3">
+<h3 id="main-functions">Main functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
+</h3>
 <ul>
 <li>
 <code><a href="reference/fw_setapikey.html">fw_setapikey()</a></code> for securing API key in the user R environment.</li>
@@ -82,7 +97,10 @@
 <li>
 <code><a href="reference/fw_fetchdata.html">fw_fetchdata()</a></code> is the main function that provides all the parameters for data access. The function is wrapped around <code><a href="reference/fw_searchdata.html">fw_searchdata()</a></code> function to allow the user to easily get and manipulate the data during package usage.</li>
 </ul>
-<p><strong>Other utility functions</strong></p>
+</div>
+<div class="section level3">
+<h3 id="other-utility-functions">Other utility functions<a class="anchor" aria-label="anchor" href="#other-utility-functions"></a>
+</h3>
 <ul>
 <li>
 <code>check_names()</code> to check spellings species taxonomic names to allow the user obtain the species traits.</li>
@@ -91,11 +109,18 @@
 <li>
 <code><a href="reference/fw_visualize.html">fw_visualize()</a></code>provides graphical display of the information obtained from the database.</li>
 </ul>
-<p><strong>Funding</strong></p>
+</div>
+<div class="section level3">
+<h3 id="funding">Funding<a class="anchor" aria-label="anchor" href="#funding"></a>
+</h3>
 <p>The package was created with support from the AquaINFRA project which is aimed at developing data and services to support marine and freshwater scientists and stakeholders. Also, the DANUBE4All project and HR21 Doctoral School under BOKU University provided logistical support during the development of this package.</p>
-<p><strong>References</strong></p>
+</div>
+<div class="section level3">
+<h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
 <p>Schmidt-Kloiber, A., &amp; Hering, D. (2015). Www.freshwaterecology.info - An online tool that unifies, standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences. Ecological Indicators, 53, 271-282. <a href="https://doi.org/10.1016/j.ecolind.2015.02.007" class="external-link uri">https://doi.org/10.1016/j.ecolind.2015.02.007</a></p>
 </div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
@@ -133,8 +158,10 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="http://www.gnu.org/licenses/gpl-3.0.html" class="external-link"><img src="https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat" alt="License"></a></li>
 <li><a href="https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://codecov.io/gh/AnthonyBasooma/fwtraits" class="external-link"><img src="https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg?token=07OUlLSQus" alt="codecov"></a></li>
+<li><a href="https://github.com/AnthonyBasooma/fwtraits/repo/releases" class="external-link"><img src="https://img.shields.io/github/downloads/AnthonyBasooma/fwtraits/repo/total.svg" alt="GitHub Downloads"></a></li>
 </ul>
 </div>
 
