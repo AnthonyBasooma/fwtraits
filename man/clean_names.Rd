@@ -12,7 +12,7 @@ clean_names(
   percenterror = 80,
   errorness = 30,
   full = FALSE,
-  warn = FALSE,
+  warn,
   taxalevel
 )
 }

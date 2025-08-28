@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{check_packages}
 \alias{check_packages}
-\title{Check for packages to install and reposnd to use}
+\title{Check for packages to install and respond to use}
 \usage{
 check_packages(pkgs)
 }
@@ -13,5 +13,5 @@ check_packages(pkgs)
 error message for packages to install
 }
 \description{
-Check for packages to install and reposnd to use
+Check for packages to install and respond to use
 }

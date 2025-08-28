@@ -159,7 +159,7 @@ fw_path <- function(dir = 'cache'){
 }
 
 
-#' Check for packages to install and reposnd to use
+#' Check for packages to install and respond to use
 #'
 #' @param pkgs list of packages to install
 #'
