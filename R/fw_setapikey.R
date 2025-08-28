@@ -27,12 +27,13 @@ fw_setapikey <- function(){
 
 
 #'For loading the API key from the environment.
+#' @param keyvar \code{string} Is the API name as indicated in the user environment. Default is \code{"API_KEY"}.
 #' @export
-fw_keyload <- function() {
+fw_keyload <- function(keyvar= "API_KEY" ) {
 
   # check if the API Key is saved already and possibly not the case
 
-  key_loaded <- Sys.getenv(x = "API_KEY")
+  key_loaded <- Sys.getenv(x = keyvar)
 
   if(key_loaded=="") stop('The API key has not been well set in the .Renviron file. Run fw_setapikey() and follow the instruction carefully.', call. = FALSE)
 

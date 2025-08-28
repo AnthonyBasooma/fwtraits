@@ -9,7 +9,6 @@ test_that(desc = 'register',
                 fw_register()
               }
             )
-
             expect_equal(called_url, "https://www.freshwaterecology.info/register/index.php")
 
           })

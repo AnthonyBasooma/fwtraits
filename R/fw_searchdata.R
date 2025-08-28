@@ -337,7 +337,7 @@ fw_searchdata <- function(organismgroup, taxa_searched = NULL,
 
         if(tlevels=='Genus') bendata[,'Genus'] <- sub(" .*", "", bendata$Taxon)
 
-        taxaclean <- clean_names(sp = searched_spp, prechecks = TRUE, standard_dataset = bendata, taxalevel = taxalevel)
+        taxaclean <- clean_names(sp = searched_spp, prechecks = TRUE, standard_dataset = bendata, taxalevel = taxalevel, warn = warn)
 
         speciestaxa <- unique(bendata$Taxagroup[which(unlist(bendata[,tlevels])%in%taxaclean ==TRUE)])
       }

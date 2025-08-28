@@ -5,6 +5,9 @@ fetchdata2 <- fw_fetchdata(data = c("Abramis brama",'Salmo trutta fario'),
 
 test_that(desc = "ggplot2",
           code = {
+
+            skip_on_cran()
+
             skip_if_not_installed("ggplot2")
 
             p <- fw_visualize(fetchdata2)
