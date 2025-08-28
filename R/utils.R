@@ -183,7 +183,7 @@ check_packages <- function(pkgs){
 #' @export
 #'
 fw_cite <- function(cachefolder = 'cache'){
-  cat("******Please cite this website as:********", "\n", fw_paramlist(cachefolder = cachefolder)$citation, "\n")
+  message("******Please cite this website as:********", "\n", fw_paramlist(cachefolder = cachefolder)$citation, "\n")
 
 }
 
