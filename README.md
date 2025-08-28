@@ -1,24 +1,40 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# fwtraits
+### fwtraits for retrieving from www.freshwaterecology.info database
 
 <!-- badges: start -->
 
+[![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg?token=07OUlLSQus)](https://codecov.io/gh/AnthonyBasooma/fwtraits)
+[![GitHub
+Downloads](https://img.shields.io/github/downloads/AnthonyBasooma/fwtraits/repo/total.svg)](https://github.com/AnthonyBasooma/fwtraits/repo/releases)
 
 <!-- badges: end -->
 
-**Aim of the package**
+<img src = "man/figures/fwtraits.png" align ="right" alt="logo" width="150" height="190" />
+
+### Aim of the package
 
 **fwtraits** provides a seamless and robust access to the species
-ecological parameters, traits or indicators from the
+ecological parameters, traits, or indicators from the
 **www.freshwaterecology.info database** (Schmidt-Kloiber & Hering 2015).
+The database hosts an array of ecological parameters for different
+taxonomic groups, including fish, macroinvertebrates, phytoplankton,
+diatoms, and phytobenthos. Experts periodically review the data to
+ensure quality. The data is used in ecological studies, primarily for
+functional diversity or macroecological analyses.
+
+**NOTE**
+
+- To seamlessly access the databases, an API has been developed by the
+  database hosts. Therefore, to freely access the database, the user is
+  required to sign up and make a request for the API key.
 
 **Package installation**
 
-The package is currently accessible of GitHub
+To access the package:
 
 ``` r
 # install.packages("devtools")
@@ -28,7 +44,7 @@ if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
 remotes::install_github("AnthonyBasooma/fwtraits")
 ```
 
-**Package usage**
+### Package usage
 
 ------------------------------------------------------------------------
 
@@ -44,9 +60,15 @@ Before using the package, the user is strongly advised to run the
 package in accessing the species ecological parameters, traits or
 indicators.
 
-<!-- ![**Figure 1. Accessing the species traits or ecological parameters from the Freshwaterecology.info database (FW DB).**](man/figures/fwatraitsworkflow.png) -->
+<figure>
+<img src="man/figures/API_v2.png"
+alt="Figure 1. Accessing the species traits or ecological parameters from the Freshwaterecology.info database (FW DB)." />
+<figcaption aria-hidden="true"><strong>Figure 1. Accessing the species
+traits or ecological parameters from the Freshwaterecology.info database
+(FW DB).</strong></figcaption>
+</figure>
 
-**Main functions**
+### Main functions
 
 - `fw_setapikey()` for securing API key in the user R environment.
 - `fw_searchdata()` To allow get data from the database. However, this
@@ -57,7 +79,7 @@ indicators.
   function to allow the user to easily get and manipulate the data
   during package usage.
 
-**Other utility functions**
+### Other utility functions
 
 - `check_names()` to check spellings species taxonomic names to allow
   the user obtain the species traits.
@@ -66,7 +88,7 @@ indicators.
 - `fw_visualize()`provides graphical display of the information obtained
   from the database.
 
-**Funding**
+### Funding
 
 The package was created with support from the AquaINFRA project which is
 aimed at developing data and services to support marine and freshwater
@@ -74,7 +96,7 @@ scientists and stakeholders. Also, the DANUBE4All project and HR21
 Doctoral School under BOKU University provided logistical support during
 the development of this package.
 
-**References**
+### References
 
 Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info -
 An online tool that unifies, standardises and codifies more than 20,000

@@ -12,6 +12,8 @@ test_that(desc = "ggplot2",
 
             p <- fw_visualize(fetchdata2)
 
-            expect_true(ggplot2::is.ggplot(p))
+            expect_true(ggplot2::is_ggplot(p))
+
+            expect_error(fw_visualize(fetchdata2$ecodata))
           })
 

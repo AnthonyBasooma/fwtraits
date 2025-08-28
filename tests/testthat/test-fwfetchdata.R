@@ -6,37 +6,18 @@ test_that(desc = 'checks for fetch data',
           code = {
             #dont provide the taxa group column name when the data is a dataframe
 
-            expect_error(fw_fetchdata(data = speciesdata, organismgroup = 'fi', ecoparams = 'migration'))
+            expect_error(fw_fetchdata(data = speciesdata, organismgroup = 'fi',
+                                      ecoparams = 'migration'))
 
-            out <- utils::capture.output()
+            expect_error(fw_fetchdata(data = speciesdata, organismgroup = 'fi',
+                                      ecoparams = 'migration', taxonomic_column = 'spp'))
           })
 
-
-searchdata <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', cachefolder = 'cache')
-
-#macroinvertebrates and phytobenthos
-
-mipb <- fw_fetchdata(data = list(mi=c("Congeria kusceri",
-                                      "Congeria leucophaeata",
-                                      "Dreissena polymorpha",
-                                      "Dreissena rostriformis bugensis"),
-                                 pb= c("Gongrosira debaryana",
-                                       "Gongrosira fluminensis",
-                                       "Hydrodictyon reticulatum",
-                                       "Sphaerobotrys fluviatilis",
-                                       "Stigeoclonium farctum",
-                                       "Stigeoclonium tenue",
-                                       "Tetraspora gelatinosa",
-                                       "Thorea hispida")),
-                     organismgroup = c('mi','pb'),
-                     ecoparams = list(mi = c('stream zonation preference'),
-                                      pb = c('substrate preference')),
-                     cachefolder = 'cache')
-
 test_that(desc = 'List is generated species with migration types',
-          code = {expect_type(searchdata, 'list')
+          code = {expect_type(fw_searchdata(organismgroup = 'fi',
+                                            ecoparams = 'migration',
+                                            cachefolder = 'cache'), 'list')
             })
-
 
 test_that(desc = 'Dataframe with sanitized species data ',
           code = {
@@ -114,15 +95,6 @@ test_that(desc = "macro+phytbentos",
           })
 
 
-# ppp <- fw_fetchdata(data = c("Anathece clathrata"),
-#                     organismgroup = 'pp',
-#                     ecoparams = c('stenoecy factor', 'aquaticity','life form'),
-#                     cachefolder = 'cache')
-#
-# ppp2 <- fw_fetchdata(data = c("Anathece minutissima"),
-#                      organismgroup = 'pp',
-#                      ecoparams = c('stenoecy factor', 'aquaticity','life form'),
-#                      cachefolder = 'cache')
 
 
 
