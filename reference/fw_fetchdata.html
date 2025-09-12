@@ -19,6 +19,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_for_taxa_groups.html">Retrieve data for taxomomic groups.</a></li>
+    <li><a class="dropdown-item" href="../articles/fishcompute.html">Computing functional diversity indices and community weghted means for fishes.</a></li>
+    <li><a class="dropdown-item" href="../articles/functiondendo.html">Compute fucntional dendogram from the ecological parameters.</a></li>
+    <li><a class="dropdown-item" href="../articles/macroinverts.html">Computing functional diversity indices and community weghted means for macroinvertebrates.</a></li>
     <li><a class="dropdown-item" href="../articles/Secure_API_key.html">How to handle the API key in public and private codes.</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -67,15 +70,16 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p><code>vector</code>. The list or vector with species names for which ecological references needs to be extracted from the
-database.</p></dd>
+<dd><p><code>vector</code>. The list or vector with species names for which
+ecological references needs to be extracted from the database.</p></dd>
 
 
 <dt id="arg-organismgroup">organismgroup<a class="anchor" aria-label="anchor" href="#arg-organismgroup"></a></dt>
-<dd><p><code>string</code>. The organism group to download from the platform.
-The allowed group include <code>"fi", "mi", "pp", "pb", "di","mp"</code> for fishes,
-macroinvertebrates, phytoplankton,
-phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed such as <code>'pp', 'di'</code>.</p><ul><li><p><code>pp</code>: Pytoplankton.</p></li>
+<dd><p><code>string</code>. The organism group to download from the
+platform. The allowed group includes <code>"fi", "mi", "pp", "pb",
+  "di","mp"</code> for fishes, macroinvertebrates, phytoplankton, phytobenthos,
+diatoms, and macrophytes, respectively. Multiple groups allowed, such as
+<code>'pp', 'di'</code>.</p><ul><li><p><code>pp</code>: Pytoplankton.</p></li>
 <li><p><code>mp</code>: Macrophytes</p></li>
 <li><p><code>mi</code>: Macroinvertebrates</p></li>
 <li><p><code>fi</code>: Fishes</p></li>
@@ -85,42 +89,50 @@ phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed su
 
 
 <dt id="arg-ecoparams">ecoparams<a class="anchor" aria-label="anchor" href="#arg-ecoparams"></a></dt>
-<dd><p><code>vector</code>. Selected traits that should be downloaded for particular organism group. Check <code><a href="fw_dbguide.html">fw_dbguide</a></code> for the allowed
+<dd><p><code>vector</code>. Selected traits that should be downloaded for
+a particular organism group. Check <code><a href="fw_dbguide.html">fw_dbguide</a></code> for the allowed
 traits in the database.</p></dd>
 
 
 <dt id="arg-taxalevel">taxalevel<a class="anchor" aria-label="anchor" href="#arg-taxalevel"></a></dt>
-<dd><p><code>string</code> Allowed taxonomic levels at which data can retrieved. Default is <code>'species'</code> but data can also be downloaded at <code>family</code>,
-<code>genus</code>, and <code>taxagroup</code> level.</p></dd>
+<dd><p><code>string</code> Allowed taxonomic levels at which data can be
+retrieved. Default is <code>'species'</code> but data can also be downloaded at
+<code>family</code>, <code>genus</code>, and <code>taxagroup</code> level.</p></dd>
 
 
 <dt id="arg-taxonomic-column">taxonomic_column<a class="anchor" aria-label="anchor" href="#arg-taxonomic-column"></a></dt>
-<dd><p><code>string</code>. If the data is a dataframe, the species column is required and provided in this parameter.
-The column should have complete species name and not genus and species provided separately.</p></dd>
+<dd><p><code>string</code>. If the data is a dataframe, the
+species column is required and provided in this parameter. The column
+should have complete species name and not genus and species provided
+separately.</p></dd>
 
 
 <dt id="arg-organismgroup-column">organismgroup_column<a class="anchor" aria-label="anchor" href="#arg-organismgroup-column"></a></dt>
-<dd><p><code>string</code> If the data is a dataframe, and more than one taxonomic group exists in the data, the
-the <code>organismgroup_column</code> is required to iterate over the taxonomic groups separately.</p></dd>
+<dd><p><code>string</code> If the data is a dataframe, and
+more than one taxonomic group exists in the data, the
+<code>organismgroup_column</code> is required to iterate over the taxonomic
+groups separately.</p></dd>
 
 
 <dt id="arg-apikey">apikey<a class="anchor" aria-label="anchor" href="#arg-apikey"></a></dt>
-<dd><p><code>string</code>. The API key which is automatically loaded using the loadapikey() internal function.</p></dd>
+<dd><p><code>string</code>. The API key is automatically loaded using
+the loadapikey() internal function.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p><code>integer</code>. An integer to help track the caching of the access token generated during data collation.
-If a user wants to get a new token, then the seed should be changed.</p></dd>
+<dd><p><code>integer</code>. An integer to help track the caching of the
+access token generated during data collation. If a user wants a new token,
+the seed should be changed.</p></dd>
 
 
 <dt id="arg-secure">secure<a class="anchor" aria-label="anchor" href="#arg-secure"></a></dt>
-<dd><p><code>logical</code>. If <code>TRUE</code>, the user will be prompted to set the API key in the
-.Renviron file by running the <code><a href="fw_setapikey.html">fw_setapikey</a></code> function. The User must strictly
-type in API_KEY = 'api key', save, close the file and restart the R session or RStudio
-for the API_KEY environment to be captured.
-If <code>FALSE</code>, then the key will be entered directly in the API_KEY directly in the
-fw_token() function. This method is insecure, since the key can be obtained from the codes
-by other users.</p></dd>
+<dd><p><code>logical</code>. If <code>TRUE</code>, the User will be prompted to
+set the API key in the .Renviron file by running the
+<code><a href="fw_setapikey.html">fw_setapikey</a></code> function. The User must strictly type in API_KEY
+= 'api key', save, close the file and restart the R session or RStudio for
+the API_KEY environment to be captured. If <code>FALSE</code>, then the key will
+be entered directly in the API_KEY directly in the fw_token() function.
+This method is insecure, since other users can obtain the key from the codes.</p></dd>
 
 
 <dt id="arg-percenterror">percenterror<a class="anchor" aria-label="anchor" href="#arg-percenterror"></a></dt>
@@ -141,17 +153,26 @@ to extracting wrong traits.</p></dd>
 
 
 <dt id="arg-inform">inform<a class="anchor" aria-label="anchor" href="#arg-inform"></a></dt>
-<dd><p><code>logical</code>. To indicate if the token is successfully generated. Default <code>TRUE</code>.</p></dd>
+<dd><p><code>logical</code>. This is to indicate if the token has been
+successfully generated. Default <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-cachefolder">cachefolder<a class="anchor" aria-label="anchor" href="#arg-cachefolder"></a></dt>
-<dd><p><code>string</code>. The root path were the cached data will be saved on the user PC.
-If the path is not provided, the cached information will be saved in the current
-working directly.</p></dd>
+<dd><p><code>string</code>. The root path were the cached data will be
+saved on the user PC. If the path is not provided, the cached information
+will be saved in the current working directly.</p></dd>
 
 
 <dt id="arg-details">details<a class="anchor" aria-label="anchor" href="#arg-details"></a></dt>
-<dd><p><code>logical</code>. For print the output summary including the parameters used, successful and unsuccessful data retrieval.</p></dd>
+<dd><p><code>loical</code>. The output has four sections, including
+Details:</p><ul><li><p>ecodata, which is the complete dataframe with all the taxonomic
+names and ecological parameters.
+\ item taxasearch: is a table with the taxonomic names,both original and cleaned names.</p></li>
+<li><p>fetch: an indication that data has been fetched from
+www.freshwaterecology.info.</p></li>
+<li><p>fun_call: A functional call used internally to review the data
+cleaning process.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
