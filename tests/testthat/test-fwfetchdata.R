@@ -113,11 +113,12 @@ test_that(desc = "expect error, wrong sp names",
                                       ecoparams = 'migration'))
           })
 
-#macrpphtyes
+#macrophtyes
 test_that("macrophyte",
           code = {
             skip_if_offline()
             skip_on_cran()
+
             expect_s3_class(fw_fetchdata(data = c("Amblystegium fluviatile",
                                          "Amblystegium humile",
                                          "Amblystegium riparium",
@@ -128,6 +129,25 @@ test_that("macrophyte",
                                 ecoparams = c('zone - systema'))$ecodata, 'data.frame')
           })
 
+dfmult <- data.frame(spp = c('Abramis barma', 'Salmo trutta fario',
+                             'Bangia atropurpurea', 'Aphanocapsa fonticola'),
+                     orggroup = rep(c('fi', 'pb'), each = 2))
 
+test_that("multiple datasets",
+          code = {
+            skip_on_cran()
+            skip_if_offline()
 
+            expect_s3_class(fw_fetchdata(data =  dfmult,
+                                         organismgroup = list('fi', 'pb'),
+                                         taxonomic_column = 'spp',
+                                         organismgroup_column = 'orggroup',
+                                         ecoparams = list(pb = c('life form', 'water type',
+                                                                 "substrate preference"),
+                                                          fi= c('migration', 'threat austria')),
+                                         cachefolder = 'cache',
+                                         seed = 123,
+                                         inform = FALSE,
+                                         details = FALSE)$ecodata, "data.frame")
+          })
 

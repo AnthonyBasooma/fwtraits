@@ -289,8 +289,6 @@ checktrait<- function(x, std, mindist = 0.3, error = 0.8, grp = NULL, warn= TRUE
 #' @noRd
 str_sentence <- function(x){
 
-  if(length(x)<0) stop('zero length string provided.', call. = FALSE)
-
   if(length(x)==1) {
 
     firstCap <- paste0(toupper(strtrim(x, 1)), substring(x, 2))

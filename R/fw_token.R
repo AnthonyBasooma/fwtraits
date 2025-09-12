@@ -70,7 +70,8 @@ fw_token <- function(apikey = NULL, seed= NULL, cachefolder = NULL, secure = TRU
 
   }else{
 
-    if (curl::has_internet()==FALSE) stop("No internet connection detected. Connect to access database.")
+    xx <- try(curl::nslookup( host = "r-project.org"), silent = TRUE)
+    if(inherits(xx, "try-error"))stop("The internet is required to obtain the API token and activate the key.")
 
     if(is.null(seed)) stop('Please set seed to properly cache the data while interacting with the platform.')
 

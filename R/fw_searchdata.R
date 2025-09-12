@@ -269,9 +269,6 @@ fw_searchdata <- function(organismgroup, taxa_searched = NULL,
 
   token <- fw_token(apikey= apikey, seed = seed, secure = secure, inform = inform, cachefolder = cachefolder)
 
-  if(is.null(token)) stop("Provide the token key to continue or run fw_be4ustart() and learn to set the token.",
-                          call. = FALSE)
-
   #set R.cache folder based on the user working directory
 
   cachedir <- fw_path(cachefolder)

@@ -68,6 +68,31 @@ test_that(desc = "Test for diversity indices",
                                       species = 'scientificName',
                                       abund = 'abundance',
                                       FD = FALSE, dummy = FALSE), 'data.frame')
+            #expect errors
+
+            expect_error(fw_fdcompute(fwdata = sptraits,
+                                      sitesdata = speciesdata,
+                                      species = 'scientificme',#not in sites data
+                                      FD = TRUE, dummy = FALSE))
+
+            expect_error(fw_fdcompute(fwdata = speciesdata,#wrong data, fetchdata expected
+                                         sitesdata = spgeo1,
+                                         species = 'scientificName',
+                                         abund = 'abundance',
+                                         FD = FALSE, dummy = FALSE))
+            expect_error(fw_fdcompute(fwdata = sptraits, #not sites
+                                         sitesdata = speciesdata,
+                                         species = 'scientificName',
+                                         abund = 'abundance',
+                                         FD = TRUE, dummy = FALSE))
+            expect_s3_class(fw_fdcompute(fwdata = sptraits,
+                                         sitesdata = spgeo1,
+                                         species = 'scientificName',
+                                         abund = 'abundance',
+                                         sites = 'waterBody',
+                                         FD = TRUE, dummy = FALSE), 'data.frame')
+
+
             #Functional dendogram
             expect_s3_class(fw_fdendro(fwdata = sptraits, plot = TRUE), 'data.frame')
           })
