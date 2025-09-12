@@ -26,8 +26,6 @@
 
 fw_fdendro <- function(fwdata, method = 'average', k = 4, plot= FALSE){
 
-  if((fwdata$type!='fetch')==TRUE)stop("Use output from fw_fetchdata function.")
-
   dd <- fwdata$ecodata |>
 
     dplyr::select(.data$Parameter, .data$Taxonname, .data$CategoryName) |>

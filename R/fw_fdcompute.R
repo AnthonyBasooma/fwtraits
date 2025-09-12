@@ -44,8 +44,6 @@ fw_fdcompute <- function(fwdata, sitesdata, species, sites = NULL, dist = 1000,
                           abund = NULL,
                           FD= TRUE, dummy = TRUE){
 
-  if((fwdata$type == "fetch")==FALSE) stop('Only put the output from the fw_fetchdata function.')
-
   dd <- fwdata$ecodata |>
     dplyr::select(.data$Parameter, .data$Taxonname, .data$CategoryName) |>
     tidyr::pivot_wider(names_from = .data$Parameter, values_from = .data$CategoryName,
@@ -111,8 +109,6 @@ fw_fdcompute <- function(fwdata, sitesdata, species, sites = NULL, dist = 1000,
     }
 
   }else{
-
-    if(is.null(abund)) stop('If the abundance is NULL, then you to compute FRic only. set to FALSE')
 
     if(isTRUE(dummy)){
 

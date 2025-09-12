@@ -21,8 +21,6 @@ fw_visualize <- function(output, scales = 'free', ncol = 2, params = NULL,
 
   match.arg(organism_group, choices = c("mi",'fi', 'pp', 'pb', 'di', 'mp'))
 
-  if(isFALSE(output$type=='fetch')) stop("Only fetch data output accepted in the output parameter.")
-
   output <- output$ecodata
 
   #one species is not necessary

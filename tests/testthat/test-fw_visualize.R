@@ -1,14 +1,17 @@
 
-fetchdata2 <- fw_fetchdata(data = c("Abramis brama",'Salmo trutta fario'),
-                           organismgroup = 'fi',
-                           ecoparams = 'migration', cachefolder = 'cache')
-
 test_that(desc = "ggplot2",
           code = {
 
             skip_on_cran()
 
             skip_if_not_installed("ggplot2")
+
+            fetchdata2 <- fw_fetchdata(data = c("Abramis brama",'Salmo trutta fario'),
+                                       organismgroup = 'fi',
+                                       ecoparams = 'migration', cachefolder = 'cache')
+            fetchdata <- fw_fetchdata(data = c("Abramis brama"),
+                                      organismgroup = 'fi',
+                                      ecoparams = 'migration', cachefolder = 'cache')
 
             p <- fw_visualize(fetchdata2)
 
@@ -17,3 +20,7 @@ test_that(desc = "ggplot2",
             expect_error(fw_visualize(fetchdata2$ecodata))
           })
 
+
+fetchdata1 <- fw_fetchdata(data = c("Abramis brama"),
+                          organismgroup = 'fi',
+                          ecoparams = 'migration', cachefolder = 'cache')

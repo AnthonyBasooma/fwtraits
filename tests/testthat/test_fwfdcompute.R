@@ -6,6 +6,17 @@ speciesdata$abundance <- rnorm(n = nrow(speciesdata), 4.3, 1.2)
 spgeo1 <- speciesdata |>
   sf::st_as_sf(coords = c('decimalLongitude', 'decimalLatitude'), crs = sf::st_crs(4326))
 
+#test for errors when the traits are not not dismialr
+set.seed(1135)
+sites1 <- rep(c("A","B", "C", "D", "E"), each= 8)
+pb <- c("Gongrosira debaryana","Gongrosira fluminensis", "Hydrodictyon reticulatum",
+        "Sphaerobotrys fluviatilis","Stigeoclonium farctum","Stigeoclonium tenue",
+        "Tetraspora gelatinosa","Thorea hispida")
+sp <- c(sample(pb, 8), sample(pb, 8),sample(pb, 8),sample(pb, 8),sample(pb, 8))
+abun <- rnorm(length(sp), 5.3, 0.5)
+
+pbdata <- data.frame(sites = sites1, species = sp, abund = abun)
+
 test_that(desc = "Test for diversity indices",
           code = {
             skip_on_cran()
@@ -16,6 +27,13 @@ test_that(desc = "Test for diversity indices",
                                                    'feeding diet adult'),
                                      taxonomic_column = 'scientificName',
                                      organismgroup = 'fi')
+
+            ppdatatraits <- fw_fetchdata(data = pbdata,
+                                         organismgroup = 'pb',
+                                         taxonomic_column = 'species',
+                                         ecoparams = c('substrate preference','life form'),
+                                         cachefolder = 'cache',
+                                         inform = FALSE)
 
             expect_s3_class(fw_fdcompute(fwdata = sptraits,
                                       sitesdata = speciesdata,
@@ -91,6 +109,13 @@ test_that(desc = "Test for diversity indices",
                                          abund = 'abundance',
                                          sites = 'waterBody',
                                          FD = TRUE, dummy = FALSE), 'data.frame')
+
+            expect_error( fw_fdcompute(fwdata = ppdatatraits,
+                                       sitesdata = pbdata,
+                                       species = 'species',
+                                       abund = 'abund',
+                                       sites = 'sites',
+                                       FD = FALSE, dummy = TRUE))
 
 
             #Functional dendogram
