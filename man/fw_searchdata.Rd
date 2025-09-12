@@ -18,10 +18,11 @@ fw_searchdata(
 )
 }
 \arguments{
-\item{organismgroup}{\code{string}. The organism group to download from the platform.
-The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes,
-macroinvertebrates, phytoplankton,
-phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed such as \code{'pp', 'di'}.
+\item{organismgroup}{\code{string}. The organism group to download from the
+platform. The allowed group includes \code{"fi", "mi", "pp", "pb",
+  "di","mp"} for fishes, macroinvertebrates, phytoplankton, phytobenthos,
+diatoms, and macrophytes, respectively. Multiple groups allowed, such as
+\code{'pp', 'di'}.
 \itemize{
 \item{\code{pp}: Pytoplankton.}
 \item{\code{mp}: Macrophytes}
@@ -31,54 +32,65 @@ phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed su
 \item{\code{pb}: Phytobenthos without diatoms}
 }}
 
-\item{taxa_searched}{\code{string} An internal placeholder to accommodate the standard taxonomic names for
-invertebrates and phytobenthos from the database.}
+\item{taxa_searched}{\code{string} An internal placeholder to accommodate the
+standard taxonomic names for invertebrates and phytobenthos from the
+database.}
 
-\item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organism group. Check \code{\link{fw_dbguide}} for the allowed
+\item{ecoparams}{\code{vector}. Selected traits that should be downloaded for
+a particular organism group. Check \code{\link{fw_dbguide}} for the allowed
 traits in the database.}
 
-\item{apikey}{\code{string}. The API key which is automatically loaded using the loadapikey() internal function.}
+\item{apikey}{\code{string}. The API key is automatically loaded using
+the loadapikey() internal function.}
 
 \item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
 
-\item{seed}{\code{integer}. An integer to help track the caching of the access token generated during data collation.
-If a user wants to get a new token, then the seed should be changed.}
+\item{seed}{\code{integer}. An integer to help track the caching of the
+access token generated during data collation. If a user wants a new token,
+the seed should be changed.}
 
-\item{secure}{\code{logical}. If \code{TRUE}, the user will be prompted to set the API key in the
-.Renviron file by running the \code{\link{fw_setapikey}} function. The User must strictly
-type in API_KEY = 'api key', save, close the file and restart the R session or RStudio
-for the API_KEY environment to be captured.
-If \code{FALSE}, then the key will be entered directly in the API_KEY directly in the
-fw_token() function. This method is insecure, since the key can be obtained from the codes
-by other users.}
+\item{secure}{\code{logical}. If \code{TRUE}, the User will be prompted to
+set the API key in the .Renviron file by running the
+\code{\link{fw_setapikey}} function. The User must strictly type in API_KEY
+= 'api key', save, close the file and restart the R session or RStudio for
+the API_KEY environment to be captured. If \code{FALSE}, then the key will
+be entered directly in the API_KEY directly in the fw_token() function.
+This method is insecure, since other users can obtain the key from the codes.}
 
-\item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
+\item{inform}{\code{logical}. This is to indicate if the token has been
+successfully generated. Default \code{TRUE}.}
 
-\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at \code{family},
-\code{genus}, and \code{taxagroup} level.}
+\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can be
+retrieved. Default is \code{'species'} but data can also be downloaded at
+\code{family}, \code{genus}, and \code{taxagroup} level.}
 
-\item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
-If the path is not provided, the cached information will be saved in the current
-working directly.}
+\item{cachefolder}{\code{string}. The root path were the cached data will be
+saved on the user PC. If the path is not provided, the cached information
+will be saved in the current working directly.}
 }
 \value{
-List of download species traits
+List of download species traits, ecological paramaeters or traits.
 }
 \description{
-The function provides a seamless access and download of species ecological parameters, traits,
-or indicators from the Freshwaterecology.info database. The function allows multiple inclusion
-of organism groups, which include macroinvertebrates, fishes, phytoplankton, phytobenthos,
-macrophytes, and diatoms.
+The function provides seamless access and download of species ecological
+parameters, traits, or indicators from the www.freshwaterecology.info
+database. The function allows multiple organism groups, including
+macroinvertebrates, fish, phytoplankton, phytobenthos, macrophytes, and
+diatoms.
 }
 \details{
-For macroinvertebrates, since there is alot of data which take a lot of time to download and yet slowing the process, the \code{taxa_searched}
-parameter should be provided to only search for the particular traits, family and orders or taxa group where the species falls. Also, the
-phytobenthos requires to provide the taxa_searched to enable search for a particular taxa group.
-For other organism group, the parameter should not provided because will not be used in the data search.
+Downloading macroinvertebrates data takes a lot of time because the database
+has a lot of data, considerably slowing the process. Therefore, the
+\code{taxa_searched} parameter is recommended for the user to indicate only
+particular traits, family, orders, or taxa group where the species falls.
+Also, the phytobenthos requires providing the \code{taxa_searched} to enable a
+search for a particular taxon group. The parameter should not be provided for
+other organism groups because it will not be used in the data search.
 }
 \examples{
 
 \dontrun{
-dfsearch <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', cachefolder = 'cache')
+dfsearch <- fw_searchdata(organismgroup = 'fi',
+                           ecoparams = 'migration', cachefolder = 'cache')
 }
 }

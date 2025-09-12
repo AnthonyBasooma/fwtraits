@@ -191,16 +191,18 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #' @title To download data from the Freshwaterecology.info database.
 #'
 #' @description
-#' The function provides a seamless access and download of species ecological parameters, traits,
-#' or indicators from the Freshwaterecology.info database. The function allows multiple inclusion
-#' of organism groups, which include macroinvertebrates, fishes, phytoplankton, phytobenthos,
-#' macrophytes, and diatoms.
+#' The function provides seamless access and download of species ecological
+#' parameters, traits, or indicators from the www.freshwaterecology.info
+#' database. The function allows multiple organism groups, including
+#' macroinvertebrates, fish, phytoplankton, phytobenthos, macrophytes, and
+#' diatoms.
 #'
 #'
-#' @param organismgroup \code{string}. The organism group to download from the platform.
-#'      The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes,
-#'      macroinvertebrates, phytoplankton,
-#'      phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed such as \code{'pp', 'di'}.
+#' @param organismgroup \code{string}. The organism group to download from the
+#'   platform. The allowed group includes \code{"fi", "mi", "pp", "pb",
+#'   "di","mp"} for fishes, macroinvertebrates, phytoplankton, phytobenthos,
+#'   diatoms, and macrophytes, respectively. Multiple groups allowed, such as
+#'   \code{'pp', 'di'}.
 #' \itemize{
 #'         \item{\code{pp}: Pytoplankton.}
 #'         \item{\code{mp}: Macrophytes}
@@ -209,22 +211,29 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #'         \item{\code{di}: Diatoms}
 #'         \item{\code{pb}: Phytobenthos without diatoms}
 #'           }
-#' @param ecoparams \code{vector}. Selected traits that should be downloaded for particular organism group. Check \code{\link{fw_dbguide}} for the allowed
-#'      traits in the database.
-#' @param taxalevel \code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at \code{family},
-#'        \code{genus}, and \code{taxagroup} level.
-#' @param taxa_searched \code{string} An internal placeholder to accommodate the standard taxonomic names for
-#'        invertebrates and phytobenthos from the database.
-#' @param inform \code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.
-#' @param cachefolder \code{string}. The root path were the cached data will be saved on the user PC.
-#'      If the path is not provided, the cached information will be saved in the current
-#'      working directly.
+#' @param ecoparams \code{vector}. Selected traits that should be downloaded for
+#'   a particular organism group. Check \code{\link{fw_dbguide}} for the allowed
+#'   traits in the database.
+#' @param taxalevel \code{string} Allowed taxonomic levels at which data can be
+#'   retrieved. Default is \code{'species'} but data can also be downloaded at
+#'   \code{family}, \code{genus}, and \code{taxagroup} level.
+#' @param taxa_searched \code{string} An internal placeholder to accommodate the
+#'   standard taxonomic names for invertebrates and phytobenthos from the
+#'   database.
+#' @param inform \code{logical}. This is to indicate if the token has been
+#'   successfully generated. Default \code{TRUE}.
+#' @param cachefolder \code{string}. The root path were the cached data will be
+#'   saved on the user PC. If the path is not provided, the cached information
+#'   will be saved in the current working directly.
 #' @details
 #'
-#' For macroinvertebrates, since there is alot of data which take a lot of time to download and yet slowing the process, the \code{taxa_searched}
-#'  parameter should be provided to only search for the particular traits, family and orders or taxa group where the species falls. Also, the
-#'  phytobenthos requires to provide the taxa_searched to enable search for a particular taxa group.
-#'  For other organism group, the parameter should not provided because will not be used in the data search.
+#' Downloading macroinvertebrates data takes a lot of time because the database
+#' has a lot of data, considerably slowing the process. Therefore, the
+#' \code{taxa_searched} parameter is recommended for the user to indicate only
+#' particular traits, family, orders, or taxa group where the species falls.
+#' Also, the phytobenthos requires providing the \code{taxa_searched} to enable a
+#' search for a particular taxon group. The parameter should not be provided for
+#' other organism groups because it will not be used in the data search.
 #'
 #' @inheritParams checktrait
 #' @inheritParams fw_token
@@ -234,7 +243,7 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #' @importFrom R.cache getCacheRootPath loadCache saveCache setCacheRootPath
 #' @importFrom utils data
 #'
-#' @return List of download species traits
+#' @return List of download species traits, ecological paramaeters or traits.
 #'
 #' @export
 #'
@@ -242,7 +251,8 @@ retdata <- function(organismgroup, taxagroup = NULL, codes, family = NULL, urlx,
 #'
 #' \dontrun{
 #
-#' dfsearch <- fw_searchdata(organismgroup = 'fi', ecoparams = 'migration', cachefolder = 'cache')
+#' dfsearch <- fw_searchdata(organismgroup = 'fi',
+#'                            ecoparams = 'migration', cachefolder = 'cache')
 #' }
 
 fw_searchdata <- function(organismgroup, taxa_searched = NULL,

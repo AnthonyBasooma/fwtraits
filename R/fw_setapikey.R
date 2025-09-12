@@ -29,7 +29,7 @@ fw_setapikey <- function(){
 #'For loading the API key from the environment.
 #' @param keyvar \code{string} Is the API name as indicated in the user environment. Default is \code{"API_KEY"}.
 #' @export
-fw_keyload <- function(keyvar= "API_KEY" ) {
+fw_keyload <- function(keyvar= "API_KEY") {
 
   # check if the API Key is saved already and possibly not the case
 

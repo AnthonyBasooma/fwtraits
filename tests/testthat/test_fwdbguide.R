@@ -1,10 +1,14 @@
 
-test_that(desc = 'dataframe of species traits',
-          code = {
-            expect_s3_class(fw_dbguide(), 'data.frame')
+test_that(desc = 'dataframe of species traits',{
+  skip_on_cran()
 
-            expect_equal(length(colnames(fw_dbguide())), 9)
+  db <- fw_dbguide()
 
-            expect_error(fw_dbguide("mm")) #wrong organism group
-          })
+  expect_s3_class(db, 'data.frame')
+
+  expect_equal(length(colnames(db)), 9)
+
+  expect_error(fw_dbguide("mm")) #wrong organism group
+})
+
 

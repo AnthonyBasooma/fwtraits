@@ -3,15 +3,28 @@
 #'
 #' @inheritParams fw_searchdata
 #' @inheritParams clean_names
-#' @param data \code{vector}. The list or vector with species names for which ecological references needs to be extracted from the
-#'         database.
-#' @param taxonomic_column \code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
-#'        The column should have complete species name and not genus and species provided separately.
-#' @param organismgroup_column \code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
-#'      the \code{organismgroup_column} is required to iterate over the taxonomic groups separately.
+#' @param data \code{vector}. The list or vector with species names for which
+#'   ecological references needs to be extracted from the database.
+#' @param taxonomic_column \code{string}. If the data is a dataframe, the
+#'   species column is required and provided in this parameter. The column
+#'   should have complete species name and not genus and species provided
+#'   separately.
+#' @param organismgroup_column \code{string} If the data is a dataframe, and
+#'   more than one taxonomic group exists in the data, the
+#'   \code{organismgroup_column} is required to iterate over the taxonomic
+#'   groups separately.
+#' @param details \code{loical}. The output has four sections, including
+#'  Details:
+#'  \itemize{
+#'  \item ecodata, which is the complete dataframe with all the taxonomic
+#'  names and ecological parameters.
+#'  \ item taxasearch: is a table with the taxonomic names,both original and cleaned names.
+#'  \item fetch: an indication that data has been fetched from
+#'   www.freshwaterecology.info.
+#'  \item fun_call: A functional call used internally to review the data
+#'  cleaning process.
+#'  }
 #'
-#' @param details \code{logical}. For print the output summary including the parameters used, successful and unsuccessful data retrieval.
-
 #'
 #' @importFrom methods is
 #' @importFrom R.cache addMemoization

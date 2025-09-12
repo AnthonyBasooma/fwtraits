@@ -107,8 +107,11 @@ fw_paramlist <- function(cachefolder = NULL) {
   }else{
     paramurl <- "https://www.freshwaterecology.info/fweapi2/v1/getecoparamlist"
 
-    mainparlist <- request(base_url = paramurl) |>
-      req_perform() |>
+    xout <- request(base_url = paramurl) |>
+      req_perform()
+
+    mainparlist <- xout|>
+
       resp_body_json()
 
     saveCache(mainparlist, key=key, comment="token code generated", compress = TRUE)
@@ -183,8 +186,31 @@ check_packages <- function(pkgs){
 #' @export
 #'
 fw_cite <- function(cachefolder = 'cache'){
-  message("******Please cite this website as:********", "\n", fw_paramlist(cachefolder = cachefolder)$citation, "\n")
+  message("==Please cite this website as:*===", "\n", fw_paramlist(cachefolder = cachefolder)$citation, "\n")
 
+}
+
+#' Internal package and create dummy codes
+#' @importFrom stats model.matrix
+#'
+#' @param trait \code{dataframe} Data matrix
+#' @param FD \code{logical} Either to compute functional diversity indices or not.
+#'
+fuzzy_codes <- function(trait, FD){
+  xcols <- sapply(trait, class)
+  xx <- colnames(trait)[which(xcols!='numeric')]
+  td <- lapply(xx, function(tt) {
+    mm <- tryCatch(model.matrix(~ . - 1, data = trait[tt]),
+                   error = function(e) NULL)
+  })
+  xc <- Filter(Negate(is.null), td)
+
+  if(length(xc)<=1){
+    if(isFALSE(FD)) tests = "CWM" else tests = "FDs"
+    stop("After removing traits with no contrasts, only one traits remains and ", tests, " cannot be computed.")
+  }else{
+    xout <- do.call(cbind, xc)
+  }
 }
 
 

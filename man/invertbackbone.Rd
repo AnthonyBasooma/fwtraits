@@ -27,8 +27,8 @@ invertbackbone
 
 }
 \references{
-Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info - An online tool that unifies,
-standardises and codifies more than 20,000 European freshwater organisms and their ecological preferences.
+Schmidt-Kloiber, A., & Hering, D. (2015). www.freshwaterecology.info - An online tool that unifies,
+standardizes and codifies more than 20,000 European freshwater organisms and their ecological preferences.
 Ecological Indicators, 53, 271-282. https://doi.org/10.1016/j.ecolind.2015.02.007.
 }
 \keyword{Macroinvertebrates}

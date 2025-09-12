@@ -5,7 +5,12 @@
 \alias{pbenthodata}
 \title{Taxonomic data for the phytobentho species in www.freshwaterecology.info database.}
 \format{
-A \code{tibble} 1857 rows and 2 columns.
+A \code{tibble} The dataset has 1857 rows and 2 columns. The column names constains
+
+\itemize{
+\item Taxgroup, which is large taxonomic group naming containing multiple species.
+\ item Taxon, is the species taxonomic names.
+}
 }
 \usage{
 data(pbenthodata)
@@ -14,7 +19,8 @@ data(pbenthodata)
 A \code{tibble}
 }
 \details{
-fhfhdld fnfmf...
+The phytobentho data forms the taxonomic backbone for the species archived in the database.
+This enables taxonomic name checks and faster data retrieval from the database.
 }
 \examples{
 
@@ -24,9 +30,6 @@ data("pbenthodata")
 
 pbenthodata
 }
-
-
-
 
 }
 \references{

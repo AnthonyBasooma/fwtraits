@@ -23,13 +23,14 @@ fw_fetchdata(
 )
 }
 \arguments{
-\item{data}{\code{vector}. The list or vector with species names for which ecological references needs to be extracted from the
-database.}
+\item{data}{\code{vector}. The list or vector with species names for which
+ecological references needs to be extracted from the database.}
 
-\item{organismgroup}{\code{string}. The organism group to download from the platform.
-The allowed group include \code{"fi", "mi", "pp", "pb", "di","mp"} for fishes,
-macroinvertebrates, phytoplankton,
-phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed such as \code{'pp', 'di'}.
+\item{organismgroup}{\code{string}. The organism group to download from the
+platform. The allowed group includes \code{"fi", "mi", "pp", "pb",
+  "di","mp"} for fishes, macroinvertebrates, phytoplankton, phytobenthos,
+diatoms, and macrophytes, respectively. Multiple groups allowed, such as
+\code{'pp', 'di'}.
 \itemize{
 \item{\code{pp}: Pytoplankton.}
 \item{\code{mp}: Macrophytes}
@@ -39,30 +40,38 @@ phytobenthos, diatoms, and macrophytes, respectively. Multiple groups allowed su
 \item{\code{pb}: Phytobenthos without diatoms}
 }}
 
-\item{ecoparams}{\code{vector}. Selected traits that should be downloaded for particular organism group. Check \code{\link{fw_dbguide}} for the allowed
+\item{ecoparams}{\code{vector}. Selected traits that should be downloaded for
+a particular organism group. Check \code{\link{fw_dbguide}} for the allowed
 traits in the database.}
 
-\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can retrieved. Default is \code{'species'} but data can also be downloaded at \code{family},
-\code{genus}, and \code{taxagroup} level.}
+\item{taxalevel}{\code{string} Allowed taxonomic levels at which data can be
+retrieved. Default is \code{'species'} but data can also be downloaded at
+\code{family}, \code{genus}, and \code{taxagroup} level.}
 
-\item{taxonomic_column}{\code{string}. If the data is a dataframe, the species column is required and provided in this parameter.
-The column should have complete species name and not genus and species provided separately.}
+\item{taxonomic_column}{\code{string}. If the data is a dataframe, the
+species column is required and provided in this parameter. The column
+should have complete species name and not genus and species provided
+separately.}
 
-\item{organismgroup_column}{\code{string} If the data is a dataframe, and more than one taxonomic group exists in the data, the
-the \code{organismgroup_column} is required to iterate over the taxonomic groups separately.}
+\item{organismgroup_column}{\code{string} If the data is a dataframe, and
+more than one taxonomic group exists in the data, the
+\code{organismgroup_column} is required to iterate over the taxonomic
+groups separately.}
 
-\item{apikey}{\code{string}. The API key which is automatically loaded using the loadapikey() internal function.}
+\item{apikey}{\code{string}. The API key is automatically loaded using
+the loadapikey() internal function.}
 
-\item{seed}{\code{integer}. An integer to help track the caching of the access token generated during data collation.
-If a user wants to get a new token, then the seed should be changed.}
+\item{seed}{\code{integer}. An integer to help track the caching of the
+access token generated during data collation. If a user wants a new token,
+the seed should be changed.}
 
-\item{secure}{\code{logical}. If \code{TRUE}, the user will be prompted to set the API key in the
-.Renviron file by running the \code{\link{fw_setapikey}} function. The User must strictly
-type in API_KEY = 'api key', save, close the file and restart the R session or RStudio
-for the API_KEY environment to be captured.
-If \code{FALSE}, then the key will be entered directly in the API_KEY directly in the
-fw_token() function. This method is insecure, since the key can be obtained from the codes
-by other users.}
+\item{secure}{\code{logical}. If \code{TRUE}, the User will be prompted to
+set the API key in the .Renviron file by running the
+\code{\link{fw_setapikey}} function. The User must strictly type in API_KEY
+= 'api key', save, close the file and restart the R session or RStudio for
+the API_KEY environment to be captured. If \code{FALSE}, then the key will
+be entered directly in the API_KEY directly in the fw_token() function.
+This method is insecure, since other users can obtain the key from the codes.}
 
 \item{percenterror}{\code{numeric}. The number used as a cutoff to infer similarity of the user provided name and what is found in the database.
 The higher the percentage, the higher the similarity the species name provided by the user and the one in the database. \code{percenterror}
@@ -75,13 +84,24 @@ to extracting wrong traits.}
 
 \item{warn}{\code{logical} To show species name warning checks and traits cleaning. Default \code{FALSE}.}
 
-\item{inform}{\code{logical}. To indicate if the token is successfully generated. Default \code{TRUE}.}
+\item{inform}{\code{logical}. This is to indicate if the token has been
+successfully generated. Default \code{TRUE}.}
 
-\item{cachefolder}{\code{string}. The root path were the cached data will be saved on the user PC.
-If the path is not provided, the cached information will be saved in the current
-working directly.}
+\item{cachefolder}{\code{string}. The root path were the cached data will be
+saved on the user PC. If the path is not provided, the cached information
+will be saved in the current working directly.}
 
-\item{details}{\code{logical}. For print the output summary including the parameters used, successful and unsuccessful data retrieval.}
+\item{details}{\code{loical}. The output has four sections, including
+Details:
+\itemize{
+\item ecodata, which is the complete dataframe with all the taxonomic
+names and ecological parameters.
+\ item taxasearch: is a table with the taxonomic names,both original and cleaned names.
+\item fetch: an indication that data has been fetched from
+www.freshwaterecology.info.
+\item fun_call: A functional call used internally to review the data
+cleaning process.
+}}
 }
 \value{
 \code{dataframe} A dataframe species traits for all orders.
