@@ -6,6 +6,19 @@
 \title{Efiplus data used to develop ecological sensitivity parameters for riverine species in European streams and rivers.}
 \format{
 A \code{tibble} 99 rows and 23 columns.
+
+\itemize{
+\item scientificName: The fish species names extracted from the EFIPLUS dataset.
+\item waterBody: The water body from which the species records were collected.
+\item decimalLatitude: Species location
+\item decimalLongitude: Species occurrence records.
+\item MRR: The locality where the species was collated or sampled from
+\item Date: the day, month, and year when the species record was collected.
+\item: year: The year when the species record was collated.
+\item Locality: particular locality where the species was sampled.
+\item country: The country where the record was made.
+
+}
 }
 \usage{
 data(speciesdata)

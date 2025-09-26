@@ -6,6 +6,12 @@
 \title{Taxonomic data for species in the freshwaterecology.info database}
 \format{
 A \code{tibble} 10421 rows and 3 columns.
+
+\itemize{
+\item Taxgroup: Higher taxonomic grouping for the species, for example, Bivalvia.
+\item Family: Taxonomic classification, e.g., CARDIIDAE
+\item Taxon: Lower taxonomic grouping for the species.eg., Parvicardium exiguum
+}
 }
 \usage{
 data(invertbackbone)
@@ -14,7 +20,9 @@ data(invertbackbone)
 A \code{tibble}
 }
 \details{
-Standard taxonomic backbone for macroinvertebrates from www.freshwaterecology.info
+Standard taxonomic backbone for macroinvertebrates from www.freshwaterecology.info.
+All macroinvetebrates species are crosschecked with this database improve quality control
+of the species names provided by the user.
 }
 \examples{
 

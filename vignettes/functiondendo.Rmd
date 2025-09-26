@@ -1,8 +1,8 @@
 ---
-title: "Compute fucntional dendogram from the ecological parameters."
+title: "Compute functional dendogram from the ecological parameters."
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Compute fucntional dendogram from the ecological parameters.}
+  %\VignetteIndexEntry{Compute functional dendogram from the ecological parameters.}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

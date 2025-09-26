@@ -103,6 +103,12 @@ test_that(desc = "Test for diversity indices",
                                          species = 'scientificName',
                                          abund = 'abundance',
                                          FD = TRUE, dummy = FALSE))
+            expect_error(fw_fdcompute(fwdata = sptraits, #not sites
+                                      sitesdata = speciesdata,
+                                      species = 'scientificName',
+                                      sites = 'waterB', #wrong site column
+                                      abund = 'abundance',
+                                      FD = TRUE, dummy = FALSE))
             expect_s3_class(fw_fdcompute(fwdata = sptraits,
                                          sitesdata = spgeo1,
                                          species = 'scientificName',

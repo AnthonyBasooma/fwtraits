@@ -91,8 +91,12 @@ successfully generated. Default \code{TRUE}.}
 saved on the user PC. If the path is not provided, the cached information
 will be saved in the current working directly.}
 
-\item{details}{\code{loical}. The output has four sections, including
-Details:
+\item{details}{\code{loical}. Outputs the downloaded details including the organism groups
+considered by the user, the functional call, and whether some groups were successful
+in retrieving data.}
+}
+\value{
+\code{dataframe} The output has four sections, including
 \itemize{
 \item ecodata, which is the complete dataframe with all the taxonomic
 names and ecological parameters.
@@ -101,10 +105,7 @@ names and ecological parameters.
 www.freshwaterecology.info.
 \item fun_call: A functional call used internally to review the data
 cleaning process.
-}}
 }
-\value{
-\code{dataframe} A dataframe species traits for all orders.
 }
 \description{
 Extracting the traits from the downloaded data.

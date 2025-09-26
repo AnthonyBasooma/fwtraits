@@ -42,6 +42,9 @@ To access the package:
 if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
 
 remotes::install_github("AnthonyBasooma/fwtraits")
+
+#To access the package vignettes in RStudio using vignettes function.
+remotes::install_github("AnthonyBasooma/fwtraits", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
 ### Package usage

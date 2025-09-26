@@ -55,29 +55,40 @@ fw_dbguide <- function(organismgroup = NULL,cachefolder = 'cache'){
 
     })
 
-    DataType <- sapply(zdata, function(nn){
+    # DataType <- sapply(zdata, function(nn){
+    #
+    #   cls <- nn[['typeOfAssignment']]
+    #
+    #   if(!is.null(cls) && !cls==""){
+    #
+    #     if(cls=='presence/absence assignment system' | cls=='single category assignment system'|
+    #        cls == "presence/absence "){
+    #
+    #       datatype = 'Nominal'
+    #
+    #     }else if(cls=="12 point assignment system" | cls == '10 point assignment system'){
+    #
+    #       datatype = 'Fuzzy'
+    #
+    #     }else if(cls == 'metric value' | cls=="affinity score assignment system"){
+    #
+    #       datatype = 'Ordered'
+    #
+    #     }
+    #   }else{
+    #     datatype = NA
+    #   }
+    # })
 
-      cls <- nn[['typeOfAssignment']]
+    DataType = sapply(zdata, function(nn){
 
-      if(!is.null(cls) && !cls==""){
+      cls <- clean_traits(nn[['name']])
 
-        if(cls=='presence/absence assignment system' | cls=='single category assignment system'|
-           cls == "presence/absence "){
+      data("classifydata", envir = environment())
 
-          datatype = 'Nominal'
+      cdata <- get("classifydata", envir  = environment())
 
-        }else if(cls=="12 point assignment system" | cls == '10 point assignment system'){
-
-          datatype = 'Fuzzy'
-
-        }else if(cls == 'metric value' | cls=="affinity score assignment system"){
-
-          datatype = 'Ordered'
-
-        }
-      }else{
-        datatype = NA
-      }
+      dout <-unique(unlist(cdata$DataType)[which(unlist(cdata$parameters_cleaned)%in%cls)])
     })
 
     assinfodata <- sapply(zdata, function(aa){

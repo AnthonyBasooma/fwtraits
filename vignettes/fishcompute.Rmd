@@ -1,8 +1,8 @@
 ---
-title: "Computing functional diversity indices and community weghted means for fishes."
+title: "Computing functional diversity indices and community weighted means for fishes."
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Computing functional diversity indices and community weghted means for fishes.}
+  %\VignetteIndexEntry{Computing functional diversity indices and community weighted means for fishes.}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -9,9 +9,20 @@
 #' @param na.rm \code{logical} To remove NA in the category names or species traits.
 #'
 
-#' @return ggplot2 display
+#' @return ggplot2 display of the retrieved ecological parameters
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' fetchdata <- fw_fetchdata(data = c("Abramis brama",'Salmo trutta fario'),
+#'           organismgroup = 'fi',
+#'           ecoparams = c('migration',"rheophily habitat"), cachefolder = 'cache')
+#'
+#' fw_visualize(fetchdata)
+#'
+#' }
+#'
 #'
 #'
 fw_visualize <- function(output, scales = 'free', ncol = 2, params = NULL,

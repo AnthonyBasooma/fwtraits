@@ -13,8 +13,16 @@
 #'   more than one taxonomic group exists in the data, the
 #'   \code{organismgroup_column} is required to iterate over the taxonomic
 #'   groups separately.
-#' @param details \code{loical}. The output has four sections, including
-#'  Details:
+#' @param details \code{loical}. Outputs the downloaded details including the organism groups
+#'      considered by the user, the functional call, and whether some groups were successful
+#'      in retrieving data.
+#'
+#'
+#' @importFrom methods is
+#' @importFrom R.cache addMemoization
+#'
+#'
+#' @return \code{dataframe} The output has four sections, including
 #'  \itemize{
 #'  \item ecodata, which is the complete dataframe with all the taxonomic
 #'  names and ecological parameters.
@@ -24,13 +32,6 @@
 #'  \item fun_call: A functional call used internally to review the data
 #'  cleaning process.
 #'  }
-#'
-#'
-#' @importFrom methods is
-#' @importFrom R.cache addMemoization
-#'
-#'
-#' @return \code{dataframe} A dataframe species traits for all orders.
 #'
 #' @export
 #'
@@ -58,7 +59,7 @@ fw_fetchdata <- function(data,
                      warn = FALSE,
                      inform = FALSE,
                      cachefolder = 'cache',
-                     details = FALSE ) {
+                     details = FALSE) {
 
   match.arg(taxalevel, choices = c("taxagroup",'family', 'genus', 'species'))
 
@@ -95,12 +96,10 @@ fw_fetchdata <- function(data,
 
     taxa_searched_list <- data
 
-  }else if(is(data, 'list')){
+  }else {
 
     taxa_searched_list <- unlist(data)
 
-  }else{
-    stop("Data format for species not allowed.")
   }
 
   #get function to enable decaching

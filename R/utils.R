@@ -32,20 +32,20 @@ fw_be4ustart <- function() {
 
   <h4> 1. Aim of the package </h4>
   <p> The package provides robust and seamless access and interaction with the
-  Freshwaterecology.info database, while extracting and arranging the species
+  www.freshwaterecology.info database, while extracting and arranging the species
   ecological preferences, traits or indicators. The database includes traits or
   ecological preferences for five taxonomic groups including fishes,
   macrophtes, macroinvertebrates, phytoplankton, and phytobenthos including diatoms. Over
   203 traits or ecological preferences exists for about 28000 species.</p>
 
-  <h4> 2. Step to start interacting with Freshwaterecology.info database </h4>
+  <h4> 2. Step to start interacting with www.freshwaterecology.info database </h4>
 
-  <p> <b>STEP 1</b>: If you are not registered with the Freshwater Information Platform, where the Freshwaterecology.info
-  database is part of, proceed to <b> STEP 2</b>, otherwise proceed to STEP 3</p>
+  <p> <b>STEP 1</b>: If you are not registered with the Freshwater Information Platform, where the www.freshwaterecology.info
+  database is part of, proceed to <b> STEP 2</b>, otherwise proceed to <b>STEP 3</b></p>
 
-<p> <b>Step 2</b>: Register at the Freshwaterecology.info database <a style='color: blue'
+<p> <b>Step 2</b>: Register at the www.freshwaterecology.info database <a style='color: blue'
 href='https://www.freshwaterecology.info/register/index.php'> registration page</a> to obtain an API key. During registration, please tick
-for acquistion of the API key which will be shortly sent to the email entered. After proceed to STEP 4 </p>
+for acquistion of the API key which will be shortly sent to the email entered. After proceed to <b>STEP 4</b> </p>
 
  <p> <b>STEP 3</b>: Apply for the API Key by sending your request for the key to registration@freshwaterecology.info </p>
 
@@ -53,7 +53,7 @@ for acquistion of the API key which will be shortly sent to the email entered. A
  secure the key in the R user environment. After this the key will be automatically picked
  in the all the forthcoming scripts on that particular computer.</p>
 
- <p> <b>STEP 5</b>: Congratulations: Ready to interact with Freshwaterecology.info database will appear.</p>
+ <p> <b>STEP 5</b>: Congratulations: Ready to interact with www.freshwaterecology.info database will appear.</p>
 
  <p> For issues about the package fucntionality, please contact anthony.basooma@boku.ac.at or post on
  <a style='color: blue'

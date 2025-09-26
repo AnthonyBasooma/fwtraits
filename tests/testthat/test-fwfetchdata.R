@@ -149,5 +149,16 @@ test_that("multiple datasets",
                                          seed = 123,
                                          inform = FALSE,
                                          details = FALSE)$ecodata, "data.frame")
+            expect_error(fw_fetchdata(data =  dfmult,
+                                      organismgroup = list('fi', 'pb'),
+                                      taxonomic_column = 'spp',
+                                      organismgroup_column = 'orggroupww',#wrong group column
+                                      ecoparams = list(pb = c('life form', 'water type',
+                                                              "substrate preference"),
+                                                       fi= c('migration', 'threat austria')),
+                                      cachefolder = 'cache',
+                                      seed = 123,
+                                      inform = FALSE,
+                                      details = FALSE))
           })
 
