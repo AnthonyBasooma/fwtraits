@@ -1,6 +1,6 @@
 Package: fwtraits
 Title: Extract Species Ecological Parameters From www.freshwaterecology.info
-Version: 0.0.1
+Version: 1.0.0
 Authors@R: c( 
     person(given = "Anthony", family = "Basooma", email = "anthony.basooma@boku.ac.at", 
     role = c("aut", "cre"),

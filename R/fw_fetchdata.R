@@ -92,14 +92,8 @@ fw_fetchdata <- function(data,
 
     }
 
-  }else if(is(data, 'vector') || is(data, 'atomic')){
-
-    taxa_searched_list <- data
-
   }else {
-
-    taxa_searched_list <- unlist(data)
-
+    taxa_searched_list <- data
   }
 
   #get function to enable decaching

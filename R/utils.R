@@ -206,8 +206,7 @@ fuzzy_codes <- function(trait, FD){
   xc <- Filter(Negate(is.null), td)
 
   if(length(xc)<=1){
-    if(isFALSE(FD)) tests = "CWM" else tests = "FDs"
-    stop("After removing traits with no contrasts, only one traits remains and ", tests, " cannot be computed.")
+    stop("After removing traits with no contrasts, only one traits remains and cannot be computed.")
   }else{
     xout <- do.call(cbind, xc)
   }
