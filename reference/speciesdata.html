@@ -19,8 +19,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_for_taxa_groups.html">Retrieve data for taxomomic groups.</a></li>
-    <li><a class="dropdown-item" href="../articles/fishcompute.html">Computing functional diversity indices and community weghted means for fishes.</a></li>
-    <li><a class="dropdown-item" href="../articles/functiondendo.html">Compute fucntional dendogram from the ecological parameters.</a></li>
+    <li><a class="dropdown-item" href="../articles/fishcompute.html">Computing functional diversity indices and community weighted means for fishes.</a></li>
+    <li><a class="dropdown-item" href="../articles/functiondendo.html">Compute functional dendogram from the ecological parameters.</a></li>
     <li><a class="dropdown-item" href="../articles/macroinverts.html">Computing functional diversity indices and community weghted means for macroinvertebrates.</a></li>
     <li><a class="dropdown-item" href="../articles/Secure_API_key.html">How to handle the API key in public and private codes.</a></li>
   </ul></li>
@@ -52,7 +52,16 @@
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
     <p>A <code>tibble</code> 99 rows and 23 columns.</p>
-    </div>
+<ul><li><p>scientificName: The fish species names extracted from the EFIPLUS dataset.</p></li>
+<li><p>waterBody: The water body from which the species records were collected.</p></li>
+<li><p>decimalLatitude: Species location</p></li>
+<li><p>decimalLongitude: Species occurrence records.</p></li>
+<li><p>MRR: The locality where the species was collated or sampled from</p></li>
+<li><p>Date: the day, month, and year when the species record was collected.</p></li>
+<li><p>: year: The year when the species record was collated.</p></li>
+<li><p>Locality: particular locality where the species was sampled.</p></li>
+<li><p>country: The country where the record was made.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>BQEs sensitivity to global/climate change in European rivers:

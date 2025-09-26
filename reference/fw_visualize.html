@@ -19,8 +19,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_for_taxa_groups.html">Retrieve data for taxomomic groups.</a></li>
-    <li><a class="dropdown-item" href="../articles/fishcompute.html">Computing functional diversity indices and community weghted means for fishes.</a></li>
-    <li><a class="dropdown-item" href="../articles/functiondendo.html">Compute fucntional dendogram from the ecological parameters.</a></li>
+    <li><a class="dropdown-item" href="../articles/fishcompute.html">Computing functional diversity indices and community weighted means for fishes.</a></li>
+    <li><a class="dropdown-item" href="../articles/functiondendo.html">Compute functional dendogram from the ecological parameters.</a></li>
     <li><a class="dropdown-item" href="../articles/macroinverts.html">Computing functional diversity indices and community weghted means for macroinvertebrates.</a></li>
     <li><a class="dropdown-item" href="../articles/Secure_API_key.html">How to handle the API key in public and private codes.</a></li>
   </ul></li>
@@ -91,9 +91,24 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>ggplot2 display</p>
+    <p>ggplot2 display of the retrieved ecological parameters</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">fetchdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="fw_fetchdata.html">fw_fetchdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Abramis brama"</span>,<span class="st">'Salmo trutta fario'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          organismgroup <span class="op">=</span> <span class="st">'fi'</span>,</span></span>
+<span class="r-in"><span>          ecoparams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'migration'</span>,<span class="st">"rheophily habitat"</span><span class="op">)</span>, cachefolder <span class="op">=</span> <span class="st">'cache'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">fw_visualize</span><span class="op">(</span><span class="va">fetchdata</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

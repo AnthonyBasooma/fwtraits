@@ -19,8 +19,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_for_taxa_groups.html">Retrieve data for taxomomic groups.</a></li>
-    <li><a class="dropdown-item" href="../articles/fishcompute.html">Computing functional diversity indices and community weghted means for fishes.</a></li>
-    <li><a class="dropdown-item" href="../articles/functiondendo.html">Compute fucntional dendogram from the ecological parameters.</a></li>
+    <li><a class="dropdown-item" href="../articles/fishcompute.html">Computing functional diversity indices and community weighted means for fishes.</a></li>
+    <li><a class="dropdown-item" href="../articles/functiondendo.html">Compute functional dendogram from the ecological parameters.</a></li>
     <li><a class="dropdown-item" href="../articles/macroinverts.html">Computing functional diversity indices and community weghted means for macroinvertebrates.</a></li>
     <li><a class="dropdown-item" href="../articles/Secure_API_key.html">How to handle the API key in public and private codes.</a></li>
   </ul></li>
@@ -51,14 +51,16 @@
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>A <code>tibble</code> The dataset has 1857 rows and 2 columns. The column names constains</p>
-<ul><li><p>Taxgroup, which is large taxonomic group naming containing multiple species.
-\ item Taxon, is the species taxonomic names.</p></li>
+    <p>A <code>tibble</code> The dataset has 1857 rows and 2 columns.</p>
+<ul><li><p>Taxgroup: Higher taxonomic grouping for the species, for example, Bacillariophyceae.</p></li>
+<li><p>Taxon: Lower taxonomic grouping for the species.eg., Achnanthes acus, Achnanthes brevipes,
+Achnanthes brevipes var. brevipes</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The phytobentho data forms the taxonomic backbone for the species archived in the database.
-This enables taxonomic name checks and faster data retrieval from the database.</p>
+    <p>This dataset was extracted from the www.freshwaterecology.info database and formed a standardized
+reference for the species names for phytobenthos. Therefore, all user-provided species are
+checked across this database to identify whether or not they exist.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
