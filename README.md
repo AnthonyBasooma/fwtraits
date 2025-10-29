@@ -7,9 +7,9 @@
 
 [![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml)
-[![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg?token=07OUlLSQus)](https://codecov.io/gh/AnthonyBasooma/fwtraits)
+[![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg?token=07OUlLSQus)](https://app.codecov.io/gh/AnthonyBasooma/fwtraits)
 [![GitHub
-Downloads](https://img.shields.io/github/downloads/AnthonyBasooma/fwtraits/repo/total.svg)](https://github.com/AnthonyBasooma/fwtraits/repo/releases)
+Downloads](https://img.shields.io/github/downloads/AnthonyBasooma/fwtraits/repo/total.svg)](https://github.com/AnthonyBasooma/fwtraits/releases/tag/V1.0.0)
 
 <!-- badges: end -->
 

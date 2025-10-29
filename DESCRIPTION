@@ -1,5 +1,5 @@
 Package: fwtraits
-Title: Extract Species Ecological Parameters From www.freshwaterecology.info
+Title: Extract Species Ecological Parameters from Www.freshwaterecology.info
 Version: 1.0.0
 Authors@R: c( 
     person(given = "Anthony", family = "Basooma", email = "anthony.basooma@boku.ac.at", 
@@ -7,19 +7,19 @@ Authors@R: c(
     comment = c(ORCID = "0000-0002-8994-9989")),
     person("Florian", "Borgwardt", role = c("ctb","fnd"), comment = c(ORCID = "0000-0002-8974-7834")),
     person("Thomas", "Hein", role = c("ctb", "fnd","ths"), comment = c(ORCID = "0000-0002-7767-4607")),
-    person("Sami", "Domisch", role = c("ctb"), comment = c(ORCID = "0000-0001-8839-5913")),
-    person("Merret", "Buurman", role = c("ctb"), comment = c(ORCID = "0000-0001-8839-5913")),
-    person("Vanessa", "Bremerich", role = c("ctb"), comment = c(ORCID = "0000-0001-8839-5913")),
-    person("Sonia Steffany Recinos", "Brizuela", role = c("ctb"), comment = c(ORCID = "0000-0001-8839-5913")),
-    person("Martin", "Tschikof", role = c("ctb"), comment = c(ORCID = "0000-0001-8839-5913")),
+    person("Sami", "Domisch", role = c("ctb")),
+    person("Merret", "Buurman", role = c("ctb")),
+    person("Vanessa", "Bremerich", role = c("ctb")),
+    person("Sonia Steffany Recinos", "Brizuela", role = c("ctb")),
+    person("Martin", "Tschikof", role = c("ctb")),
     person("Astrid", "Schmidt-Kloiber", role = c("ctb", "fnd", "dtc"), comment = c(ORCID = "0000-0001-8839-5913"))
            )
-Description: To extract species ecological ranges from the Freshwaterecology.info.
+Description: To extract species ecological ranges from the www.freshwaterecology.info.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-URL: https://github.com/AnthonyBasooma/fwtraits, https://anthonybasooma.github.io/fwtraits/,https://github.com/AnthonyBasooma/fwtraits/releases/tag/V1.0.0
+URL: https://github.com/AnthonyBasooma/fwtraits, https://anthonybasooma.github.io/fwtraits/, https://github.com/AnthonyBasooma/fwtraits/releases/tag/V1.0.0
 BugReports: https://github.com/AnthonyBasooma/fwtraits/issues
 Depends: R (>= 4.1.0)
 Imports: 
