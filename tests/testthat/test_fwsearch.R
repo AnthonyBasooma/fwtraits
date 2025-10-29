@@ -1,11 +1,13 @@
 
 test_that(desc = "tchecks",
           code = {
+            skip_on_cran()
+
             expect_equal(length(tcheck(c("mi", "fi", 'pp','pb','di','mp'))), 6)
             expect_equal(length(tcheck(c("mi", "fi", 'pp','pb','di','mp'), TRUE)), 6)
             expect_error(tcheck('mm'))#wrong taxa
 
-            #test for migration ecoparam retruns warning
+            #test for migration ecoparam returns warning
             expect_warning(fw_searchdata(organismgroup = 'fi', taxa_searched = 'Abramis brama', ecoparams = 'migte'))
 
             expect_warning(fw_searchdata(organismgroup = 'pb', taxa_searched = 'Achnantheffs danica',

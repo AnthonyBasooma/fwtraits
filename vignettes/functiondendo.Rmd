@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = identical(Sys.getenv("NOT_CRAN"), "true")
 )
 ```
 Functional dendrograms measure functional diversity (Petchey & Gaston, 2007). The dendograms cluster species with similar traits in the same or closely linked clusters, a precursor to under the species interactions at the species-species level. In **fwtraits**, these interactions can be examined by providing the species' ecological parameters or traits.

@@ -17,6 +17,8 @@ test_that("fw_setapikey tries to open .Renviron", {
 
 test_that("The key is properly set",
          code =  {
+           skip_on_cran()
+
             expect_error(fw_keyload("api_key1")) #wrong api key variable name
 
            expect_equal(nchar(fw_keyload()), 36)

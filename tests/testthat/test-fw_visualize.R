@@ -20,7 +20,3 @@ test_that(desc = "ggplot2",
             expect_error(fw_visualize(fetchdata2$ecodata))
           })
 
-
-fetchdata1 <- fw_fetchdata(data = c("Abramis brama"),
-                          organismgroup = 'fi',
-                          ecoparams = 'migration', cachefolder = 'cache')
