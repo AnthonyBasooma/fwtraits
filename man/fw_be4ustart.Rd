@@ -13,8 +13,9 @@ fw_be4ustart()
 Steps to follow in using the Freshwater Information Platform
 }
 \examples{
-
-#b4us <- fw_be4ustart()
+\dontrun{
+b4us <- fw_be4ustart()
+}
 
 }
 \author{

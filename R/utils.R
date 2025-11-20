@@ -7,8 +7,9 @@
 #' @export
 #'
 #' @examples
-#'
-#' #b4us <- fw_be4ustart()
+#' \dontrun{
+#' b4us <- fw_be4ustart()
+#' }
 #'
 #' @author Anthony Basooma
 #'
@@ -183,6 +184,7 @@ check_packages <- function(pkgs){
 #' @param cachefolder \code{string}. The root path were the cached data will be saved on the user PC.
 #'      If the path is not provided, the cached information will be saved in the current
 #'      working directly.
+#' @return string of the package citation
 #' @export
 #'
 fw_cite <- function(cachefolder = 'cache'){

@@ -14,7 +14,7 @@ Authors@R: c(
     person("Martin", "Tschikof", role = c("ctb")),
     person("Astrid", "Schmidt-Kloiber", role = c("ctb", "fnd", "dtc"), comment = c(ORCID = "0000-0001-8839-5913"))
            )
-Description: To extract species ecological ranges from the www.freshwaterecology.info.
+Description: Support the extraction and seamless integration of species ecological traits or preferences from the www.freshwaterecology.info into several ecological model workflows. During data extraction, different taxonomic levels are acceptable, including species, genus, and family, based on the availability of data in the database. The data is cached after the first search and can be accessed during and after online interactions. Only scientific names are acceptable in the search; local or English names are not allowed. A user API key is required to start using the package.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

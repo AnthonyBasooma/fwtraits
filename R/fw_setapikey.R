@@ -2,16 +2,18 @@
 
 
 #' Function and instructions creating the API_KEY variable in the User environment.
-#'
+#' @param verbose \code{logical} If logical, then the instruction message will show. Default \code{TRUE}.
 #' @importFrom utils file.edit
+#'
+#' @return string of instructions for saving or setting the API in the R session.
 #' @export
 #'
-fw_setapikey <- function(){
+fw_setapikey <- function(verbose = TRUE){
 
-  cat("  =============================================",'\n',
-      " =============================================",'\n',
+  if(verbose)cat("  =============================================",'\n',
+      "=============================================",'\n',
       "PLEASE FOLLOW THE INSTRUCTIONS CAREFULLY",'\n',
-      " =============================================",'\n',
+      "=============================================",'\n',
       "1. PLEASE EDIT THE .Renviron THATS HAS OPENED",'\n',
       "==                                         ",'\n',
       "2. TYPE IN: API_KEY = 36-digits alphanumeric",'\n',
@@ -28,6 +30,7 @@ fw_setapikey <- function(){
 
 #'For loading the API key from the environment.
 #' @param keyvar \code{string} Is the API name as indicated in the user environment. Default is \code{"API_KEY"}.
+#' @return string of API
 #' @export
 fw_keyload <- function(keyvar= "API_KEY") {
 

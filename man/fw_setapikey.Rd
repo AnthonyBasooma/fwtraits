@@ -4,7 +4,13 @@
 \alias{fw_setapikey}
 \title{Function and instructions creating the API_KEY variable in the User environment.}
 \usage{
-fw_setapikey()
+fw_setapikey(verbose = TRUE)
+}
+\arguments{
+\item{verbose}{\code{logical} If logical, then the instruction message will show. Default \code{TRUE}.}
+}
+\value{
+string of instructions for saving or setting the API in the R session.
 }
 \description{
 Function and instructions creating the API_KEY variable in the User environment.

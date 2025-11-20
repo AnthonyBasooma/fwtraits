@@ -9,6 +9,9 @@ fw_keyload(keyvar = "API_KEY")
 \arguments{
 \item{keyvar}{\code{string} Is the API name as indicated in the user environment. Default is \code{"API_KEY"}.}
 }
+\value{
+string of API
+}
 \description{
 For loading the API key from the environment.
 }

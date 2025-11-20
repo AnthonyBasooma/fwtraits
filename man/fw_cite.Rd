@@ -11,6 +11,9 @@ fw_cite(cachefolder = "cache")
 If the path is not provided, the cached information will be saved in the current
 working directly.}
 }
+\value{
+string of the package citation
+}
 \description{
 Get database citations
 }

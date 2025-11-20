@@ -327,9 +327,11 @@ fw_parsevalues <- function(data, org, cachefolder){
           DataType <- unique(dbdata$DataType[which(dbdata$parameters_cleaned== paramvalue)])
 
           #explanation of category names
+          if(length(cvalue)>1)cvalue <- cvalue[1]
+
           explanation <- unique(dbdata$category_explanation[which(dbdata$parameters_cleaned== paramvalue &
                                                                     dbdata$category_name == cvalue )])
-          if(length(explanation)<=0 | is.na(cvalue)) explanation <- NA
+         if(length(explanation)<=0 | any(is.na(cvalue))) explanation <- NA
 
           # #Add assignment info
           assigninfo <- unique(dbdata$AssignementInfo[which(dbdata$parameters_cleaned== paramvalue)])
