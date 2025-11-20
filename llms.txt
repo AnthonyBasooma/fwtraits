@@ -1,0 +1,167 @@
+### fwtraits for retrieving from www.freshwaterecology.info database
+
+![logo](reference/figures/fwtraits.png)
+
+### Aim of the package
+
+**fwtraits** provides a seamless and robust access to the species
+ecological parameters, traits, or indicators from the
+**www.freshwaterecology.info database** (Schmidt-Kloiber & Hering 2015).
+The database hosts an array of ecological parameters for different
+taxonomic groups, including fish, macroinvertebrates, phytoplankton,
+diatoms, and phytobenthos. Experts periodically review the data to
+ensure quality. The data is used in ecological studies, primarily for
+functional diversity or macroecological analyses.
+
+**NOTE**
+
+- To seamlessly access the databases, an API has been developed by the
+  database hosts. Therefore, to freely access the database, the user is
+  required to sign up and make a request for the API key.
+
+**Package installation**
+
+To access the package:
+
+``` r
+# install.packages("devtools")
+
+if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+
+remotes::install_github("AnthonyBasooma/fwtraits")
+
+#To access the package vignettes in RStudio using vignettes function.
+remotes::install_github("AnthonyBasooma/fwtraits", build_vignettes = TRUE, dependencies = TRUE)
+```
+
+### Package usage
+
+------------------------------------------------------------------------
+
+The database is arranged into organism groups including
+macroinvertebrates, fishes, phytoplankton, macrophytes, and phytobenthos
+most especially the diatoms (Figure 1). The package is a wrapper around
+the [fweapi2](https://www.freshwaterecology.info/fweapi2docu.php)
+developed and maintained by the University of Natural Resources and Life
+Sciences (BOKU), Vienna, Austria.
+
+Before using the package, the user is strongly advised to run the
+**[`fw_be4ustart()`](https://anthonybasooma.github.io/fwtraits/reference/fw_be4ustart.md)**
+to get the steps required to access and use the package in accessing the
+species ecological parameters, traits or indicators.
+
+![Figure 1. Accessing the species traits or ecological parameters from
+the Freshwaterecology.info database (FW
+DB).](reference/figures/API_v2.png)
+
+**Figure 1. Accessing the species traits or ecological parameters from
+the Freshwaterecology.info database (FW DB).**
+
+### Main functions
+
+- [`fw_setapikey()`](https://anthonybasooma.github.io/fwtraits/reference/fw_setapikey.md)
+  for securing API key in the user R environment.
+- [`fw_searchdata()`](https://anthonybasooma.github.io/fwtraits/reference/fw_searchdata.md)
+  To allow get data from the database. However, this is mostly an
+  internal function since the data is not already parsed to enable
+  usability.
+- [`fw_fetchdata()`](https://anthonybasooma.github.io/fwtraits/reference/fw_fetchdata.md)
+  is the main function that provides all the parameters for data access.
+  The function is wrapped around
+  [`fw_searchdata()`](https://anthonybasooma.github.io/fwtraits/reference/fw_searchdata.md)
+  function to allow the user to easily get and manipulate the data
+  during package usage.
+
+### Other utility functions
+
+- `check_names()` to check spellings species taxonomic names to allow
+  the user obtain the species traits.
+- `fw_checktraits()`harmonize species traits to allow effective between
+  user inputs and database information.
+- [`fw_visualize()`](https://anthonybasooma.github.io/fwtraits/reference/fw_visualize.md)provides
+  graphical display of the information obtained from the database.
+
+### Funding
+
+The package was created with support from the AquaINFRA project which is
+aimed at developing data and services to support marine and freshwater
+scientists and stakeholders. Also, the DANUBE4All project and HR21
+Doctoral School under BOKU University provided logistical support during
+the development of this package.
+
+### References
+
+Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info -
+An online tool that unifies, standardises and codifies more than 20,000
+European freshwater organisms and their ecological preferences.
+Ecological Indicators, 53, 271-282.
+<https://doi.org/10.1016/j.ecolind.2015.02.007>
+
+# Package index
+
+## All functions
+
+- [`check_packages()`](https://anthonybasooma.github.io/fwtraits/reference/check_packages.md)
+  : Check for packages to install and respond to use
+- [`checktrait()`](https://anthonybasooma.github.io/fwtraits/reference/checktrait.md)
+  : Checks the traits spelling compared to user input.
+- [`classifydata`](https://anthonybasooma.github.io/fwtraits/reference/classifydata.md)
+  : Data with ecological parameters classification.
+- [`clean_names()`](https://anthonybasooma.github.io/fwtraits/reference/clean_names.md)
+  : Check and clean species names to match standard names in the
+  database.
+- [`fuzzy_codes()`](https://anthonybasooma.github.io/fwtraits/reference/fuzzy_codes.md)
+  : Internal package and create dummy codes
+- [`fw_be4ustart()`](https://anthonybasooma.github.io/fwtraits/reference/fw_be4ustart.md)
+  : Steps to follow in using the Freshwater Information Platform
+- [`fw_cite()`](https://anthonybasooma.github.io/fwtraits/reference/fw_cite.md)
+  : Get database citations
+- [`fw_dbguide()`](https://anthonybasooma.github.io/fwtraits/reference/fw_dbguide.md)
+  : Standard table with taxonomic groups and their traits explanations.
+- [`fw_fdcompute()`](https://anthonybasooma.github.io/fwtraits/reference/fw_fdcompute.md)
+  : Compute the functional diversity indices and community weighted
+  means.
+- [`fw_fdendro()`](https://anthonybasooma.github.io/fwtraits/reference/fw_fdendro.md)
+  : For computing the functional dendogram
+- [`fw_fetchdata()`](https://anthonybasooma.github.io/fwtraits/reference/fw_fetchdata.md)
+  : Extracting the traits from the downloaded data.
+- [`fw_geosites()`](https://anthonybasooma.github.io/fwtraits/reference/fw_geosites.md)
+  : Auto generation of species sites
+- [`fw_keyload()`](https://anthonybasooma.github.io/fwtraits/reference/fw_keyload.md)
+  : For loading the API key from the environment.
+- [`fw_register()`](https://anthonybasooma.github.io/fwtraits/reference/fw_register.md)
+  : Open the registration page
+- [`fw_searchdata()`](https://anthonybasooma.github.io/fwtraits/reference/fw_searchdata.md)
+  : To download data from the Freshwaterecology.info database.
+- [`fw_setapikey()`](https://anthonybasooma.github.io/fwtraits/reference/fw_setapikey.md)
+  : Function and instructions creating the API_KEY variable in the User
+  environment.
+- [`fw_token()`](https://anthonybasooma.github.io/fwtraits/reference/fw_token.md)
+  : Access and loading the token key
+- [`fw_visualize()`](https://anthonybasooma.github.io/fwtraits/reference/fw_visualize.md)
+  : ggplot2 visualization.
+- [`invertbackbone`](https://anthonybasooma.github.io/fwtraits/reference/invertbackbone.md)
+  : Taxonomic data for species in the freshwaterecology.info database
+- [`pbenthodata`](https://anthonybasooma.github.io/fwtraits/reference/pbenthodata.md)
+  : Taxonomic data for the phytobentho species in
+  www.freshwaterecology.info database.
+- [`speciesdata`](https://anthonybasooma.github.io/fwtraits/reference/speciesdata.md)
+  : Efiplus data used to develop ecological sensitivity parameters for
+  riverine species in European streams and rivers.
+
+# Articles
+
+### All vignettes
+
+- [Retrieve data for taxomomic
+  groups.](https://anthonybasooma.github.io/fwtraits/articles/data_for_taxa_groups.md):
+- [Computing functional diversity indices and community weighted means
+  for
+  fishes.](https://anthonybasooma.github.io/fwtraits/articles/fishcompute.md):
+- [Compute functional dendogram from the ecological
+  parameters.](https://anthonybasooma.github.io/fwtraits/articles/functiondendo.md):
+- [Computing functional diversity indices and community weghted means
+  for
+  macroinvertebrates.](https://anthonybasooma.github.io/fwtraits/articles/macroinverts.md):
+- [How to handle the API key in public and private
+  codes.](https://anthonybasooma.github.io/fwtraits/articles/Secure_API_key.md):

@@ -1,0 +1,70 @@
+# Compute functional dendogram from the ecological parameters.
+
+Functional dendrograms measure functional diversity (Petchey & Gaston,
+2007). The dendograms cluster species with similar traits in the same or
+closely linked clusters, a precursor to under the species interactions
+at the species-species level. In **fwtraits**, these interactions can be
+examined by providing the species’ ecological parameters or traits.
+
+``` r
+library(fwtraits)
+```
+
+### Data collation
+
+The data was obtained from the www.freshwaterecology.info database using
+the **`fw_fetchdata`** function.
+
+``` r
+
+data("speciesdata")
+
+set.seed(1135)
+speciesdata$abund <- rnorm(n = nrow(speciesdata), 4.3, 1.2)
+
+#species with geographical coordinates
+
+geospdata <- speciesdata |> 
+  sf::st_as_sf(coords = c('decimalLongitude', 'decimalLatitude'), 
+               crs = sf::st_crs(4326))
+```
+
+### Data retrieval from the database
+
+``` r
+
+fishtraits <- fw_fetchdata(data = speciesdata, 
+                         ecoparams = c('rheophily habitat', 'spawning habitat',
+                                       'feeding diet adult'), 
+                         taxonomic_column = 'scientificName',
+                         organismgroup = 'fi')
+```
+
+### Data visualistion and compute the functional dendogram.
+
+``` r
+
+
+fdendoclust <- fw_fdendro(fwdata = fishtraits, plot = TRUE)
+```
+
+![](functiondendo_files/figure-html/visualisation-1.png)
+
+``` r
+
+head(fdendoclust, 3)
+#>                   rheophily_habitat spawning_habitat feeding_diet_adult cluster
+#> Abramis brama          rheophilic B      euryoparous         omnivorous       1
+#> Alburnus alburnus         eurytopic      euryoparous         omnivorous       1
+#> Anguilla anguilla         eurytopic      limnoparous         omnivorous       2
+
+table(fdendoclust$cluster)
+#> 
+#> 1 2 3 4 
+#> 6 6 8 1
+```
+
+### References
+
+Petchey, O. L., & Gaston, K. J. (2007). Dendrograms and measuring
+functional diversity. Oikos, 116(8), 1422-1426.
