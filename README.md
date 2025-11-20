@@ -8,8 +8,9 @@
 [![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/fwtraits/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/AnthonyBasooma/fwtraits/branch/master/graph/badge.svg?token=07OUlLSQus)](https://app.codecov.io/gh/AnthonyBasooma/fwtraits)
-[![GitHub
-Downloads](https://img.shields.io/github/downloads/AnthonyBasooma/fwtraits/repo/total.svg)](https://github.com/AnthonyBasooma/fwtraits/releases/tag/V1.0.0)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/fwtraits?color=orange)](https://cran.r-project.org/package=fwtraits)
+[![DOI](https://img.shields.io/badge/DOI-10.1016/j.baae.2025.10.010-orange)](https://doi.org/10.1016/j.baae.2025.10.010)
 
 <!-- badges: end -->
 
@@ -82,15 +83,6 @@ traits or ecological parameters from the Freshwaterecology.info database
   function to allow the user to easily get and manipulate the data
   during package usage.
 
-### Other utility functions
-
-- `check_names()` to check spellings species taxonomic names to allow
-  the user obtain the species traits.
-- `fw_checktraits()`harmonize species traits to allow effective between
-  user inputs and database information.
-- `fw_visualize()`provides graphical display of the information obtained
-  from the database.
-
 ### Funding
 
 The package was created with support from the AquaINFRA project which is
@@ -99,10 +91,24 @@ scientists and stakeholders. Also, the DANUBE4All project and HR21
 Doctoral School under BOKU University provided logistical support during
 the development of this package.
 
-### References
+### Package citation
+
+Basooma, A., Borgwardt, F., Domisch, S., Buurman, M., Bremerich, V.,
+Recinos Brizuela, S., Tschikof, M., Hein, T., & Schmidt-Kloiber, A.
+(2025). Introducing fwtraits – an R package for obtaining freshwater
+biodiversity trait information. Basic and Applied Ecology, 8, 81-91.
+<https://doi.org/10.1016/j.baae.2025.10.010>
+
+### Citation of the www.freshwaterecology.info paper
 
 Schmidt-Kloiber, A., & Hering, D. (2015). Www.freshwaterecology.info -
 An online tool that unifies, standardises and codifies more than 20,000
 European freshwater organisms and their ecological preferences.
 Ecological Indicators, 53, 271-282.
 <https://doi.org/10.1016/j.ecolind.2015.02.007>
+
+### Citation for www.freshwaterecology.info API
+
+Freshwater Ecology Information Platform. (2025). FWE-API 2 –
+Documentation of freshwaterecology.info. Retrieved November 20, 2025,
+from <https://www.freshwaterecology.info/fweapi2docu.php>
